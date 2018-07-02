@@ -5,7 +5,7 @@ import io.realm.RealmObject;
 public class incomeCategory extends RealmObject {
 
     private String name;
-    private double exactValue;
+    private double exactValue; //Optional field
 
     public incomeCategory() {
         this.name = "";
@@ -16,6 +16,11 @@ public class incomeCategory extends RealmObject {
     public incomeCategory(String name, double exactValue) {
         this.name = name;
         this.exactValue = exactValue;
+    }
+
+    public incomeCategory(String name) {
+        this.name = name;
+        this.exactValue = 0;
     }
 
     public String getName() {
