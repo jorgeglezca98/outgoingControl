@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
+import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
 
 import io.realm.RealmList;
 
@@ -94,6 +95,19 @@ public class newOutgoingCategoriesAdapter extends RecyclerView.Adapter<newOutgoi
                     adapter.deleteLast();
                 }
             });
+        }
+
+        public RealmList<subcategory> getSubcategories(){
+            RealmList<subcategory> result = new RealmList<>();
+            newSubcategoriesAdapter.ViewHolder viewHolder;
+            for (int i = 0; i < recyclerViewSubcategories.getAdapter().getItemCount(); i++) {
+                viewHolder = (newSubcategoriesAdapter.ViewHolder) recyclerViewSubcategories.findViewHolderForAdapterPosition(i);
+                if(!viewHolder.subcategoryName.getText().toString().isEmpty())
+                    result.add(new subcategory(viewHolder.subcategoryName.getText().toString()));
+            }
+            if(result.isEmpty())
+                result.add(new subcategory(name.getText().toString()));
+            return result;
         }
     }
 }

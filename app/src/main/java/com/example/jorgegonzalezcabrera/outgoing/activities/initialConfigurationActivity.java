@@ -105,13 +105,12 @@ public class initialConfigurationActivity extends AppCompatActivity {
         });
     }
 
-    //TODO: merge this two methods
     private RealmList<outgoingCategory> getOutgoingCategories() {
         RealmList<outgoingCategory> result = new RealmList<>();
         newOutgoingCategoriesAdapter.ViewHolder viewHolder;
         for (int i = 0; i < outgoingCategoriesRecyclerView.getAdapter().getItemCount(); i++) {
             viewHolder = (newOutgoingCategoriesAdapter.ViewHolder) outgoingCategoriesRecyclerView.findViewHolderForAdapterPosition(i);
-            result.add(new outgoingCategory(new RealmList<subcategory>(), Double.valueOf(viewHolder.max.getText().toString()), viewHolder.name.getText().toString()));
+            result.add(new outgoingCategory(viewHolder.getSubcategories(), Double.valueOf(viewHolder.max.getText().toString()), viewHolder.name.getText().toString()));
         }
         return result;
     }
