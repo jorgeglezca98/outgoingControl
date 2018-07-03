@@ -12,6 +12,9 @@ public class myApplication extends Application{
         super.onCreate();
         Realm.init(this);
         getConfiguration();
+        Realm.getDefaultInstance().beginTransaction();
+        Realm.getDefaultInstance().deleteAll();
+        Realm.getDefaultInstance().commitTransaction();
     }
 
     private void getConfiguration(){

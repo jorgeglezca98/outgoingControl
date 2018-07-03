@@ -20,7 +20,7 @@ public class SplashActiviy extends AppCompatActivity {
         final Intent intent;
 
         database.beginTransaction();
-        if (database.where(appConfiguration.class).findAll() == null)
+        if (database.where(appConfiguration.class).findAll().size() == 0)
             intent = new Intent(SplashActiviy.this, initialConfigurationActivity.class);
         else
             intent = new Intent(SplashActiviy.this, MainActivity.class);
