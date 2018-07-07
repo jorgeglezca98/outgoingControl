@@ -7,28 +7,4 @@
     android:padding="5dp"
     tools:context=".activities.MainActivity">
 
-    <TextView
-        android:id="@+id/textViewTitleSummaryTable"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="#b7b7b7"
-        android:gravity="center_horizontal"
-        android:padding="3dp"
-        android:text="Global"
-        app:layout_constraintEnd_toEndOf="@+id/recyclerViewSummaryTable"
-        app:layout_constraintStart_toStartOf="@+id/recyclerViewSummaryTable"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerViewSummaryTable"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewTitleSummaryTable">
-
-    </android.support.v7.widget.RecyclerView>
-
 </android.support.constraint.ConstraintLayout>

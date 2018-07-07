@@ -2,8 +2,6 @@ package com.example.jorgegonzalezcabrera.outgoing.activities;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -12,41 +10,76 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
+import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
+import com.example.jorgegonzalezcabrera.outgoing.models.entry;
+
+import io.realm.Realm;
+
+import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newEntryDialog;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private appConfiguration currentConfiguration;
+    private Realm database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        database = Realm.getDefaultInstance();
+        database.executeTransaction(new Realm.Transaction() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void execute(Realm realm) {
+                currentConfiguration = database.where(appConfiguration.class).findFirst();
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                newEntryDialog(MainActivity.this, currentConfiguration.getOutgoingCategoriesCategories(),
+                        currentConfiguration.getIncomeCategories(), new dialogs.OnNewEntryAccepted() {
+                            @Override
+                            public void OnClick(String subcategory, int type, double value, String description) {
+                                final entry newEntry = new entry(value, type, subcategory, description);
+                                if(type == entry.type.OUTGOING.ordinal()){
+                                    currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney()-value);
+                                } else{
+                                    currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney()+value);
+                                }
+                                database.executeTransaction(new Realm.Transaction() {
+                                    @Override
+                                    public void execute(Realm realm) {
+                                        database.copyToRealm(newEntry);
+                                    }
+                                });
+                            }
+                        });
+            }
+        });
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -96,7 +129,7 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

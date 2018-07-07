@@ -8,7 +8,7 @@ import io.realm.RealmObject;
 
 public class entry extends RealmObject {
 
-    enum type{OUTGOING,INCOME}
+    public enum type{OUTGOING,INCOME}
 
     private double valor;
     private int type; //**Puede que acabe sobrando
@@ -29,7 +29,7 @@ public class entry extends RealmObject {
         this.type = type;
         this.category = category;
         this.date = new Date();
-        this.description = description;
+        this.description = description.isEmpty() ? "Not described" : description;
     }
 
     public double getValor() {
