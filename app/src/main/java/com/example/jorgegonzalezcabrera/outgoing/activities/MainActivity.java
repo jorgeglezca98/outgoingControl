@@ -7,6 +7,8 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,9 +16,12 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.adapters.surplusMoneyTableAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
+
+import java.util.Vector;
 
 import io.realm.Realm;
 
@@ -24,14 +29,16 @@ import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newEntry
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
-    private appConfiguration currentConfiguration;
-    private Realm database;
-    private TextView textViewCurrentMoney;
-    private TextView textViewOutgoingsOfTheMonth;
-    private TextView textViewIncomesOfTheMonth;
+    
+    appConfiguration currentConfiguration;
+    Realm database;
+    TextView textViewCurrentMoney;
+    TextView textViewOutgoingsOfTheMonth;
+    TextView textViewIncomesOfTheMonth;
+    RecyclerView recyclerViewSurplusMoney;
     long totalOutgoings;
     long totalIncomes;
+    Vector<surplusMoneyTableAdapter.surplusMoneyByCategory> surplusMoneyByCategoryVector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +57,18 @@ public class MainActivity extends AppCompatActivity
         textViewCurrentMoney = findViewById(R.id.textViewCurrentMoney);
         textViewCurrentMoney.setText(String.valueOf(currentConfiguration.getCurrentMoney()));
 
+        surplusMoneyByCategoryVector = new Vector<>();
         totalOutgoings = 0;
+        double aux;
         textViewOutgoingsOfTheMonth = findViewById(R.id.textViewOutgoingsOfTheMonth);
         for (int i = 0; i < currentConfiguration.getOutgoingCategoriesCategories().size(); i++) {
+            aux=0;
             for (int j = 0; j < currentConfiguration.getOutgoingCategoriesCategories().get(i).getSubcategories().size(); j++) {
-                totalOutgoings += (double) database.where(entry.class).equalTo("category", currentConfiguration.getOutgoingCategoriesCategories().get(i).getSubcategories().get(j).getName()).sum("valor");
+                aux += (double) database.where(entry.class).equalTo("category", currentConfiguration.getOutgoingCategoriesCategories().get(i).getSubcategories().get(j).getName()).sum("valor");
             }
+            totalOutgoings += aux;
+            surplusMoneyByCategoryVector.add(new surplusMoneyTableAdapter.surplusMoneyByCategory(currentConfiguration.getOutgoingCategoriesCategories().get(i).getName(),currentConfiguration.getOutgoingCategoriesCategories().get(i).getMaximum()-aux));
+
         }
         textViewOutgoingsOfTheMonth.setText(String.valueOf(totalOutgoings));
 
@@ -66,6 +79,10 @@ public class MainActivity extends AppCompatActivity
         }
         textViewIncomesOfTheMonth.setText(String.valueOf(totalIncomes));
 
+        recyclerViewSurplusMoney = findViewById(R.id.recyclerViewSurplusMoney);
+        recyclerViewSurplusMoney.setAdapter(new surplusMoneyTableAdapter(surplusMoneyByCategoryVector));
+        recyclerViewSurplusMoney.setLayoutManager(new LinearLayoutManager(this));
+        
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
