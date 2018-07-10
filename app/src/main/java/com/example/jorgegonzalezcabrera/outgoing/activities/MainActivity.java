@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
@@ -26,6 +27,11 @@ public class MainActivity extends AppCompatActivity
 
     private appConfiguration currentConfiguration;
     private Realm database;
+    private TextView textViewCurrentMoney;
+    private TextView textViewOutgoingsOfTheMonth;
+    private TextView textViewIncomesOfTheMonth;
+    long totalOutgoings;
+    long totalIncomes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +47,24 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        textViewCurrentMoney = findViewById(R.id.textViewCurrentMoney);
+        textViewCurrentMoney.setText(String.valueOf(currentConfiguration.getCurrentMoney()));
+
+        totalOutgoings = 0;
+        textViewOutgoingsOfTheMonth = findViewById(R.id.textViewOutgoingsOfTheMonth);
+        for (int i = 0; i < currentConfiguration.getOutgoingCategoriesCategories().size(); i++) {
+            for (int j = 0; j < currentConfiguration.getOutgoingCategoriesCategories().get(i).getSubcategories().size(); j++) {
+                totalOutgoings += (double) database.where(entry.class).equalTo("category", currentConfiguration.getOutgoingCategoriesCategories().get(i).getSubcategories().get(j).getName()).sum("valor");
+            }
+        }
+        textViewOutgoingsOfTheMonth.setText(String.valueOf(totalOutgoings));
+
+        totalIncomes = 0;
+        textViewIncomesOfTheMonth = findViewById(R.id.textViewIncomeOfTheMonth);
+        for (int i = 0; i < currentConfiguration.getIncomeCategories().size(); i++) {
+            totalIncomes += (double) database.where(entry.class).equalTo("category", currentConfiguration.getIncomeCategories().get(i).getName()).sum("valor");
+        }
+        textViewIncomesOfTheMonth.setText(String.valueOf(totalIncomes));
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -49,16 +73,17 @@ public class MainActivity extends AppCompatActivity
                 newEntryDialog(MainActivity.this, currentConfiguration.getOutgoingCategoriesCategories(),
                         currentConfiguration.getIncomeCategories(), new dialogs.OnNewEntryAccepted() {
                             @Override
-                            public void OnClick(String subcategory, int type, double value, String description) {
-                                final entry newEntry = new entry(value, type, subcategory, description);
-                                if(type == entry.type.OUTGOING.ordinal()){
-                                    currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney()-value);
-                                } else{
-                                    currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney()+value);
-                                }
+                            public void OnClick(final String subcategory, final int type, final double value, final String description) {
                                 database.executeTransaction(new Realm.Transaction() {
                                     @Override
                                     public void execute(Realm realm) {
+                                        final entry newEntry = new entry(value, type, subcategory, description);
+                                        if (type == entry.type.OUTGOING.ordinal()) {
+                                            currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - value);
+                                        } else {
+                                            currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + value);
+                                        }
+                                        database.copyToRealmOrUpdate(currentConfiguration);
                                         database.copyToRealm(newEntry);
                                     }
                                 });
@@ -115,17 +140,13 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
 
         }
 
@@ -136,3 +157,4 @@ public class MainActivity extends AppCompatActivity
 }
 
 //TODO: permitir que se accedan valores regulares
+//TODO: the models should have a primarykey to make updates
