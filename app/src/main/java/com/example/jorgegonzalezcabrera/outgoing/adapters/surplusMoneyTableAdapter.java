@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 
 import java.util.Vector;
 
@@ -19,6 +20,21 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
     public surplusMoneyTableAdapter(Vector<surplusMoneyByCategory> items) {
         this.items = items;
         this.layout = R.layout.surplus_money_item;
+    }
+
+    public void updateData(String category,double value){
+        //TODO: optimize this method
+        int i=0,j=0;
+        while(i<items.size() && !items.get(i).category.getSubcategories().get(j).getName().equals(category)){
+            j=0;
+            while(j<items.get(i).category.getSubcategories().size() && !items.get(i).category.getSubcategories().get(j).getName().equals(category)){
+                j++;
+            }
+            i++;
+        }
+        if(i<items.size())
+            items.get(i).surplusMoney-=value;
+        notifyItemChanged(i);
     }
 
     @NonNull
@@ -51,18 +67,18 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
         }
 
         public void bind(surplusMoneyByCategory surplusMoneyByCategory) {
-            categoryName.setText(surplusMoneyByCategory.categoryName);
+            categoryName.setText(surplusMoneyByCategory.category.getName());
             surplusMoney.setText(String.valueOf(surplusMoneyByCategory.surplusMoney));
         }
     }
 
 
     public static class surplusMoneyByCategory{
-        public String categoryName;
+        public outgoingCategory category;
         public double surplusMoney;
 
-        public surplusMoneyByCategory(String categoryName, double surplusMoney) {
-            this.categoryName = categoryName;
+        public surplusMoneyByCategory(outgoingCategory category, double surplusMoney) {
+            this.category = category;
             this.surplusMoney = surplusMoney;
         }
     }

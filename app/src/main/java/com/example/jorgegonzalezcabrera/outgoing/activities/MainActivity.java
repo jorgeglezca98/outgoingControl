@@ -1,6 +1,7 @@
 package com.example.jorgegonzalezcabrera.outgoing.activities;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -29,15 +30,15 @@ import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newEntry
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    
+
     appConfiguration currentConfiguration;
     Realm database;
     TextView textViewCurrentMoney;
     TextView textViewOutgoingsOfTheMonth;
     TextView textViewIncomesOfTheMonth;
     RecyclerView recyclerViewSurplusMoney;
-    long totalOutgoings;
-    long totalIncomes;
+    double totalOutgoings;
+    double totalIncomes;
     Vector<surplusMoneyTableAdapter.surplusMoneyByCategory> surplusMoneyByCategoryVector;
 
     @Override
@@ -46,43 +47,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
 
-        database = Realm.getDefaultInstance();
-        database.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                currentConfiguration = database.where(appConfiguration.class).findFirst();
-            }
-        });
+        bindUI();
 
-        textViewCurrentMoney = findViewById(R.id.textViewCurrentMoney);
-        textViewCurrentMoney.setText(String.valueOf(currentConfiguration.getCurrentMoney()));
-
-        surplusMoneyByCategoryVector = new Vector<>();
-        totalOutgoings = 0;
-        double aux;
-        textViewOutgoingsOfTheMonth = findViewById(R.id.textViewOutgoingsOfTheMonth);
-        for (int i = 0; i < currentConfiguration.getOutgoingCategoriesCategories().size(); i++) {
-            aux=0;
-            for (int j = 0; j < currentConfiguration.getOutgoingCategoriesCategories().get(i).getSubcategories().size(); j++) {
-                aux += (double) database.where(entry.class).equalTo("category", currentConfiguration.getOutgoingCategoriesCategories().get(i).getSubcategories().get(j).getName()).sum("valor");
-            }
-            totalOutgoings += aux;
-            surplusMoneyByCategoryVector.add(new surplusMoneyTableAdapter.surplusMoneyByCategory(currentConfiguration.getOutgoingCategoriesCategories().get(i).getName(),currentConfiguration.getOutgoingCategoriesCategories().get(i).getMaximum()-aux));
-
-        }
-        textViewOutgoingsOfTheMonth.setText(String.valueOf(totalOutgoings));
-
-        totalIncomes = 0;
-        textViewIncomesOfTheMonth = findViewById(R.id.textViewIncomeOfTheMonth);
-        for (int i = 0; i < currentConfiguration.getIncomeCategories().size(); i++) {
-            totalIncomes += (double) database.where(entry.class).equalTo("category", currentConfiguration.getIncomeCategories().get(i).getName()).sum("valor");
-        }
-        textViewIncomesOfTheMonth.setText(String.valueOf(totalIncomes));
-
-        recyclerViewSurplusMoney = findViewById(R.id.recyclerViewSurplusMoney);
-        recyclerViewSurplusMoney.setAdapter(new surplusMoneyTableAdapter(surplusMoneyByCategoryVector));
-        recyclerViewSurplusMoney.setLayoutManager(new LinearLayoutManager(this));
-        
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,9 +62,9 @@ public class MainActivity extends AppCompatActivity
                                     public void execute(Realm realm) {
                                         final entry newEntry = new entry(value, type, subcategory, description);
                                         if (type == entry.type.OUTGOING.ordinal()) {
-                                            currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - value);
+                                            updateAfterOutgoing(value,subcategory);
                                         } else {
-                                            currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + value);
+                                            updateAfterIncome(value);
                                         }
                                         database.copyToRealmOrUpdate(currentConfiguration);
                                         database.copyToRealm(newEntry);
@@ -117,6 +83,60 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    public void bindUI(){
+        database = Realm.getDefaultInstance();
+        database.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                currentConfiguration = database.where(appConfiguration.class).findFirst();
+            }
+        });
+
+        textViewCurrentMoney = findViewById(R.id.textViewCurrentMoney);
+        textViewCurrentMoney.setText(String.format("%.2f", currentConfiguration.getCurrentMoney()));
+
+        surplusMoneyByCategoryVector = new Vector<>();
+        totalOutgoings = 0;
+        double aux;
+        textViewOutgoingsOfTheMonth = findViewById(R.id.textViewOutgoingsOfTheMonth);
+        for (int i = 0; i < currentConfiguration.getOutgoingCategoriesCategories().size(); i++) {
+            aux = 0;
+            for (int j = 0; j < currentConfiguration.getOutgoingCategoriesCategories().get(i).getSubcategories().size(); j++) {
+                aux += database.where(entry.class).equalTo("category", currentConfiguration.getOutgoingCategoriesCategories().get(i).getSubcategories().get(j).getName()).sum("valor").doubleValue();
+            }
+            totalOutgoings += aux;
+            surplusMoneyByCategoryVector.add(new surplusMoneyTableAdapter.surplusMoneyByCategory(currentConfiguration.getOutgoingCategoriesCategories().get(i), currentConfiguration.getOutgoingCategoriesCategories().get(i).getMaximum() - aux));
+
+        }
+        textViewOutgoingsOfTheMonth.setText(String.format("%.2f", totalOutgoings));
+
+        totalIncomes = 0;
+        textViewIncomesOfTheMonth = findViewById(R.id.textViewIncomeOfTheMonth);
+        for (int i = 0; i < currentConfiguration.getIncomeCategories().size(); i++) {
+            totalIncomes += database.where(entry.class).equalTo("category", currentConfiguration.getIncomeCategories().get(i).getName()).sum("valor").doubleValue();
+        }
+        textViewIncomesOfTheMonth.setText(String.format("%.2f", totalIncomes));
+
+        recyclerViewSurplusMoney = findViewById(R.id.recyclerViewSurplusMoney);
+        recyclerViewSurplusMoney.setAdapter(new surplusMoneyTableAdapter(surplusMoneyByCategoryVector));
+        recyclerViewSurplusMoney.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    public void updateAfterOutgoing(double value, String subcategory){
+        currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - value);
+        textViewCurrentMoney.setText(String.format("%.2f", currentConfiguration.getCurrentMoney()));
+        totalOutgoings += value;
+        textViewOutgoingsOfTheMonth.setText(String.format("%.2f", totalOutgoings));
+        ((surplusMoneyTableAdapter) recyclerViewSurplusMoney.getAdapter()).updateData(subcategory, value);
+    }
+
+    public void updateAfterIncome(double value){
+        currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + value);
+        textViewCurrentMoney.setText(String.format("%.2f", currentConfiguration.getCurrentMoney()));
+        totalIncomes += value;
+        textViewIncomesOfTheMonth.setText(String.format("%.2f", totalIncomes));
     }
 
     @Override
@@ -173,5 +193,6 @@ public class MainActivity extends AppCompatActivity
     }
 }
 
+//TODO: make sure that the data is updated in the database
 //TODO: permitir que se accedan valores regulares
 //TODO: the models should have a primarykey to make updates
