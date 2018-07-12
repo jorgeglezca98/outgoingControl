@@ -2,6 +2,7 @@ package com.example.jorgegonzalezcabrera.outgoing.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Vector;
 
 import io.realm.RealmList;
@@ -34,7 +36,7 @@ public class allActionsAdapter extends RecyclerView.Adapter<allActionsAdapter.Vi
         Date firstDayOfMonth = firstDateOfTheMonth(new Date());
         entries = new Vector<>();
         entries.add(new RealmList<entry>());
-        for(int i=0;i<allEntries.size();i++){
+        for(int i=allEntries.size()-1;i>=0;i--){
             if(firstDayOfMonth.before(allEntries.get(i).getDate())){
                 entries.lastElement().add(allEntries.get(i));
             } else{
@@ -75,10 +77,13 @@ public class allActionsAdapter extends RecyclerView.Adapter<allActionsAdapter.Vi
         }
 
         public void bind(RealmList<entry> entriesOfTheMonth) {
-            DateFormat df = new SimpleDateFormat("MMMMM yyyy");
+            DateFormat df = new SimpleDateFormat("MMMM 'de' yyyy",  new Locale("es", "ES"));
             date.setText(df.format(entriesOfTheMonth.first().getDate()));
             entriesByMonth.setAdapter(new actionsAdapter(entriesOfTheMonth));
-            entriesByMonth.setLayoutManager(new LinearLayoutManager(context));
+            LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+            entriesByMonth.setLayoutManager(layoutManager);
+            entriesByMonth.addItemDecoration(new DividerItemDecoration(context, layoutManager.getOrientation()));
+
         }
     }
 }
