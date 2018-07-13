@@ -17,14 +17,17 @@ import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.mainPagerAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.actionsFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.mainFragment;
+import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 
 import java.util.Vector;
 
 public class MainActivity extends FragmentActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, mainFragment.OnNewEntryAddedInterface {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private Vector<Fragment> fragments;
+    private actionsFragment actionsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +41,12 @@ public class MainActivity extends FragmentActivity
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         viewPager = findViewById(R.id.viewPager);
-        Vector<Fragment> fragments = new Vector<>();
+        fragments = new Vector<>();
         fragments.add(new mainFragment());
-        fragments.add(new actionsFragment());
+        actionsFragment = new actionsFragment();
+        fragments.add(actionsFragment);
         viewPager.setAdapter(new mainPagerAdapter(getSupportFragmentManager(),fragments));
-        //TODO: this method is deprecated so I have to look for another option
-        viewPager.setOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -123,6 +126,11 @@ public class MainActivity extends FragmentActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void OnNewEntryAdded(entry newEntry) {
+        actionsFragment.updateData(newEntry);
     }
 }
 

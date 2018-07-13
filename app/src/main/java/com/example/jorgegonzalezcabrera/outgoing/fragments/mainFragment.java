@@ -1,5 +1,7 @@
 package com.example.jorgegonzalezcabrera.outgoing.fragments;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -38,7 +40,7 @@ public class mainFragment extends Fragment {
     double totalOutgoings;
     double totalIncomes;
     Vector<surplusMoneyTableAdapter.surplusMoneyByCategory> surplusMoneyByCategoryVector;
-
+    OnNewEntryAddedInterface NewEntryAddedInterface;
 
     @Nullable
     @Override
@@ -48,6 +50,22 @@ public class mainFragment extends Fragment {
         bindUI(view);
 
         return view;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try {
+            NewEntryAddedInterface = (OnNewEntryAddedInterface) context;
+        }catch (Exception e){
+            NewEntryAddedInterface = new OnNewEntryAddedInterface() {
+                @Override
+                public void OnNewEntryAdded(entry newEntry) {
+
+                }
+            };
+        }
     }
 
     public void bindUI(View view){
@@ -60,7 +78,7 @@ public class mainFragment extends Fragment {
         });
 
         textViewCurrentMoney = view.findViewById(R.id.textViewCurrentMoney);
-        textViewCurrentMoney.setText(String.format("%.2f", currentConfiguration.getCurrentMoney()));
+        textViewCurrentMoney.setText(String.format("%.2f", currentConfiguration.getCurrentMoney()) + "€");
 
         surplusMoneyByCategoryVector = new Vector<>();
         totalOutgoings = 0;
@@ -75,14 +93,14 @@ public class mainFragment extends Fragment {
             surplusMoneyByCategoryVector.add(new surplusMoneyTableAdapter.surplusMoneyByCategory(currentConfiguration.getOutgoingCategoriesCategories().get(i), currentConfiguration.getOutgoingCategoriesCategories().get(i).getMaximum() - aux));
 
         }
-        textViewOutgoingsOfTheMonth.setText(String.format("%.2f", totalOutgoings));
+        textViewOutgoingsOfTheMonth.setText(String.format("%.2f", totalOutgoings) + "€");
 
         totalIncomes = 0;
         textViewIncomesOfTheMonth = view.findViewById(R.id.textViewIncomeOfTheMonth);
         for (int i = 0; i < currentConfiguration.getIncomeCategories().size(); i++) {
             totalIncomes += database.where(entry.class).equalTo("category", currentConfiguration.getIncomeCategories().get(i).getName()).sum("valor").doubleValue();
         }
-        textViewIncomesOfTheMonth.setText(String.format("%.2f", totalIncomes));
+        textViewIncomesOfTheMonth.setText(String.format("%.2f", totalIncomes) + "€");
 
         recyclerViewSurplusMoney = view.findViewById(R.id.recyclerViewSurplusMoney);
         recyclerViewSurplusMoney.setAdapter(new surplusMoneyTableAdapter(surplusMoneyByCategoryVector));
@@ -107,6 +125,7 @@ public class mainFragment extends Fragment {
                                         }
                                         database.copyToRealmOrUpdate(currentConfiguration);
                                         database.copyToRealm(newEntry);
+                                        NewEntryAddedInterface.OnNewEntryAdded(newEntry);
                                     }
                                 });
                             }
@@ -117,16 +136,20 @@ public class mainFragment extends Fragment {
 
     public void updateAfterOutgoing(double value, String subcategory){
         currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - value);
-        textViewCurrentMoney.setText(String.format("%.2f", currentConfiguration.getCurrentMoney()));
+        textViewCurrentMoney.setText(String.format("%.2f", currentConfiguration.getCurrentMoney()) + "€");
         totalOutgoings += value;
-        textViewOutgoingsOfTheMonth.setText(String.format("%.2f", totalOutgoings));
+        textViewOutgoingsOfTheMonth.setText(String.format("%.2f", totalOutgoings) + "€");
         ((surplusMoneyTableAdapter) recyclerViewSurplusMoney.getAdapter()).updateData(subcategory, value);
     }
 
     public void updateAfterIncome(double value){
         currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + value);
-        textViewCurrentMoney.setText(String.format("%.2f", currentConfiguration.getCurrentMoney()));
+        textViewCurrentMoney.setText(String.format("%.2f", currentConfiguration.getCurrentMoney()) + "€");
         totalIncomes += value;
-        textViewIncomesOfTheMonth.setText(String.format("%.2f", totalIncomes));
+        textViewIncomesOfTheMonth.setText(String.format("%.2f", totalIncomes) + "€");
+    }
+
+    public interface OnNewEntryAddedInterface{
+        void OnNewEntryAdded(entry newEntry);
     }
 }

@@ -68,7 +68,7 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
 
         public void bind(surplusMoneyByCategory surplusMoneyByCategory) {
             categoryName.setText(surplusMoneyByCategory.category.getName());
-            surplusMoney.setText(String.valueOf(surplusMoneyByCategory.surplusMoney));
+            surplusMoney.setText(String.valueOf(surplusMoneyByCategory.surplusMoney) + "€");
         }
     }
 

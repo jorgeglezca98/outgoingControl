@@ -47,6 +47,11 @@ public class allActionsAdapter extends RecyclerView.Adapter<allActionsAdapter.Vi
         }
     }
 
+    public void newEntryAdded(entry newEntry){
+        entries.firstElement().add(0,newEntry);
+        notifyItemChanged(0);
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -78,12 +83,14 @@ public class allActionsAdapter extends RecyclerView.Adapter<allActionsAdapter.Vi
 
         public void bind(RealmList<entry> entriesOfTheMonth) {
             DateFormat df = new SimpleDateFormat("MMMM 'de' yyyy",  new Locale("es", "ES"));
-            date.setText(df.format(entriesOfTheMonth.first().getDate()));
-            entriesByMonth.setAdapter(new actionsAdapter(entriesOfTheMonth));
-            LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-            entriesByMonth.setLayoutManager(layoutManager);
-            entriesByMonth.addItemDecoration(new DividerItemDecoration(context, layoutManager.getOrientation()));
-
+            if(entriesOfTheMonth.size()>0) {
+                //TODO: look for another option to solve this problem
+                date.setText(df.format(entriesOfTheMonth.first().getDate()));
+                entriesByMonth.setAdapter(new actionsAdapter(entriesOfTheMonth));
+                LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+                entriesByMonth.setLayoutManager(layoutManager);
+                entriesByMonth.addItemDecoration(new DividerItemDecoration(context, layoutManager.getOrientation()));
+            }
         }
     }
 }
