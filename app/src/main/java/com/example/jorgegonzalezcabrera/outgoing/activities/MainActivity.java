@@ -18,6 +18,7 @@ import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.mainPagerAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.actionsFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.mainFragment;
+import com.example.jorgegonzalezcabrera.outgoing.fragments.settingFragment;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 
 import java.util.Vector;
@@ -37,6 +38,7 @@ public class MainActivity extends FragmentActivity
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         tabLayout.addTab(tabLayout.newTab().setText("Main"));
         tabLayout.addTab(tabLayout.newTab().setText("Actions"));
+        tabLayout.addTab(tabLayout.newTab().setText("Settings"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         viewPager = findViewById(R.id.viewPager);
@@ -44,6 +46,7 @@ public class MainActivity extends FragmentActivity
         fragments.add(new mainFragment());
         actionsFragment = new actionsFragment();
         fragments.add(actionsFragment);
+        fragments.add(new settingFragment());
         viewPager.setAdapter(new mainPagerAdapter(getSupportFragmentManager(), fragments));
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
