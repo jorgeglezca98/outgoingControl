@@ -69,19 +69,19 @@ public class allActionsAdapter extends RecyclerView.Adapter<allActionsAdapter.Vi
         return entries.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView date;
         private RecyclerView entriesByMonth;
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             date = itemView.findViewById(R.id.textViewMonth);
             entriesByMonth = itemView.findViewById(R.id.recyclerViewActionsOfTheMonth);
         }
 
-        public void bind(RealmList<entry> entriesOfTheMonth) {
+        void bind(RealmList<entry> entriesOfTheMonth) {
             DateFormat df = new SimpleDateFormat("MMMM 'de' yyyy",  new Locale("es", "ES"));
             if(entriesOfTheMonth.size()>0) {
                 //TODO: look for another option to solve this problem

@@ -47,7 +47,7 @@ public class dialogs {
             categories.add(incomeCategories.get(i).getName());
         }
 
-        final ArrayAdapter<String> stringArrayAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, categories);
+        final ArrayAdapter<String> stringArrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, categories);
         categorySpinner.setAdapter(stringArrayAdapter);
 
         cancelButton.setOnClickListener(new View.OnClickListener() {

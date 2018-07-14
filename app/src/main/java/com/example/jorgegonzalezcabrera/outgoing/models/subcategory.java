@@ -10,6 +10,7 @@ public class subcategory extends RealmObject {
     }
 
     public subcategory() {
+        name = "";
     }
 
     public String getName() {

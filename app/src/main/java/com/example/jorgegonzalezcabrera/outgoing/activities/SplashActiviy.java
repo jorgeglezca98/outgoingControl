@@ -1,13 +1,9 @@
 package com.example.jorgegonzalezcabrera.outgoing.activities;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-
-import com.example.jorgegonzalezcabrera.outgoing.R;
+import android.support.v7.app.AppCompatActivity;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
-
 import io.realm.Realm;
 
 public class SplashActiviy extends AppCompatActivity {

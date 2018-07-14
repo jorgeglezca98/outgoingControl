@@ -17,7 +17,7 @@ public class newSubcategoriesAdapter extends RecyclerView.Adapter<newSubcategori
     private int layout;
     private RealmList<subcategory> newSubcategories;
 
-    public newSubcategoriesAdapter() {
+    newSubcategoriesAdapter() {
         layout = R.layout.new_subcategory;
         newSubcategories = new RealmList<>();
         newSubcategories.add(new subcategory());
@@ -57,7 +57,7 @@ public class newSubcategoriesAdapter extends RecyclerView.Adapter<newSubcategori
 
         public EditText subcategoryName;
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             subcategoryName = itemView.findViewById(R.id.editTextNewSubcategory);

@@ -1,14 +1,11 @@
 package com.example.jorgegonzalezcabrera.outgoing.fragments;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,12 +14,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
-import com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.surplusMoneyTableAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 
+import java.util.Locale;
 import java.util.Vector;
 
 import io.realm.Realm;
@@ -78,7 +75,7 @@ public class mainFragment extends Fragment {
         });
 
         textViewCurrentMoney = view.findViewById(R.id.textViewCurrentMoney);
-        textViewCurrentMoney.setText(String.format("%.2f", currentConfiguration.getCurrentMoney()) + "€");
+        textViewCurrentMoney.setText(String.format(new Locale("es", "ES"),"%.2f", currentConfiguration.getCurrentMoney()) + "€");
 
         surplusMoneyByCategoryVector = new Vector<>();
         totalOutgoings = 0;
@@ -93,14 +90,14 @@ public class mainFragment extends Fragment {
             surplusMoneyByCategoryVector.add(new surplusMoneyTableAdapter.surplusMoneyByCategory(currentConfiguration.getOutgoingCategoriesCategories().get(i), currentConfiguration.getOutgoingCategoriesCategories().get(i).getMaximum() - aux));
 
         }
-        textViewOutgoingsOfTheMonth.setText(String.format("%.2f", totalOutgoings) + "€");
+        textViewOutgoingsOfTheMonth.setText(String.format(new Locale("es", "ES"),"%.2f", totalOutgoings) + "€");
 
         totalIncomes = 0;
         textViewIncomesOfTheMonth = view.findViewById(R.id.textViewIncomeOfTheMonth);
         for (int i = 0; i < currentConfiguration.getIncomeCategories().size(); i++) {
             totalIncomes += database.where(entry.class).equalTo("category", currentConfiguration.getIncomeCategories().get(i).getName()).sum("valor").doubleValue();
         }
-        textViewIncomesOfTheMonth.setText(String.format("%.2f", totalIncomes) + "€");
+        textViewIncomesOfTheMonth.setText(String.format(new Locale("es", "ES"),"%.2f", totalIncomes) + "€");
 
         recyclerViewSurplusMoney = view.findViewById(R.id.recyclerViewSurplusMoney);
         recyclerViewSurplusMoney.setAdapter(new surplusMoneyTableAdapter(surplusMoneyByCategoryVector));
@@ -136,17 +133,17 @@ public class mainFragment extends Fragment {
 
     public void updateAfterOutgoing(double value, String subcategory){
         currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - value);
-        textViewCurrentMoney.setText(String.format("%.2f", currentConfiguration.getCurrentMoney()) + "€");
+        textViewCurrentMoney.setText(String.format(new Locale("es", "ES"),"%.2f", currentConfiguration.getCurrentMoney()) + "€");
         totalOutgoings += value;
-        textViewOutgoingsOfTheMonth.setText(String.format("%.2f", totalOutgoings) + "€");
+        textViewOutgoingsOfTheMonth.setText(String.format(new Locale("es", "ES"),"%.2f", totalOutgoings) + "€");
         ((surplusMoneyTableAdapter) recyclerViewSurplusMoney.getAdapter()).updateData(subcategory, value);
     }
 
     public void updateAfterIncome(double value){
         currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + value);
-        textViewCurrentMoney.setText(String.format("%.2f", currentConfiguration.getCurrentMoney()) + "€");
+        textViewCurrentMoney.setText(String.format(new Locale("es", "ES"),"%.2f", currentConfiguration.getCurrentMoney()) + "€");
         totalIncomes += value;
-        textViewIncomesOfTheMonth.setText(String.format("%.2f", totalIncomes) + "€");
+        textViewIncomesOfTheMonth.setText(String.format(new Locale("es", "ES"),"%.2f", totalIncomes) + "€");
     }
 
     public interface OnNewEntryAddedInterface{

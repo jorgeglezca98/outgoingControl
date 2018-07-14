@@ -4,11 +4,9 @@ import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
@@ -17,6 +15,7 @@ import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import io.realm.RealmList;
 
@@ -25,7 +24,7 @@ public class actionsAdapter extends RecyclerView.Adapter<actionsAdapter.ViewHold
     private int layout;
     private RealmList<entry> entries;
 
-    public actionsAdapter(RealmList<entry> entries) {
+    actionsAdapter(RealmList<entry> entries) {
         this.layout = R.layout.action_item;
         this.entries = entries;
     }
@@ -47,7 +46,7 @@ public class actionsAdapter extends RecyclerView.Adapter<actionsAdapter.ViewHold
         return entries.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView day;
         private TextView category;
@@ -55,7 +54,7 @@ public class actionsAdapter extends RecyclerView.Adapter<actionsAdapter.ViewHold
         private TextView value;
         private ConstraintLayout background;
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             day = itemView.findViewById(R.id.textViewDayOfAction);
@@ -65,18 +64,22 @@ public class actionsAdapter extends RecyclerView.Adapter<actionsAdapter.ViewHold
             background = itemView.findViewById(R.id.layoutActionItemBackground);
         }
 
-        public void bind(entry entry) {
-            DateFormat df = new SimpleDateFormat("dd");
+        void bind(entry entry) {
+            DateFormat df = new SimpleDateFormat("dd",new Locale("es", "ES"));
             day.setText(df.format(entry.getDate()));
             category.setText(entry.getCategory());
             description.setText(entry.getDescription());
+
+            String formattedValue;
             if(entry.getType()== type.OUTGOING.ordinal()) {
                 background.setBackgroundColor(Color.parseColor("#ea9999"));
-                value.setText("-" + String.valueOf(entry.getValor()) + "€");
+                formattedValue = "-" + String.valueOf(entry.getValor()) + "€";
+                value.setText(formattedValue);
             }
             else {
                 background.setBackgroundColor(Color.parseColor("#b6d7a8"));
-                value.setText("+" + String.valueOf(entry.getValor()) + " €");
+                formattedValue = "+" + String.valueOf(entry.getValor()) + " €";
+                value.setText(formattedValue);
             }
         }
     }

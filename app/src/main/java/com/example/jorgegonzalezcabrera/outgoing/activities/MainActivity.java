@@ -1,6 +1,7 @@
 package com.example.jorgegonzalezcabrera.outgoing.activities;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -24,9 +25,7 @@ import java.util.Vector;
 public class MainActivity extends FragmentActivity
         implements NavigationView.OnNavigationItemSelectedListener, mainFragment.OnNewEntryAddedInterface {
 
-    private TabLayout tabLayout;
     private ViewPager viewPager;
-    private Vector<Fragment> fragments;
     private actionsFragment actionsFragment;
 
     @Override
@@ -35,17 +34,17 @@ public class MainActivity extends FragmentActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
 
-        tabLayout = findViewById(R.id.tabLayout);
+        TabLayout tabLayout = findViewById(R.id.tabLayout);
         tabLayout.addTab(tabLayout.newTab().setText("Main"));
         tabLayout.addTab(tabLayout.newTab().setText("Actions"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         viewPager = findViewById(R.id.viewPager);
-        fragments = new Vector<>();
+        Vector<Fragment> fragments = new Vector<>();
         fragments.add(new mainFragment());
         actionsFragment = new actionsFragment();
         fragments.add(actionsFragment);
-        viewPager.setAdapter(new mainPagerAdapter(getSupportFragmentManager(),fragments));
+        viewPager.setAdapter(new mainPagerAdapter(getSupportFragmentManager(), fragments));
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -109,7 +108,7 @@ public class MainActivity extends FragmentActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 

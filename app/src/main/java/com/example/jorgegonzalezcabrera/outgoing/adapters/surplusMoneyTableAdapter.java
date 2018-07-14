@@ -54,21 +54,21 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
         return items.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView categoryName;
         private TextView surplusMoney;
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             categoryName = itemView.findViewById(R.id.textViewCategoryName);
             surplusMoney = itemView.findViewById(R.id.textViewSurplusMoney);
         }
 
-        public void bind(surplusMoneyByCategory surplusMoneyByCategory) {
+        void bind(surplusMoneyByCategory surplusMoneyByCategory) {
             categoryName.setText(surplusMoneyByCategory.category.getName());
-            surplusMoney.setText(String.valueOf(surplusMoneyByCategory.surplusMoney) + "€");
+            surplusMoney.setText(String.valueOf(surplusMoneyByCategory.surplusMoney + "€"));
         }
     }
 

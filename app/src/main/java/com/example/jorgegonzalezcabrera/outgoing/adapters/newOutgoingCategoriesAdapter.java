@@ -65,8 +65,9 @@ public class newOutgoingCategoriesAdapter extends RecyclerView.Adapter<newOutgoi
         public ImageButton imageButtonAddSubcategory;
         public ImageButton imageButtonDeleteSubcategory;
         public RecyclerView recyclerViewSubcategories;
+        public newSubcategoriesAdapter adapter;
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             name = itemView.findViewById(R.id.editTextCategoryName);
@@ -76,8 +77,8 @@ public class newOutgoingCategoriesAdapter extends RecyclerView.Adapter<newOutgoi
             imageButtonDeleteSubcategory = itemView.findViewById(R.id.imageButtonDeleteSubcategory);
         }
 
-        public void bind(){
-            final newSubcategoriesAdapter adapter = new newSubcategoriesAdapter();
+        void bind(){
+            adapter = new newSubcategoriesAdapter();
             recyclerViewSubcategories.setAdapter(adapter);
             LinearLayoutManager layoutManager = new LinearLayoutManager(context);
             recyclerViewSubcategories.setLayoutManager(layoutManager);
@@ -100,7 +101,7 @@ public class newOutgoingCategoriesAdapter extends RecyclerView.Adapter<newOutgoi
         public RealmList<subcategory> getSubcategories(){
             RealmList<subcategory> result = new RealmList<>();
             newSubcategoriesAdapter.ViewHolder viewHolder;
-            for (int i = 0; i < recyclerViewSubcategories.getAdapter().getItemCount(); i++) {
+            for (int i = 0; i < adapter.getItemCount(); i++) {
                 viewHolder = (newSubcategoriesAdapter.ViewHolder) recyclerViewSubcategories.findViewHolderForAdapterPosition(i);
                 if(!viewHolder.subcategoryName.getText().toString().isEmpty())
                     result.add(new subcategory(viewHolder.subcategoryName.getText().toString()));
