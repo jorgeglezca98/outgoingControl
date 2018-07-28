@@ -55,13 +55,11 @@ public class newIncomeCategoriesAdapter extends RecyclerView.Adapter<newIncomeCa
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public EditText name;
-        public EditText exactValue;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             name = itemView.findViewById(R.id.editTextIncomeCategoryName);
-            exactValue = itemView.findViewById(R.id.editTextIncomeCategoryExactValue);
         }
     }
 }

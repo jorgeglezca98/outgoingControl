@@ -114,7 +114,7 @@ public class initialConfigurationActivity extends AppCompatActivity {
         newIncomeCategoriesAdapter.ViewHolder viewHolder;
         for (int i = 0; i < incomeCategoriesAdapter.getItemCount(); i++) {
             viewHolder = (newIncomeCategoriesAdapter.ViewHolder) incomeCategoriesRecyclerView.findViewHolderForAdapterPosition(i);
-            result.add(new incomeCategory(viewHolder.name.getText().toString(), Double.valueOf(viewHolder.exactValue.getText().toString())));
+            result.add(new incomeCategory(viewHolder.name.getText().toString()));
         }
         return result;
     }
@@ -138,8 +138,6 @@ public class initialConfigurationActivity extends AppCompatActivity {
                 incomeViewHolder = (newIncomeCategoriesAdapter.ViewHolder) incomeCategoriesRecyclerView.findViewHolderForAdapterPosition(i);
                 if (incomeViewHolder.name.getText().toString().isEmpty()) {
                     incomeViewHolder.name.setHintTextColor(getResources().getColor(R.color.colorWrong));
-                    return false;
-                } else if (incomeViewHolder.exactValue.getText().toString().isEmpty()) {
                     return false;
                 }
             }

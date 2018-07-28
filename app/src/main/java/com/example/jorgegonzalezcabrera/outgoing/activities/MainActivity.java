@@ -193,6 +193,7 @@ public class MainActivity extends FragmentActivity
     }
 }
 
+//TODO: manage the periodic entry have just introduced
 //TODO: make sure that the data is updated in the database
 //TODO: permitir que se accedan valores regulares
 //TODO: the models should have a primarykey to make updates
