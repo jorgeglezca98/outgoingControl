@@ -42,7 +42,7 @@ public class mainFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.main_fragment,container,false);
+        View view = inflater.inflate(R.layout.main_fragment, container, false);
 
         bindUI(view);
 
@@ -55,7 +55,7 @@ public class mainFragment extends Fragment {
 
         try {
             NewEntryAddedInterface = (OnNewEntryAddedInterface) context;
-        }catch (Exception e){
+        } catch (Exception e) {
             NewEntryAddedInterface = new OnNewEntryAddedInterface() {
                 @Override
                 public void OnNewEntryAdded(entry newEntry) {
@@ -65,7 +65,7 @@ public class mainFragment extends Fragment {
         }
     }
 
-    public void bindUI(View view){
+    public void bindUI(View view) {
         database = Realm.getDefaultInstance();
         database.executeTransaction(new Realm.Transaction() {
             @Override
@@ -75,7 +75,7 @@ public class mainFragment extends Fragment {
         });
 
         textViewCurrentMoney = view.findViewById(R.id.textViewCurrentMoney);
-        textViewCurrentMoney.setText(String.format(new Locale("es", "ES"),"%.2f", currentConfiguration.getCurrentMoney()) + "€");
+        textViewCurrentMoney.setText(String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€");
 
         surplusMoneyByCategoryVector = new Vector<>();
         totalOutgoings = 0;
@@ -90,14 +90,14 @@ public class mainFragment extends Fragment {
             surplusMoneyByCategoryVector.add(new surplusMoneyTableAdapter.surplusMoneyByCategory(currentConfiguration.getOutgoingCategoriesCategories().get(i), currentConfiguration.getOutgoingCategoriesCategories().get(i).getMaximum() - aux));
 
         }
-        textViewOutgoingsOfTheMonth.setText(String.format(new Locale("es", "ES"),"%.2f", totalOutgoings) + "€");
+        textViewOutgoingsOfTheMonth.setText(String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€");
 
         totalIncomes = 0;
         textViewIncomesOfTheMonth = view.findViewById(R.id.textViewIncomeOfTheMonth);
         for (int i = 0; i < currentConfiguration.getIncomeCategories().size(); i++) {
             totalIncomes += database.where(entry.class).equalTo("category", currentConfiguration.getIncomeCategories().get(i).getName()).sum("valor").doubleValue();
         }
-        textViewIncomesOfTheMonth.setText(String.format(new Locale("es", "ES"),"%.2f", totalIncomes) + "€");
+        textViewIncomesOfTheMonth.setText(String.format(new Locale("es", "ES"), "%.2f", totalIncomes) + "€");
 
         recyclerViewSurplusMoney = view.findViewById(R.id.recyclerViewSurplusMoney);
         recyclerViewSurplusMoney.setAdapter(new surplusMoneyTableAdapter(surplusMoneyByCategoryVector));
@@ -111,42 +111,54 @@ public class mainFragment extends Fragment {
                         currentConfiguration.getIncomeCategories(), new dialogs.OnNewEntryAccepted() {
                             @Override
                             public void OnClick(final String subcategory, final int type, final double value, final String description) {
-                                database.executeTransaction(new Realm.Transaction() {
-                                    @Override
-                                    public void execute(Realm realm) {
-                                        final entry newEntry = new entry(value, type, subcategory, description);
-                                        if (type == entry.type.OUTGOING.ordinal()) {
-                                            updateAfterOutgoing(value,subcategory);
-                                        } else {
-                                            updateAfterIncome(value);
-                                        }
-                                        database.copyToRealmOrUpdate(currentConfiguration);
-                                        database.copyToRealm(newEntry);
-                                        NewEntryAddedInterface.OnNewEntryAdded(newEntry);
-                                    }
-                                });
+                                final entry newEntry = new entry(value, type, subcategory, description);
+                                if (type == entry.type.OUTGOING.ordinal()) {
+                                    updateAfterOutgoing(newEntry);
+                                } else {
+                                    updateAfterIncome(newEntry);
+                                }
                             }
                         });
             }
         });
     }
 
-    public void updateAfterOutgoing(double value, String subcategory){
-        currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - value);
-        textViewCurrentMoney.setText(String.format(new Locale("es", "ES"),"%.2f", currentConfiguration.getCurrentMoney()) + "€");
-        totalOutgoings += value;
-        textViewOutgoingsOfTheMonth.setText(String.format(new Locale("es", "ES"),"%.2f", totalOutgoings) + "€");
-        ((surplusMoneyTableAdapter) recyclerViewSurplusMoney.getAdapter()).updateData(subcategory, value);
+    public void updateAfterOutgoing(final entry newEntry) {
+        currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - newEntry.getValor());
+        textViewCurrentMoney.setText(String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€");
+        totalOutgoings += newEntry.getValor();
+        textViewOutgoingsOfTheMonth.setText(String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€");
+        ((surplusMoneyTableAdapter) recyclerViewSurplusMoney.getAdapter()).updateData(newEntry.getCategory(), newEntry.getValor());
+
+        database.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                database.copyToRealmOrUpdate(currentConfiguration);
+                database.copyToRealm(newEntry);
+            }
+        });
+
+        NewEntryAddedInterface.OnNewEntryAdded(newEntry);
     }
 
-    public void updateAfterIncome(double value){
-        currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + value);
-        textViewCurrentMoney.setText(String.format(new Locale("es", "ES"),"%.2f", currentConfiguration.getCurrentMoney()) + "€");
-        totalIncomes += value;
-        textViewIncomesOfTheMonth.setText(String.format(new Locale("es", "ES"),"%.2f", totalIncomes) + "€");
+    public void updateAfterIncome(final entry newEntry) {
+        currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + newEntry.getValor());
+        textViewCurrentMoney.setText(String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€");
+        totalIncomes += newEntry.getValor();
+        textViewIncomesOfTheMonth.setText(String.format(new Locale("es", "ES"), "%.2f", totalIncomes) + "€");
+
+        database.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                database.copyToRealmOrUpdate(currentConfiguration);
+                database.copyToRealm(newEntry);
+            }
+        });
+
+        NewEntryAddedInterface.OnNewEntryAdded(newEntry);
     }
 
-    public interface OnNewEntryAddedInterface{
+    public interface OnNewEntryAddedInterface {
         void OnNewEntryAdded(entry newEntry);
     }
 }

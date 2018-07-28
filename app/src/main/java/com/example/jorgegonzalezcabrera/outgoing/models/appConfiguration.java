@@ -1,5 +1,6 @@
 package com.example.jorgegonzalezcabrera.outgoing.models;
 
+import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -31,7 +32,9 @@ public class appConfiguration extends RealmObject {
     }
 
     public void setCurrentMoney(double currentMoney) {
+        Realm.getDefaultInstance().beginTransaction();
         this.currentMoney = currentMoney;
+        Realm.getDefaultInstance().commitTransaction();
     }
 
     public RealmList<outgoingCategory> getOutgoingCategoriesCategories() {

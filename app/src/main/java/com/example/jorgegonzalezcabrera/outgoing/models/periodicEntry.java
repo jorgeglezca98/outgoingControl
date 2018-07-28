@@ -12,37 +12,37 @@ import io.realm.annotations.PrimaryKey;
 
 public class periodicEntry extends RealmObject {
 
-    public enum categoryType{OUTGOING,INCOME}
     public enum periodicType{WEEKLY,MONTHLY,ANNUAL}
 
     @PrimaryKey
     private long id;
     private double value;
-    private categoryType categoryType;
+    private int typeOfCategory;
     private String category;
     private String description;
-    private periodicType periodicType;
-    private int[] selectedDates;
+    private int frequency;
+    private Date lastChange;
+    private RealmList<Integer> selectedDates; //I am not really sure of this field
 
     public periodicEntry() {
         //TODO: I am not really sure it is the right way
         this.id = 0;
         this.value = 0;
-        this.categoryType = categoryType.OUTGOING;
+        this.typeOfCategory = entry.type.OUTGOING.ordinal();
         this.category = "";
         this.description = "Not described";
-        this.periodicType = periodicType.WEEKLY;
-        this.selectedDates = new int[0];
+        this.frequency = periodicType.WEEKLY.ordinal();
+        this.selectedDates = new RealmList<>();
     }
 
-    public periodicEntry(double value, categoryType categoryType, String category,
-                         @Nonnull String description, periodicType periodicType, int[] selectedDates) {
+    public periodicEntry(double value, entry.type typeOfCategory,@Nonnull String category,
+                         @Nonnull String description, periodicType frequency, RealmList<Integer> selectedDates) {
         this.id = myApplication.periodicEntryId.incrementAndGet();
         this.value = value;
-        this.categoryType = categoryType;
+        this.typeOfCategory = typeOfCategory.ordinal();
         this.category = category;
         this.description = description.isEmpty() ? "Not described" : description;
-        this.periodicType = periodicType;
+        this.frequency = frequency.ordinal();
         this.selectedDates = selectedDates;
     }
 
@@ -58,12 +58,16 @@ public class periodicEntry extends RealmObject {
         this.value = value;
     }
 
-    public categoryType getCategoryType() {
-        return categoryType;
+    public entry.type getTypeOfCategory() {
+        if (typeOfCategory == entry.type.OUTGOING.ordinal()) {
+            return entry.type.OUTGOING;
+        } else {
+            return entry.type.INCOME;
+        }
     }
 
-    public void setCategoryType(categoryType categoryType) {
-        this.categoryType = categoryType;
+    public void setTypeOfCategory(entry.type typeOfCategory) {
+        this.typeOfCategory = typeOfCategory.ordinal();
     }
 
     public String getCategory() {
@@ -82,19 +86,37 @@ public class periodicEntry extends RealmObject {
         this.description = description;
     }
 
-    public periodicType getPeriodicType() {
-        return periodicType;
+    public periodicType getFrequency() {
+        if (frequency == periodicType.WEEKLY.ordinal()) {
+            return periodicType.WEEKLY;
+        } else if(frequency == periodicType.MONTHLY.ordinal()){
+            return periodicType.MONTHLY;
+        } else{
+            return periodicType.ANNUAL;
+        }
     }
 
-    public void setPeriodicType(periodicType periodicType) {
-        this.periodicType = periodicType;
+    public void setFrequency(periodicType frequency) {
+        this.frequency = frequency.ordinal();
     }
 
-    public int[] getSelectedDates() {
+    public RealmList<Integer> getSelectedDates() {
         return selectedDates;
     }
 
-    public void setSelectedDates(int[] selectedDates) {
+    public void setSelectedDates(RealmList<Integer> selectedDates) {
         this.selectedDates = selectedDates;
+    }
+
+    public entry getEntry() {
+        return new entry(value,typeOfCategory,category,description);
+    }
+
+    public Date getLastChange() {
+        return lastChange;
+    }
+
+    public void setLastChange(Date lastChange) {
+        this.lastChange = lastChange;
     }
 }

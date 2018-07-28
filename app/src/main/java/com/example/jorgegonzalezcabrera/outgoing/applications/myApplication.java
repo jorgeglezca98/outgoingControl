@@ -22,6 +22,7 @@ public class myApplication extends Application{
         if(Realm.getDefaultInstance().where(periodicEntry.class).findAll().size()!=0){
             periodicEntryId = new AtomicInteger(Realm.getDefaultInstance().where(periodicEntry.class).max("id").intValue());
         } else{
+            periodicEntryId = new AtomicInteger();
             periodicEntryId.set(0);
         }
         //TODO: this condition can result in the malfunction of the app, it is necessary to avoid id repetitions after the removal of perodicEntry
