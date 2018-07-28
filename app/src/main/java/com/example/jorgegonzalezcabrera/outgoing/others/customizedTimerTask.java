@@ -11,14 +11,13 @@ import java.util.GregorianCalendar;
 import java.util.TimerTask;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class customizedTimerTask extends TimerTask {
 
-    private long periodicEntryId;
-    private mainFragment mainFragment;
+    private mainFragment mainFragment; //Really weird
 
-    public customizedTimerTask(long periodicEntryId, mainFragment mainFragment) {
-        this.periodicEntryId = periodicEntryId;
+    public customizedTimerTask(mainFragment mainFragment) {
         this.mainFragment = mainFragment;
     }
 
@@ -28,18 +27,16 @@ public class customizedTimerTask extends TimerTask {
         currentDate.setTime(new Date());
         Realm database = Realm.getDefaultInstance();
         database.beginTransaction();
-        periodicEntry periodicEntry = Realm.getDefaultInstance().where(periodicEntry.class).equalTo("id", periodicEntryId).findFirst();
+        RealmResults<periodicEntry> periodicEntries = Realm.getDefaultInstance().where(periodicEntry.class).findAll();
         database.commitTransaction();
-        if (periodicEntry != null) {
-            if (periodicEntry.getFrequency() == periodicType.WEEKLY) {
-                weeklyActions(periodicEntry,currentDate);
-            } else if (periodicEntry.getFrequency() == periodicType.MONTHLY) {
-                monthlyActions(periodicEntry,currentDate);
-            } else if (periodicEntry.getFrequency() == periodicType.ANNUAL) {
-                annualActions(periodicEntry,currentDate);
+        for(int i=0;i<periodicEntries.size();i++){
+            if (periodicEntries.get(i).getFrequency() == periodicType.WEEKLY) {
+                weeklyActions(periodicEntries.get(i),currentDate);
+            } else if (periodicEntries.get(i).getFrequency() == periodicType.MONTHLY) {
+                monthlyActions(periodicEntries.get(i),currentDate);
+            } else if (periodicEntries.get(i).getFrequency() == periodicType.ANNUAL) {
+                annualActions(periodicEntries.get(i),currentDate);
             }
-        } else {
-            cancel();
         }
     }
 
@@ -47,7 +44,7 @@ public class customizedTimerTask extends TimerTask {
         int i=0;
         while(i<periodicEntry.getSelectedDates().size()){
             if(periodicEntry.getSelectedDates().get(i)==currentDate.get(Calendar.MONTH)){
-                createEntry(periodicEntry);
+                createEntry(periodicEntry,mainFragment);
                 break;
             }
             i++;
@@ -58,7 +55,7 @@ public class customizedTimerTask extends TimerTask {
         int i=0;
         while(i<periodicEntry.getSelectedDates().size()){
             if(periodicEntry.getSelectedDates().get(i)==currentDate.get(Calendar.DAY_OF_MONTH)){
-                createEntry(periodicEntry);
+                createEntry(periodicEntry,mainFragment);
                 break;
             }
             i++;
@@ -69,24 +66,28 @@ public class customizedTimerTask extends TimerTask {
         int i=0;
         while(i<periodicEntry.getSelectedDates().size()){
             if(periodicEntry.getSelectedDates().get(i)==currentDate.get(Calendar.DAY_OF_WEEK)){
-                createEntry(periodicEntry);
+                createEntry(periodicEntry,mainFragment);
                 break;
             }
             i++;
         }
     }
 
-    private void createEntry(periodicEntry periodicEntry) {
+    public static void createEntry(periodicEntry periodicEntry, mainFragment fragment) {
         entry newEntry = periodicEntry.getEntry();
 
         if (newEntry.getType() == entry.type.OUTGOING.ordinal()) {
-            mainFragment.updateAfterOutgoing(newEntry);
+            fragment.updateAfterOutgoing(newEntry);
         } else {
-            mainFragment.updateAfterIncome(newEntry);
+            fragment.updateAfterIncome(newEntry);
         }
 
+        GregorianCalendar currentDate = new GregorianCalendar();
+        currentDate.setTime(new Date());
+        currentDate.set(currentDate.get(Calendar.YEAR),currentDate.get(Calendar.MONTH),currentDate.get(Calendar.DAY_OF_MONTH),0,0,0);
+
         Realm.getDefaultInstance().beginTransaction();
-        periodicEntry.setLastChange(new Date());
+        periodicEntry.setLastChange(currentDate.getTime());
         Realm.getDefaultInstance().copyToRealmOrUpdate(periodicEntry);
         Realm.getDefaultInstance().commitTransaction();
     }

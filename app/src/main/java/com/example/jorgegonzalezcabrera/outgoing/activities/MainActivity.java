@@ -20,20 +20,34 @@ import com.example.jorgegonzalezcabrera.outgoing.fragments.actionsFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.mainFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.settingFragment;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
+import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
+import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry.periodicType;
+import com.example.jorgegonzalezcabrera.outgoing.others.customizedTimerTask;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Timer;
 import java.util.Vector;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class MainActivity extends FragmentActivity
         implements NavigationView.OnNavigationItemSelectedListener, mainFragment.OnNewEntryAddedInterface {
 
     private ViewPager viewPager;
     private actionsFragment actionsFragment;
+    private mainFragment mainFragment;
+    private Realm database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
+
+        database = Realm.getDefaultInstance();
 
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         tabLayout.addTab(tabLayout.newTab().setText("Main"));
@@ -43,7 +57,8 @@ public class MainActivity extends FragmentActivity
 
         viewPager = findViewById(R.id.viewPager);
         Vector<Fragment> fragments = new Vector<>();
-        fragments.add(new mainFragment());
+        mainFragment = new mainFragment();
+        fragments.add(mainFragment);
         actionsFragment = new actionsFragment();
         fragments.add(actionsFragment);
         fragments.add(new settingFragment());
@@ -75,6 +90,8 @@ public class MainActivity extends FragmentActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        setTimers();
     }
 
     @Override
@@ -133,6 +150,46 @@ public class MainActivity extends FragmentActivity
     @Override
     public void OnNewEntryAdded(entry newEntry) {
         actionsFragment.updateData(newEntry);
+    }
+
+    public void setTimers() {
+        Timer timer = new Timer(true);;
+        GregorianCalendar date = new GregorianCalendar();
+        GregorianCalendar currentDate = new GregorianCalendar();
+        currentDate.setTime(new Date());
+
+        database.beginTransaction();
+        RealmResults<periodicEntry> periodicEntries = database.where(periodicEntry.class).findAll();
+        database.commitTransaction();
+
+        for (int i = 0; i < periodicEntries.size(); i++) {
+            date.setTime(periodicEntries.get(i).getLastChange());
+
+            if (periodicEntries.get(i).getFrequency() == periodicType.ANNUAL) {
+                date.add(Calendar.YEAR, 1);
+                while (date.before(currentDate)) {
+                    customizedTimerTask.createEntry(periodicEntries.get(i), mainFragment);
+                    date.add(Calendar.YEAR, 1);
+                }
+            } else if (periodicEntries.get(i).getFrequency() == periodicType.MONTHLY) {
+                date.add(Calendar.MONTH, 1);
+                while (date.before(currentDate)) {
+                    customizedTimerTask.createEntry(periodicEntries.get(i), mainFragment);
+                    date.add(Calendar.MONTH, 1);
+                }
+            } else if (periodicEntries.get(i).getFrequency() == periodicType.WEEKLY) {
+                date.add(Calendar.DAY_OF_YEAR, 7);
+                while (date.before(currentDate)) {
+                    customizedTimerTask.createEntry(periodicEntries.get(i), mainFragment);
+                    date.add(Calendar.DAY_OF_YEAR, 7);
+                }
+            }
+
+        }
+
+        currentDate.add(Calendar.DAY_OF_YEAR,1);
+        currentDate.set(currentDate.get(Calendar.YEAR),currentDate.get(Calendar.MONTH),currentDate.get(Calendar.DAY_OF_MONTH),0,0,0);
+        timer.schedule(new customizedTimerTask(mainFragment), currentDate.getTime(),86400000);
     }
 }
 

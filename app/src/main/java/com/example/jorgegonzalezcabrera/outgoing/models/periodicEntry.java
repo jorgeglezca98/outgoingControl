@@ -33,6 +33,7 @@ public class periodicEntry extends RealmObject {
         this.description = "Not described";
         this.frequency = periodicType.WEEKLY.ordinal();
         this.selectedDates = new RealmList<>();
+        this.lastChange = new Date();
     }
 
     public periodicEntry(double value, entry.type typeOfCategory,@Nonnull String category,
@@ -44,6 +45,7 @@ public class periodicEntry extends RealmObject {
         this.description = description.isEmpty() ? "Not described" : description;
         this.frequency = frequency.ordinal();
         this.selectedDates = selectedDates;
+        this.lastChange = new Date();
     }
 
     public long getId() {
