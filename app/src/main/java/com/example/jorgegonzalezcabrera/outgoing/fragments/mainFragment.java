@@ -124,38 +124,64 @@ public class mainFragment extends Fragment {
     }
 
     public void updateAfterOutgoing(final entry newEntry) {
-        currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - newEntry.getValor());
-        textViewCurrentMoney.setText(String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€");
-        totalOutgoings += newEntry.getValor();
-        textViewOutgoingsOfTheMonth.setText(String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€");
-        ((surplusMoneyTableAdapter) recyclerViewSurplusMoney.getAdapter()).updateData(newEntry.getCategory(), newEntry.getValor());
+        if(currentConfiguration!=null) {
+            currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - newEntry.getValor());
+            textViewCurrentMoney.setText(String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€");
+            totalOutgoings += newEntry.getValor();
+            textViewOutgoingsOfTheMonth.setText(String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€");
+            ((surplusMoneyTableAdapter) recyclerViewSurplusMoney.getAdapter()).updateData(newEntry.getCategory(), newEntry.getValor());
 
-        database.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                database.copyToRealmOrUpdate(currentConfiguration);
-                database.copyToRealm(newEntry);
+            database.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    database.copyToRealmOrUpdate(currentConfiguration);
+                    database.copyToRealm(newEntry);
+                }
+            });
+
+            NewEntryAddedInterface.OnNewEntryAdded(newEntry);
+        } else{
+            appConfiguration configuration;
+            Realm.getDefaultInstance().beginTransaction();
+            configuration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
+            if(configuration!=null){
+                configuration.setCurrentMoney(configuration.getCurrentMoney() - newEntry.getValor());
+                Realm.getDefaultInstance().copyToRealmOrUpdate(configuration);
+                Realm.getDefaultInstance().copyToRealm(newEntry);
             }
-        });
-
-        NewEntryAddedInterface.OnNewEntryAdded(newEntry);
+            Realm.getDefaultInstance().commitTransaction();
+        }
     }
 
     public void updateAfterIncome(final entry newEntry) {
-        currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + newEntry.getValor());
-        textViewCurrentMoney.setText(String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€");
-        totalIncomes += newEntry.getValor();
-        textViewIncomesOfTheMonth.setText(String.format(new Locale("es", "ES"), "%.2f", totalIncomes) + "€");
+        if(currentConfiguration!=null) {
+            currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + newEntry.getValor());
+            textViewCurrentMoney.setText(String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€");
+            totalIncomes += newEntry.getValor();
+            textViewIncomesOfTheMonth.setText(String.format(new Locale("es", "ES"), "%.2f", totalIncomes) + "€");
 
-        database.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                database.copyToRealmOrUpdate(currentConfiguration);
-                database.copyToRealm(newEntry);
+            database.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    database.copyToRealmOrUpdate(currentConfiguration);
+                    database.copyToRealm(newEntry);
+                }
+            });
+
+            NewEntryAddedInterface.OnNewEntryAdded(newEntry);
+        } else {
+            appConfiguration configuration;
+            Realm.getDefaultInstance().beginTransaction();
+            configuration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
+            Realm.getDefaultInstance().commitTransaction();
+            if(configuration!=null){
+                configuration.setCurrentMoney(configuration.getCurrentMoney() + newEntry.getValor());
+                Realm.getDefaultInstance().beginTransaction();
+                Realm.getDefaultInstance().copyToRealmOrUpdate(configuration);
+                Realm.getDefaultInstance().copyToRealm(newEntry);
+                Realm.getDefaultInstance().commitTransaction();
             }
-        });
-
-        NewEntryAddedInterface.OnNewEntryAdded(newEntry);
+        }
     }
 
     public interface OnNewEntryAddedInterface {

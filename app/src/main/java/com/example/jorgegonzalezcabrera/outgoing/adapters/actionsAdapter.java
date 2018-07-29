@@ -52,7 +52,6 @@ public class actionsAdapter extends RecyclerView.Adapter<actionsAdapter.ViewHold
         private TextView category;
         private TextView description;
         private TextView value;
-        private ConstraintLayout background;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -61,7 +60,6 @@ public class actionsAdapter extends RecyclerView.Adapter<actionsAdapter.ViewHold
             category = itemView.findViewById(R.id.textViewCategoryOfAction);
             description = itemView.findViewById(R.id.textViewDescriptionOfAction);
             value = itemView.findViewById(R.id.textViewValueOfAction);
-            background = itemView.findViewById(R.id.layoutActionItemBackground);
         }
 
         void bind(entry entry) {
@@ -72,14 +70,14 @@ public class actionsAdapter extends RecyclerView.Adapter<actionsAdapter.ViewHold
 
             String formattedValue;
             if(entry.getType()== type.OUTGOING.ordinal()) {
-                background.setBackgroundColor(Color.parseColor("#ea9999"));
                 formattedValue = "-" + String.valueOf(entry.getValor()) + "€";
                 value.setText(formattedValue);
+                value.setTextColor(Color.parseColor("#ea9999"));
             }
             else {
-                background.setBackgroundColor(Color.parseColor("#b6d7a8"));
                 formattedValue = "+" + String.valueOf(entry.getValor()) + " €";
                 value.setText(formattedValue);
+                value.setTextColor(Color.parseColor("#b6d7a8"));
             }
         }
     }
