@@ -76,7 +76,7 @@ public class customizedTimerTask extends TimerTask {
     public static void createEntry(periodicEntry periodicEntry, mainFragment fragment) {
         entry newEntry = periodicEntry.getEntry();
 
-        if (newEntry.getType() == entry.type.OUTGOING.ordinal()) {
+        if (newEntry.getType() == entry.type.OUTGOING) {
             fragment.updateAfterOutgoing(newEntry);
         } else {
             fragment.updateAfterIncome(newEntry);

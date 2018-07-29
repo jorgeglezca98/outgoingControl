@@ -33,27 +33,25 @@ public class allActionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.layout = R.layout.action_item;
         this.secondLayout = R.layout.actions_by_month;
 
-        Date firstDayOfMonth = firstDateOfTheMonth(new Date());
+        Date firstDayOfMonth = new Date();
         entries = new Vector<>();
-        entries.add(new RealmList<entry>());
-        entries.lastElement().add(null);
         for (int i = allEntries.size() - 1; i >= 0; i--) {
-            if (firstDayOfMonth.before(allEntries.get(i).getDate())) {
+            if (firstDayOfMonth.before(allEntries.get(i).getCreationDate())) {
                 entries.lastElement().add(allEntries.get(i));
             } else {
                 entries.add(new RealmList<entry>());
                 entries.lastElement().add(null); //It is the way I know that there is item using secondLayout. Maybe it is not the best option.
                 entries.lastElement().add(allEntries.get(i));
-                firstDayOfMonth = firstDateOfTheMonth(allEntries.get(i).getDate());
+                firstDayOfMonth = firstDateOfTheMonth(allEntries.get(i).getCreationDate());
             }
         }
     }
 
     public void newEntryAdded(entry newEntry) {
         GregorianCalendar dateOfNewEntry = new GregorianCalendar();
-        dateOfNewEntry.setTime(newEntry.getDate());
+        dateOfNewEntry.setTime(newEntry.getCreationDate());
         GregorianCalendar dateOfLastEntry = new GregorianCalendar();
-        dateOfLastEntry.setTime(entries.firstElement().get(1).getDate());
+        dateOfLastEntry.setTime(entries.firstElement().get(1).getCreationDate());
         if(dateOfNewEntry.get(Calendar.MONTH)==dateOfLastEntry.get(Calendar.MONTH) && dateOfNewEntry.get(Calendar.YEAR)==dateOfLastEntry.get(Calendar.YEAR)){
             entries.firstElement().add(1, newEntry);
             notifyItemInserted(1);
@@ -91,7 +89,7 @@ public class allActionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         if (getItemViewType(i) == 0) {
-            ((dateViewHolder) viewHolder).bind(get(i + 1).getDate());
+            ((dateViewHolder) viewHolder).bind(get(i + 1).getCreationDate());
         } else if (getItemViewType(i) == 1) {
             ((actionViewHolder) viewHolder).bind(get(i));
         }
@@ -124,12 +122,12 @@ public class allActionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         void bind(entry entry) {
             DateFormat df = new SimpleDateFormat("dd", new Locale("es", "ES"));
-            day.setText(df.format(entry.getDate()));
+            day.setText(df.format(entry.getCreationDate()));
             category.setText(entry.getCategory());
             description.setText(entry.getDescription());
 
             String formattedValue;
-            if (entry.getType() == com.example.jorgegonzalezcabrera.outgoing.models.entry.type.OUTGOING.ordinal()) {
+            if (entry.getType() == com.example.jorgegonzalezcabrera.outgoing.models.entry.type.OUTGOING) {
                 formattedValue = "-" + String.valueOf(entry.getValor()) + "€";
                 value.setText(formattedValue);
                 value.setTextColor(Color.parseColor("#ea9999"));

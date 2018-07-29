@@ -81,13 +81,13 @@ public class mainFragment extends Fragment {
         totalOutgoings = 0;
         double aux;
         textViewOutgoingsOfTheMonth = view.findViewById(R.id.textViewOutgoingsOfTheMonth);
-        for (int i = 0; i < currentConfiguration.getOutgoingCategoriesCategories().size(); i++) {
+        for (int i = 0; i < currentConfiguration.getOutgoingCategories().size(); i++) {
             aux = 0;
-            for (int j = 0; j < currentConfiguration.getOutgoingCategoriesCategories().get(i).getSubcategories().size(); j++) {
-                aux += database.where(entry.class).equalTo("category", currentConfiguration.getOutgoingCategoriesCategories().get(i).getSubcategories().get(j).getName()).sum("valor").doubleValue();
+            for (int j = 0; j < currentConfiguration.getOutgoingCategories().get(i).getSubcategories().size(); j++) {
+                aux += database.where(entry.class).equalTo("category", currentConfiguration.getOutgoingCategories().get(i).getSubcategories().get(j).getName()).sum("valor").doubleValue();
             }
             totalOutgoings += aux;
-            surplusMoneyByCategoryVector.add(new surplusMoneyTableAdapter.surplusMoneyByCategory(currentConfiguration.getOutgoingCategoriesCategories().get(i), currentConfiguration.getOutgoingCategoriesCategories().get(i).getMaximum() - aux));
+            surplusMoneyByCategoryVector.add(new surplusMoneyTableAdapter.surplusMoneyByCategory(currentConfiguration.getOutgoingCategories().get(i), currentConfiguration.getOutgoingCategories().get(i).getMaximum() - aux));
 
         }
         textViewOutgoingsOfTheMonth.setText(String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€");
@@ -107,11 +107,12 @@ public class mainFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                newEntryDialog(getContext(), currentConfiguration.getOutgoingCategoriesCategories(),
+                newEntryDialog(getContext(), currentConfiguration.getOutgoingCategories(),
                         currentConfiguration.getIncomeCategories(), new dialogs.OnNewEntryAccepted() {
                             @Override
                             public void OnClick(final String subcategory, final int type, final double value, final String description) {
-                                final entry newEntry = new entry(value, type, subcategory, description);
+                                entry.type aux = type==entry.type.OUTGOING.ordinal() ? entry.type.OUTGOING : entry.type.INCOME ;
+                                final entry newEntry = new entry(value, aux, subcategory, description);
                                 if (type == entry.type.OUTGOING.ordinal()) {
                                     updateAfterOutgoing(newEntry);
                                 } else {

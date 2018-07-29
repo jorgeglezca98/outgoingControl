@@ -1,5 +1,7 @@
 package com.example.jorgegonzalezcabrera.outgoing.models;
 
+import javax.annotation.Nonnull;
+
 import io.realm.RealmObject;
 
 public class incomeCategory extends RealmObject {
@@ -10,8 +12,7 @@ public class incomeCategory extends RealmObject {
         this.name = "";
     }
 
-    // An 0 exactValue will be interpreted as an irregular income
-    public incomeCategory(String name) {
+    public incomeCategory(@Nonnull String name) {
         this.name = name;
     }
 
@@ -19,7 +20,7 @@ public class incomeCategory extends RealmObject {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@Nonnull String name) {
         this.name = name;
     }
 

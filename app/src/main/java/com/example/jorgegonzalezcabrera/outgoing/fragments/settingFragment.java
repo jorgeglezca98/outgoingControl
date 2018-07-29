@@ -52,9 +52,9 @@ public class settingFragment extends Fragment {
         Realm.getDefaultInstance().commitTransaction();
 
         final List<String> categories = new ArrayList<>();
-        for (int i = 0; i < currentConfiguration.getOutgoingCategoriesCategories().size(); i++) {
-            for (int j = 0; j < currentConfiguration.getOutgoingCategoriesCategories().get(i).getSubcategories().size(); j++) {
-                categories.add(currentConfiguration.getOutgoingCategoriesCategories().get(i).getSubcategories().get(j).getName());
+        for (int i = 0; i < currentConfiguration.getOutgoingCategories().size(); i++) {
+            for (int j = 0; j < currentConfiguration.getOutgoingCategories().get(i).getSubcategories().size(); j++) {
+                categories.add(currentConfiguration.getOutgoingCategories().get(i).getSubcategories().get(j).getName());
             }
         }
         final int lastOutgoingCategoryPosition = categories.size() - 1;

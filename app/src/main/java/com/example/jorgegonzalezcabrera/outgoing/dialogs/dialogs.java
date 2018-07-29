@@ -10,36 +10,40 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
-import com.example.jorgegonzalezcabrera.outgoing.models.entry;
+import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
 import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
+import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class dialogs {
 
-    public interface OnNewEntryAccepted{
+    public interface OnNewEntryAccepted {
         void OnClick(String subcategory, int type, double value, String description);
     }
 
     public static void newEntryDialog(Context context, List<outgoingCategory> outgoingCategories,
-                                      List<incomeCategory> incomeCategories,final OnNewEntryAccepted myInterface) {
+                                      List<incomeCategory> incomeCategories, final OnNewEntryAccepted myInterface) {
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
         dialog.setContentView(R.layout.new_entry_dialog);
 
-        final EditText value = dialog.findViewById(R.id.editTextValueNewEntry);
+        final EditText valueEditText = dialog.findViewById(R.id.editTextValueNewEntry);
         final Spinner categorySpinner = dialog.findViewById(R.id.spinnerCategorySelection);
-        final EditText description = dialog.findViewById(R.id.editTextConceptNewEntry);
+        final EditText descriptionEditText = dialog.findViewById(R.id.editTextConceptNewEntry);
         Button cancelButton = dialog.findViewById(R.id.buttonCancel);
         Button applyButton = dialog.findViewById(R.id.buttonApplyNewEntry);
 
         List<String> categories = new ArrayList<>();
         for (int i = 0; i < outgoingCategories.size(); i++) {
             for (int j = 0; j < outgoingCategories.get(i).getSubcategories().size(); j++) {
-                categories.add(outgoingCategories.get(i).getSubcategories().get(j).getName());
+                subcategory subcategory = outgoingCategories.get(i).getSubcategories().get(j);
+                if(subcategory!=null){
+                    categories.add(subcategory.getName());
+                }
             }
         }
         final int lastOutgoingCategoryPosition = categories.size() - 1;
@@ -47,8 +51,8 @@ public class dialogs {
             categories.add(incomeCategories.get(i).getName());
         }
 
-        final ArrayAdapter<String> stringArrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, categories);
-        categorySpinner.setAdapter(stringArrayAdapter);
+        final ArrayAdapter<String> categoriesSpinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, categories);
+        categorySpinner.setAdapter(categoriesSpinnerAdapter);
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,11 +64,19 @@ public class dialogs {
         applyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!value.getText().toString().isEmpty()){
-                    int type = categorySpinner.getSelectedItemPosition()<=lastOutgoingCategoryPosition ? entry.type.OUTGOING.ordinal() : entry.type.INCOME.ordinal() ;
-                    myInterface.OnClick(stringArrayAdapter.getItem(categorySpinner.getSelectedItemPosition()), type,
-                            Double.valueOf(value.getText().toString()),description.getText().toString());
-                    dialog.cancel();
+                if (!valueEditText.getText().toString().isEmpty()) {
+                    int typeOfCategory;
+                    if (categorySpinner.getSelectedItemPosition() <= lastOutgoingCategoryPosition)
+                        typeOfCategory = type.OUTGOING.ordinal();
+                    else
+                        typeOfCategory = type.INCOME.ordinal();
+
+                    String subcategory = categoriesSpinnerAdapter.getItem(categorySpinner.getSelectedItemPosition());
+                    String description = descriptionEditText.getText().toString();
+                    double value = Double.valueOf(valueEditText.getText().toString());
+
+                    myInterface.OnClick(subcategory, typeOfCategory, value, description);
+                    dialog.dismiss();
                 }
             }
         });

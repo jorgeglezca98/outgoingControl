@@ -1,5 +1,9 @@
 package com.example.jorgegonzalezcabrera.outgoing.models;
 
+import com.example.jorgegonzalezcabrera.outgoing.applications.myApplication;
+
+import javax.annotation.Nonnull;
+
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -10,20 +14,28 @@ public class appConfiguration extends RealmObject {
     @PrimaryKey
     private long id;
     private double currentMoney;
-    private RealmList<outgoingCategory> outgoingCategoriesCategories;
+    private RealmList<outgoingCategory> outgoingCategories;
     private RealmList<incomeCategory> incomeCategories;
 
-    public appConfiguration(double currentMoney, RealmList<outgoingCategory> outgoingCategoriesCategories, RealmList<incomeCategory> incomeCategories) {
-        this.id = 0;
+    public appConfiguration(double currentMoney, @Nonnull RealmList<outgoingCategory> outgoingCategories, @Nonnull RealmList<incomeCategory> incomeCategories) {
+        this.id = myApplication.periodicEntryId.incrementAndGet();
         this.currentMoney = currentMoney;
-        this.outgoingCategoriesCategories = outgoingCategoriesCategories;
-        this.incomeCategories = incomeCategories;
+        this.outgoingCategories = new RealmList<>();
+        for (int i = 0; i < outgoingCategories.size(); i++) {
+            if (outgoingCategories.get(i) != null)
+                this.outgoingCategories.add(outgoingCategories.get(i));
+        }
+        this.incomeCategories = new RealmList<>();
+        for (int i = 0; i < incomeCategories.size(); i++) {
+            if (incomeCategories.get(i) != null)
+                this.incomeCategories.add(incomeCategories.get(i));
+        }
     }
 
     public appConfiguration() {
-        this.id = 0;
-        this.currentMoney = 0;
-        this.outgoingCategoriesCategories = new RealmList<>();
+        this.id = -1;
+        this.currentMoney = -1;
+        this.outgoingCategories = new RealmList<>();
         this.incomeCategories = new RealmList<>();
     }
 
@@ -37,19 +49,35 @@ public class appConfiguration extends RealmObject {
         Realm.getDefaultInstance().commitTransaction();
     }
 
-    public RealmList<outgoingCategory> getOutgoingCategoriesCategories() {
-        return outgoingCategoriesCategories;
+    public RealmList<outgoingCategory> getOutgoingCategories() {
+        return outgoingCategories;
     }
 
-    public void setOutgoingCategoriesCategories(RealmList<outgoingCategory> outgoingCategoriesCategories) {
-        this.outgoingCategoriesCategories = outgoingCategoriesCategories;
+    public void setOutgoingCategories(@Nonnull RealmList<outgoingCategory> outgoingCategories) {
+        Realm.getDefaultInstance().beginTransaction();
+        this.outgoingCategories = new RealmList<>();
+        for (int i = 0; i < outgoingCategories.size(); i++) {
+            if (outgoingCategories.get(i) != null)
+                this.outgoingCategories.add(outgoingCategories.get(i));
+        }
+        Realm.getDefaultInstance().commitTransaction();
     }
 
     public RealmList<incomeCategory> getIncomeCategories() {
         return incomeCategories;
     }
 
-    public void setIncomeCategories(RealmList<incomeCategory> incomeCategories) {
-        this.incomeCategories = incomeCategories;
+    public void setIncomeCategories(@Nonnull RealmList<incomeCategory> incomeCategories) {
+        Realm.getDefaultInstance().beginTransaction();
+        this.incomeCategories = new RealmList<>();
+        for (int i = 0; i < incomeCategories.size(); i++) {
+            if (incomeCategories.get(i) != null)
+                this.incomeCategories.add(incomeCategories.get(i));
+        }
+        Realm.getDefaultInstance().commitTransaction();
+    }
+
+    public long getId() {
+        return id;
     }
 }

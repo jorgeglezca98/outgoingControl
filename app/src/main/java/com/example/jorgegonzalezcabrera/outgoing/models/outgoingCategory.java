@@ -1,5 +1,7 @@
 package com.example.jorgegonzalezcabrera.outgoing.models;
 
+import javax.annotation.Nonnull;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
@@ -15,12 +17,15 @@ public class outgoingCategory extends RealmObject {
         this.name = "";
     }
 
-    public outgoingCategory(RealmList<subcategory> subcategories, double maximum, String name) {
-        if(subcategories==null || subcategories.isEmpty()){
-            this.subcategories = new RealmList<>();
+    public outgoingCategory(@Nonnull RealmList<subcategory> subcategories, double maximum, @Nonnull String name) {
+        this.subcategories = new RealmList<>();
+        for (int i = 0; i < subcategories.size(); i++) {
+            if (subcategories.get(i) != null) {
+                this.subcategories.add(subcategories.get(i));
+            }
+        }
+        if (this.subcategories.isEmpty()) {
             this.subcategories.add(new subcategory(name));
-        } else{
-            this.subcategories = subcategories;
         }
         this.maximum = maximum;
         this.name = name;
@@ -30,8 +35,16 @@ public class outgoingCategory extends RealmObject {
         return subcategories;
     }
 
-    public void setSubcategories(RealmList<subcategory> subcategories) {
-        this.subcategories = subcategories;
+    public void setSubcategories(@Nonnull RealmList<subcategory> subcategories) {
+        this.subcategories = new RealmList<>();
+        for (int i = 0; i < subcategories.size(); i++) {
+            if (subcategories.get(i) != null) {
+                this.subcategories.add(subcategories.get(i));
+            }
+        }
+        if (this.subcategories.isEmpty()) {
+            this.subcategories.add(new subcategory(name));
+        }
     }
 
     public double getMaximum() {
@@ -46,7 +59,7 @@ public class outgoingCategory extends RealmObject {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@Nonnull String name) {
         this.name = name;
     }
 }

@@ -2,62 +2,69 @@ package com.example.jorgegonzalezcabrera.outgoing.models;
 
 import java.util.Date;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
 import io.realm.RealmObject;
+
+import static com.example.jorgegonzalezcabrera.outgoing.models.entry.type.INCOME;
+import static com.example.jorgegonzalezcabrera.outgoing.models.entry.type.OUTGOING;
 
 public class entry extends RealmObject {
 
     public enum type{OUTGOING,INCOME}
 
     private double valor;
-    private int type; //**Puede que acabe sobrando
+    private int type;
     private String category;
-    private Date date;
+    private Date creationDate;
     private String description;
 
     public entry() {
         this.valor = 0;
         this.type = -1;
         this.category = "";
-        this.date = new Date();
+        this.creationDate = new Date();
         this.description = "Not described";
     }
 
-    public entry(double valor, int type,@Nonnull String category,@Nonnull String description) {
+    public entry(double valor,@Nonnull type type,@Nonnull String category, String description) {
         this.valor = valor;
-        this.type = type;
+        this.type = type.ordinal();
         this.category = category;
-        this.date = new Date();
-        this.description = description.isEmpty() ? "Not described" : description;
+        this.creationDate = new Date();
+        this.description = description==null ? "Not described" : description;
     }
 
     public double getValor() {
         return valor;
     }
 
-    public void setValor(double valor) {
+    public void setValor(@Nonnegative double valor) {
         this.valor = valor;
     }
 
-    public int getType() {
-        return type;
+    public type getType() {
+        if(this.type==OUTGOING.ordinal())
+            return OUTGOING;
+        else
+            return INCOME;
     }
 
-    public void setType(int type) {
-        this.type = type;
+    public void setType(@Nonnull type type) {
+        this.type = type.ordinal();
     }
 
     public String getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(@Nonnull String category) {
         this.category = category;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getCreationDate() {
+        return creationDate;
     }
 
     public String getDescription() {
@@ -65,6 +72,6 @@ public class entry extends RealmObject {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = description==null ? "Not described" : description;
     }
 }

@@ -1,6 +1,7 @@
 package com.example.jorgegonzalezcabrera.outgoing.models;
 
 import com.example.jorgegonzalezcabrera.outgoing.applications.myApplication;
+import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
 
 import java.util.Date;
 
@@ -12,7 +13,7 @@ import io.realm.annotations.PrimaryKey;
 
 public class periodicEntry extends RealmObject {
 
-    public enum periodicType{WEEKLY,MONTHLY,ANNUAL}
+    public enum periodicType {WEEKLY, MONTHLY, ANNUAL}
 
     @PrimaryKey
     private long id;
@@ -22,29 +23,31 @@ public class periodicEntry extends RealmObject {
     private String description;
     private int frequency;
     private Date lastChange;
-    private RealmList<Integer> selectedDates; //I am not really sure of this field
+    private RealmList<Integer> selectedDates;
 
     public periodicEntry() {
-        //TODO: I am not really sure it is the right way
-        this.id = 0;
+        this.id = -1;
         this.value = 0;
-        this.typeOfCategory = entry.type.OUTGOING.ordinal();
+        this.typeOfCategory = -1;
         this.category = "";
         this.description = "Not described";
-        this.frequency = periodicType.WEEKLY.ordinal();
+        this.frequency = -1;
         this.selectedDates = new RealmList<>();
         this.lastChange = new Date();
     }
 
-    public periodicEntry(double value, entry.type typeOfCategory,@Nonnull String category,
-                         @Nonnull String description, periodicType frequency, RealmList<Integer> selectedDates) {
+    public periodicEntry(double value, @Nonnull entry.type typeOfCategory, @Nonnull String category,
+                         String description, @Nonnull periodicType frequency, @Nonnull RealmList<Integer> selectedDates) {
         this.id = myApplication.periodicEntryId.incrementAndGet();
         this.value = value;
         this.typeOfCategory = typeOfCategory.ordinal();
         this.category = category;
-        this.description = description.isEmpty() ? "Not described" : description;
+        this.description = description == null ? "Not described" : description;
         this.frequency = frequency.ordinal();
         this.selectedDates = selectedDates;
+        if (selectedDates.size() == 0) {
+            selectedDates.add(this.frequency == periodicType.ANNUAL.ordinal() ? 0 : 1);
+        }
         this.lastChange = new Date();
     }
 
@@ -91,9 +94,9 @@ public class periodicEntry extends RealmObject {
     public periodicType getFrequency() {
         if (frequency == periodicType.WEEKLY.ordinal()) {
             return periodicType.WEEKLY;
-        } else if(frequency == periodicType.MONTHLY.ordinal()){
+        } else if (frequency == periodicType.MONTHLY.ordinal()) {
             return periodicType.MONTHLY;
-        } else{
+        } else {
             return periodicType.ANNUAL;
         }
     }
@@ -111,7 +114,7 @@ public class periodicEntry extends RealmObject {
     }
 
     public entry getEntry() {
-        return new entry(value,typeOfCategory,category,description);
+        return new entry(value, typeOfCategory == type.OUTGOING.ordinal() ? type.OUTGOING : type.INCOME, category, description);
     }
 
     public Date getLastChange() {

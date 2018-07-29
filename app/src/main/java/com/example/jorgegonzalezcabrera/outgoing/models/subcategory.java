@@ -1,11 +1,13 @@
 package com.example.jorgegonzalezcabrera.outgoing.models;
 
+import javax.annotation.Nonnull;
+
 import io.realm.RealmObject;
 
 public class subcategory extends RealmObject {
     private String name;
 
-    public subcategory(String name) {
+    public subcategory(@Nonnull String name) {
         this.name = name;
     }
 
@@ -17,7 +19,7 @@ public class subcategory extends RealmObject {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@Nonnull String name) {
         this.name = name;
     }
 }
