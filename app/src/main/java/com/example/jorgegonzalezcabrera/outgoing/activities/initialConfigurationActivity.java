@@ -13,7 +13,7 @@ import io.realm.Realm;
 import io.realm.RealmList;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
-import com.example.jorgegonzalezcabrera.outgoing.adapters.newIncomeCategoriesAdapter;
+import com.example.jorgegonzalezcabrera.outgoing.adapters.erasableItemsAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.newOutgoingCategoriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
@@ -25,7 +25,7 @@ public class initialConfigurationActivity extends AppCompatActivity {
     private RecyclerView incomeCategoriesRecyclerView;
     private EditText editTextInitialMoney;
     private newOutgoingCategoriesAdapter outgoingCategoriesAdapter;
-    private newIncomeCategoriesAdapter incomeCategoriesAdapter;
+    private erasableItemsAdapter incomeCategoriesAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +39,7 @@ public class initialConfigurationActivity extends AppCompatActivity {
         outgoingCategoriesRecyclerView.setLayoutManager(OutcomingCategoriesLayoutManager);
 
         incomeCategoriesRecyclerView = findViewById(R.id.recyclerViewIncomeCategories);
-        incomeCategoriesAdapter = new newIncomeCategoriesAdapter();
+        incomeCategoriesAdapter = new erasableItemsAdapter();
         incomeCategoriesRecyclerView.setAdapter(incomeCategoriesAdapter);
         final LinearLayoutManager incomeCategorieslayoutManager = new LinearLayoutManager(this);
         incomeCategoriesRecyclerView.setLayoutManager(incomeCategorieslayoutManager);
@@ -111,9 +111,9 @@ public class initialConfigurationActivity extends AppCompatActivity {
 
     private RealmList<incomeCategory> getIncomeCategories() {
         RealmList<incomeCategory> result = new RealmList<>();
-        newIncomeCategoriesAdapter.ViewHolder viewHolder;
+        erasableItemsAdapter.ViewHolder viewHolder;
         for (int i = 0; i < incomeCategoriesAdapter.getItemCount(); i++) {
-            viewHolder = (newIncomeCategoriesAdapter.ViewHolder) incomeCategoriesRecyclerView.findViewHolderForAdapterPosition(i);
+            viewHolder = (erasableItemsAdapter.ViewHolder) incomeCategoriesRecyclerView.findViewHolderForAdapterPosition(i);
             result.add(new incomeCategory(viewHolder.name.getText().toString()));
         }
         return result;
@@ -133,9 +133,9 @@ public class initialConfigurationActivity extends AppCompatActivity {
                     return false;
                 }
             }
-            newIncomeCategoriesAdapter.ViewHolder incomeViewHolder;
+            erasableItemsAdapter.ViewHolder incomeViewHolder;
             for (int i = 0; i < incomeCategoriesAdapter.getItemCount(); i++) {
-                incomeViewHolder = (newIncomeCategoriesAdapter.ViewHolder) incomeCategoriesRecyclerView.findViewHolderForAdapterPosition(i);
+                incomeViewHolder = (erasableItemsAdapter.ViewHolder) incomeCategoriesRecyclerView.findViewHolderForAdapterPosition(i);
                 if (incomeViewHolder.name.getText().toString().isEmpty()) {
                     incomeViewHolder.name.setHintTextColor(getResources().getColor(R.color.colorWrong));
                     return false;

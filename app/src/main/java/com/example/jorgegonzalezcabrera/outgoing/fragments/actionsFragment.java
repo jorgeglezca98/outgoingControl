@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
-import com.example.jorgegonzalezcabrera.outgoing.adapters.allActionsAdapter;
+import com.example.jorgegonzalezcabrera.outgoing.adapters.allEntriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.others.HeaderItemDecoration;
 import com.example.jorgegonzalezcabrera.outgoing.others.HeaderItemDecoration.StickyHeaderInterface;
@@ -29,7 +29,7 @@ import io.realm.RealmList;
 public class actionsFragment extends Fragment implements StickyHeaderInterface {
 
     RecyclerView recyclerViewAllTheActions;
-    allActionsAdapter adapter;
+    allEntriesAdapter adapter;
     Context context;
 
     @Override
@@ -46,11 +46,11 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
         recyclerViewAllTheActions = view.findViewById(R.id.recyclerViewAllTheActions);
         RealmList<entry> allTheActions = new RealmList<>();
         allTheActions.addAll(Realm.getDefaultInstance().where(entry.class).findAll());
-        adapter = new allActionsAdapter(allTheActions);
+        adapter = new allEntriesAdapter(allTheActions);
         recyclerViewAllTheActions.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         recyclerViewAllTheActions.setLayoutManager(layoutManager);
-        recyclerViewAllTheActions.addItemDecoration(new HeaderItemDecoration(R.layout.actions_by_month, this));
+        recyclerViewAllTheActions.addItemDecoration(new HeaderItemDecoration(R.layout.entries_by_month, this));
         recyclerViewAllTheActions.addItemDecoration(new DividerItemDecoration(context, layoutManager.getOrientation()));
 
         return view;

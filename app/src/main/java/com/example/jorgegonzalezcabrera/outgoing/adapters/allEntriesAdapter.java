@@ -20,89 +20,108 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Vector;
 
+import javax.annotation.Nonnull;
+
 import io.realm.RealmList;
 
 import static com.example.jorgegonzalezcabrera.outgoing.utilities.utils.firstDateOfTheMonth;
 
-public class allActionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private int layout;
-    private int secondLayout;
+    private enum viewType {ACTION, HEADER}
+
+    private int actionLayout;
+    private int headerLayout;
     private Vector<RealmList<entry>> entries;
 
-    public allActionsAdapter(RealmList<entry> allEntries) {
-        this.layout = R.layout.action_item;
-        this.secondLayout = R.layout.actions_by_month;
+    public allEntriesAdapter(@Nonnull RealmList<entry> allEntries) {
+        this.actionLayout = R.layout.entry_item;
+        this.headerLayout = R.layout.entries_by_month;
 
         Date firstDayOfMonth = new Date();
         entries = new Vector<>();
         for (int i = allEntries.size() - 1; i >= 0; i--) {
-            if (firstDayOfMonth.before(allEntries.get(i).getCreationDate())) {
-                entries.lastElement().add(allEntries.get(i));
-            } else {
-                entries.add(new RealmList<entry>());
-                entries.lastElement().add(null); //It is the way I know that there is item using secondLayout. Maybe it is not the best option.
-                entries.lastElement().add(allEntries.get(i));
-                firstDayOfMonth = firstDateOfTheMonth(allEntries.get(i).getCreationDate());
+            entry entry = allEntries.get(i);
+            if (entry != null) {
+                if (firstDayOfMonth.before(entry.getCreationDate())) {
+                    entries.lastElement().add(allEntries.get(i));
+                } else {
+                    entries.add(new RealmList<entry>());
+                    entries.lastElement().add(null); //It is the way I know that there is a header in this position.
+                    entries.lastElement().add(allEntries.get(i));
+                    firstDayOfMonth = firstDateOfTheMonth(entry.getCreationDate());
+                }
             }
         }
     }
 
-    public void newEntryAdded(entry newEntry) {
+    public void newEntryAdded(@Nonnull entry newEntry) {
         GregorianCalendar dateOfNewEntry = new GregorianCalendar();
         dateOfNewEntry.setTime(newEntry.getCreationDate());
         GregorianCalendar dateOfLastEntry = new GregorianCalendar();
-        dateOfLastEntry.setTime(entries.firstElement().get(1).getCreationDate());
-        if(dateOfNewEntry.get(Calendar.MONTH)==dateOfLastEntry.get(Calendar.MONTH) && dateOfNewEntry.get(Calendar.YEAR)==dateOfLastEntry.get(Calendar.YEAR)){
+        if(!entries.isEmpty()){
+            entry entry = entries.firstElement().last();
+            if(entry!=null){
+                dateOfLastEntry.setTime(entry.getCreationDate());
+            }
+        }
+
+        if (dateOfNewEntry.get(Calendar.MONTH) == dateOfLastEntry.get(Calendar.MONTH)) {
+            if (dateOfNewEntry.get(Calendar.YEAR) == dateOfLastEntry.get(Calendar.YEAR)) {
+                entries.firstElement().add(1, newEntry);
+                notifyItemInserted(1);
+            }
+        } else {
+            entries.add(0, new RealmList<entry>());
+            entries.firstElement().add(0, null);
+            notifyItemInserted(0);
             entries.firstElement().add(1, newEntry);
             notifyItemInserted(1);
-        } else{
-            entries.add(0,new RealmList<entry>());
-            entries.firstElement().add(0,null);
-            notifyItemInserted(0);
-            entries.firstElement().add(1,newEntry);
-            notifyItemInserted(1);
-            //TODO: check this new method
         }
     }
 
     public entry get(int position) {
-        int i = 0;
-        while (position >= entries.get(i).size()) {
-            position -= entries.get(i).size();
+        int i = 0, j = position;
+        while (j >= entries.get(i).size()) {
+            j -= entries.get(i).size();
             i++;
         }
-        return entries.get(i).get(position);
+        return entries.get(i).get(j);
     }
 
     @Override
     public int getItemViewType(int position) {
-        return (get(position) == null) ? 0 : 1;
+        return (get(position) == null) ? viewType.HEADER.ordinal() : viewType.ACTION.ordinal();
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate((i == 1) ? layout : secondLayout, viewGroup, false);
-        return (i == 1) ? new actionViewHolder(v) : new dateViewHolder(v);
+        if (i == viewType.ACTION.ordinal()) {
+            View v = LayoutInflater.from(viewGroup.getContext()).inflate(actionLayout, viewGroup, false);
+            return new actionViewHolder(v);
+        } else {
+            View v = LayoutInflater.from(viewGroup.getContext()).inflate(headerLayout, viewGroup, false);
+            return new dateViewHolder(v);
+        }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-        if (getItemViewType(i) == 0) {
+        if (getItemViewType(i) == viewType.HEADER.ordinal()) {
             ((dateViewHolder) viewHolder).bind(get(i + 1).getCreationDate());
-        } else if (getItemViewType(i) == 1) {
+        } else if (getItemViewType(i) == viewType.ACTION.ordinal()) {
             ((actionViewHolder) viewHolder).bind(get(i));
         }
     }
 
     @Override
     public int getItemCount() {
-        int result = 0;
+        int count = 0;
         for (int i = 0; i < entries.size(); i++) {
-            result += entries.get(i).size();
+            count += entries.get(i).size();
         }
-        return result;
+        return count;
     }
 
     class actionViewHolder extends RecyclerView.ViewHolder {
@@ -121,7 +140,7 @@ public class allActionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             value = itemView.findViewById(R.id.textViewValueOfAction);
         }
 
-        void bind(entry entry) {
+        void bind(@Nonnull entry entry) {
             DateFormat df = new SimpleDateFormat("dd", new Locale("es", "ES"));
             day.setText(df.format(entry.getCreationDate()));
             category.setText(entry.getCategory());
@@ -141,6 +160,7 @@ public class allActionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     class dateViewHolder extends RecyclerView.ViewHolder {
+
         private TextView date;
 
         dateViewHolder(@NonNull View itemView) {
@@ -148,7 +168,7 @@ public class allActionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             date = itemView.findViewById(R.id.textViewMonth);
         }
 
-        void bind(Date dateOfMonth) {
+        void bind(@Nonnull Date dateOfMonth) {
             DateFormat df = new SimpleDateFormat("MMMM 'de' yyyy", new Locale("es", "ES"));
             date.setText(df.format(dateOfMonth));
         }

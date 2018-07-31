@@ -6,6 +6,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -15,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
-import com.example.jorgegonzalezcabrera.outgoing.adapters.mainPagerAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.actionsFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.mainFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.settingFragment;
@@ -56,13 +56,23 @@ public class MainActivity extends FragmentActivity
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         viewPager = findViewById(R.id.viewPager);
-        Vector<Fragment> fragments = new Vector<>();
+        final Vector<Fragment> fragments = new Vector<>();
         mainFragment = new mainFragment();
         fragments.add(mainFragment);
         actionsFragment = new actionsFragment();
         fragments.add(actionsFragment);
         fragments.add(new settingFragment());
-        viewPager.setAdapter(new mainPagerAdapter(getSupportFragmentManager(), fragments));
+        viewPager.setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
+            @Override
+            public Fragment getItem(int i) {
+                return fragments.get(i);
+            }
+
+            @Override
+            public int getCount() {
+                return fragments.size();
+            }
+        });
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

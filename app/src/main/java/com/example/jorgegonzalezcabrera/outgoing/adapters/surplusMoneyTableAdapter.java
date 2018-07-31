@@ -9,32 +9,49 @@ import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
+import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
 
+import java.util.Locale;
 import java.util.Vector;
 
+import javax.annotation.Nonnull;
+
+import io.realm.RealmList;
+
 public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyTableAdapter.ViewHolder> {
+
+    public static class surplusMoneyByCategory {
+        public outgoingCategory category;
+        public double surplusMoney;
+
+        public surplusMoneyByCategory(@Nonnull outgoingCategory category, double surplusMoney) {
+            this.category = category;
+            this.surplusMoney = surplusMoney;
+        }
+    }
 
     private int layout;
     private Vector<surplusMoneyByCategory> items;
 
-    public surplusMoneyTableAdapter(Vector<surplusMoneyByCategory> items) {
-        this.items = items;
+    public surplusMoneyTableAdapter(@Nonnull Vector<surplusMoneyByCategory> items) {
+        this.items = new Vector<>();
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i) != null) {
+                this.items.add(items.get(i));
+            }
+        }
         this.layout = R.layout.surplus_money_item;
     }
 
-    public void updateData(String category,double value){
-        //TODO: optimize this method
-        int i=0,j=0;
-        while(i<items.size() && !items.get(i).category.getSubcategories().get(j).getName().equals(category)){
-            j=0;
-            while(j<items.get(i).category.getSubcategories().size() && !items.get(i).category.getSubcategories().get(j).getName().equals(category)){
-                j++;
+    public void updateData(String category, double value) {
+        for (int i = 0; i < items.size(); i++) {
+            RealmList<subcategory> subcategories = items.get(i).category.getSubcategories();
+            if (subcategories.where().equalTo("name", category).findFirst() != null) {
+                items.get(i).surplusMoney -= value;
+                notifyItemChanged(i);
+                return;
             }
-            i++;
         }
-        if(i<items.size())
-            items.get(i).surplusMoney-=value;
-        notifyItemChanged(i);
     }
 
     @NonNull
@@ -66,20 +83,10 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
             surplusMoney = itemView.findViewById(R.id.textViewSurplusMoney);
         }
 
-        void bind(surplusMoneyByCategory surplusMoneyByCategory) {
+        void bind(@NonNull surplusMoneyByCategory surplusMoneyByCategory) {
             categoryName.setText(surplusMoneyByCategory.category.getName());
-            surplusMoney.setText(String.valueOf(surplusMoneyByCategory.surplusMoney + "€"));
-        }
-    }
-
-
-    public static class surplusMoneyByCategory{
-        public outgoingCategory category;
-        public double surplusMoney;
-
-        public surplusMoneyByCategory(outgoingCategory category, double surplusMoney) {
-            this.category = category;
-            this.surplusMoney = surplusMoney;
+            String value = String.format(new Locale("es", "ES"), "%.2f", surplusMoneyByCategory.surplusMoney) + "€";
+            surplusMoney.setText(value);
         }
     }
 }

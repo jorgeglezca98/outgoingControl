@@ -11,7 +11,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
-import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
 
 import io.realm.RealmList;
@@ -20,19 +19,18 @@ public class newOutgoingCategoriesAdapter extends RecyclerView.Adapter<newOutgoi
 
     private Context context;
     private int layout;
-    private RealmList<outgoingCategory> newCategories;
+    private int quantity;
 
     public newOutgoingCategoriesAdapter(Context context) {
         this.context = context;
         layout = R.layout.new_outgoing_category;
-        newCategories = new RealmList<>();
-        newCategories.add(new outgoingCategory());
+        quantity = 1;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(layout,viewGroup,false);
+        View v = LayoutInflater.from(context).inflate(layout, viewGroup, false);
         return new newOutgoingCategoriesAdapter.ViewHolder(v);
     }
 
@@ -43,18 +41,18 @@ public class newOutgoingCategoriesAdapter extends RecyclerView.Adapter<newOutgoi
 
     @Override
     public int getItemCount() {
-        return newCategories.size();
+        return quantity;
     }
 
-    public void addOne(){
-        newCategories.add(new outgoingCategory());
-        notifyDataSetChanged();
+    public void addOne() {
+        quantity++;
+        notifyItemInserted(quantity - 1);
     }
 
-    public void deleteLast(){
-        if(newCategories.size()>1){
-            newCategories.remove(newCategories.size()-1);
-            notifyDataSetChanged();
+    public void deleteLast() {
+        if (quantity > 1) {
+            quantity--;
+            notifyItemRemoved(quantity);
         }
     }
 
@@ -65,20 +63,20 @@ public class newOutgoingCategoriesAdapter extends RecyclerView.Adapter<newOutgoi
         public ImageButton imageButtonAddSubcategory;
         public ImageButton imageButtonDeleteSubcategory;
         public RecyclerView recyclerViewSubcategories;
-        public newSubcategoriesAdapter adapter;
+        erasableItemsAdapter adapter;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             name = itemView.findViewById(R.id.editTextCategoryName);
             max = itemView.findViewById(R.id.editTextMaxValue);
-            recyclerViewSubcategories = itemView.findViewById(R.id.recyclerViewSubcategories);
             imageButtonAddSubcategory = itemView.findViewById(R.id.imageButtonAddSubcategory);
             imageButtonDeleteSubcategory = itemView.findViewById(R.id.imageButtonDeleteSubcategory);
+            recyclerViewSubcategories = itemView.findViewById(R.id.recyclerViewSubcategories);
         }
 
-        void bind(){
-            adapter = new newSubcategoriesAdapter();
+        void bind() {
+            adapter = new erasableItemsAdapter();
             recyclerViewSubcategories.setAdapter(adapter);
             LinearLayoutManager layoutManager = new LinearLayoutManager(context);
             recyclerViewSubcategories.setLayoutManager(layoutManager);
@@ -98,15 +96,19 @@ public class newOutgoingCategoriesAdapter extends RecyclerView.Adapter<newOutgoi
             });
         }
 
-        public RealmList<subcategory> getSubcategories(){
+        public RealmList<subcategory> getSubcategories() {
             RealmList<subcategory> result = new RealmList<>();
-            newSubcategoriesAdapter.ViewHolder viewHolder;
+            erasableItemsAdapter.ViewHolder viewHolder;
+            String subcategoryName;
             for (int i = 0; i < adapter.getItemCount(); i++) {
-                viewHolder = (newSubcategoriesAdapter.ViewHolder) recyclerViewSubcategories.findViewHolderForAdapterPosition(i);
-                if(!viewHolder.subcategoryName.getText().toString().isEmpty())
-                    result.add(new subcategory(viewHolder.subcategoryName.getText().toString()));
+                viewHolder = (erasableItemsAdapter.ViewHolder) recyclerViewSubcategories.findViewHolderForAdapterPosition(i);
+                if (viewHolder != null) {
+                    subcategoryName = viewHolder.name.getText().toString();
+                    if (!subcategoryName.isEmpty())
+                        result.add(new subcategory(subcategoryName));
+                }
             }
-            if(result.isEmpty())
+            if (result.isEmpty())
                 result.add(new subcategory(name.getText().toString()));
             return result;
         }
