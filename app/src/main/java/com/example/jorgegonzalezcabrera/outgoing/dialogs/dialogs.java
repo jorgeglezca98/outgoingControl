@@ -18,14 +18,16 @@ import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 public class dialogs {
 
     public interface OnNewEntryAccepted {
         void OnClick(String subcategory, int type, double value, String description);
     }
 
-    public static void newEntryDialog(Context context, List<outgoingCategory> outgoingCategories,
-                                      List<incomeCategory> incomeCategories, final OnNewEntryAccepted myInterface) {
+    public static void newEntryDialog(Context context,@Nonnull List<outgoingCategory> outgoingCategories,
+                                      @Nonnull List<incomeCategory> incomeCategories, final OnNewEntryAccepted myInterface) {
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);

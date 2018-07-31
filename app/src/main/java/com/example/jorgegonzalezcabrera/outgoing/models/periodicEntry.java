@@ -11,6 +11,8 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
+import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getTypeFromOrdinal;
+
 public class periodicEntry extends RealmObject {
 
     public enum periodicType {WEEKLY, MONTHLY, ANNUAL}
@@ -64,11 +66,7 @@ public class periodicEntry extends RealmObject {
     }
 
     public entry.type getTypeOfCategory() {
-        if (typeOfCategory == entry.type.OUTGOING.ordinal()) {
-            return entry.type.OUTGOING;
-        } else {
-            return entry.type.INCOME;
-        }
+        return getTypeFromOrdinal(typeOfCategory);
     }
 
     public void setTypeOfCategory(entry.type typeOfCategory) {

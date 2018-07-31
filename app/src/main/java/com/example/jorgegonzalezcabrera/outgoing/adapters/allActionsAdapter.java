@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
+import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -127,7 +128,7 @@ public class allActionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             description.setText(entry.getDescription());
 
             String formattedValue;
-            if (entry.getType() == com.example.jorgegonzalezcabrera.outgoing.models.entry.type.OUTGOING) {
+            if (entry.getType() == type.OUTGOING) {
                 formattedValue = "-" + String.valueOf(entry.getValor()) + "€";
                 value.setText(formattedValue);
                 value.setTextColor(Color.parseColor("#ea9999"));

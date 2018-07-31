@@ -1,5 +1,6 @@
 package com.example.jorgegonzalezcabrera.outgoing.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,12 +29,19 @@ import io.realm.RealmList;
 
 public class settingFragment extends Fragment {
 
+    private Realm database;
     private EditText editTextValue;
     private Spinner spinnerCategories;
     private EditText editTextDescription;
     private Spinner spinnerPeriodicityType;
-    private Spinner spinnerSelecetedDates;
-    private Button buttonAddPeriodicEntry;
+    private Spinner spinnerSelectedDates;
+    private Context context;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.context = context;
+    }
 
     @Nullable
     @Override
@@ -44,12 +52,11 @@ public class settingFragment extends Fragment {
         spinnerCategories = view.findViewById(R.id.spinnerCategorySelection);
         editTextDescription = view.findViewById(R.id.editTextConceptNewEntry);
         spinnerPeriodicityType = view.findViewById(R.id.spinnerPeriodicityType);
-        spinnerSelecetedDates = view.findViewById(R.id.spinnerSelectedDates);
-        buttonAddPeriodicEntry = view.findViewById(R.id.buttonApplyNewPeriodicEntry);
+        spinnerSelectedDates = view.findViewById(R.id.spinnerSelectedDates);
+        Button buttonAddPeriodicEntry = view.findViewById(R.id.buttonApplyNewPeriodicEntry);
 
-        Realm.getDefaultInstance().beginTransaction();
-        appConfiguration currentConfiguration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
-        Realm.getDefaultInstance().commitTransaction();
+        database = Realm.getDefaultInstance();
+        appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
 
         final List<String> categories = new ArrayList<>();
         for (int i = 0; i < currentConfiguration.getOutgoingCategories().size(); i++) {
@@ -62,9 +69,8 @@ public class settingFragment extends Fragment {
             categories.add(currentConfiguration.getIncomeCategories().get(i).getName());
         }
 
-
-        final ArrayAdapter<String> stringArrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, categories);
-        spinnerCategories.setAdapter(stringArrayAdapter);
+        final ArrayAdapter<String> categoriesSpinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, categories);
+        spinnerCategories.setAdapter(categoriesSpinnerAdapter);
 
         spinnerPeriodicityType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -74,18 +80,16 @@ public class settingFragment extends Fragment {
                     for (int j = 1; j <= 12; j++) {
                         selectedDate.add(j);
                     }
-                    spinnerSelecetedDates.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, selectedDate));
                 } else if (spinnerPeriodicityType.getSelectedItemPosition() == 1) {
                     for (int j = 1; j <= 28; j++) {
                         selectedDate.add(j);
                     }
-                    spinnerSelecetedDates.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, selectedDate));
                 } else if (spinnerPeriodicityType.getSelectedItemPosition() == 2) {
                     for (int j = 1; j <= 7; j++) {
                         selectedDate.add(j);
                     }
-                    spinnerSelecetedDates.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, selectedDate));
                 }
+                spinnerSelectedDates.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, selectedDate));
             }
 
             @Override
@@ -107,17 +111,25 @@ public class settingFragment extends Fragment {
                     } else {
                         frequency = periodicEntry.periodicType.WEEKLY;
                     }
+
                     RealmList<Integer> selectedDate = new RealmList<>();
-                    selectedDate.add((Integer) spinnerSelecetedDates.getSelectedItem());
-                    periodicEntry newPeriodicEntry = new periodicEntry(Integer.valueOf(editTextValue.getText().toString()), type, categories.get(spinnerCategories.getSelectedItemPosition()), editTextDescription.getText().toString(), frequency, selectedDate);
-                    Realm.getDefaultInstance().beginTransaction();
-                    Realm.getDefaultInstance().copyToRealm(newPeriodicEntry);
-                    Realm.getDefaultInstance().commitTransaction();
+                    selectedDate.add((Integer) spinnerSelectedDates.getSelectedItem());
+                    int value = Integer.valueOf(editTextValue.getText().toString());
+                    String category = categories.get(spinnerCategories.getSelectedItemPosition());
+                    String description = editTextDescription.getText().toString();
+                    periodicEntry newPeriodicEntry = new periodicEntry(value, type, category, description, frequency, selectedDate);
+
+                    database.beginTransaction();
+                    database.copyToRealm(newPeriodicEntry);
+                    database.commitTransaction();
 
                     editTextValue.setText("");
                     editTextDescription.setText("");
+                    spinnerPeriodicityType.setSelection(0);
+                    spinnerCategories.setSelection(0);
+                    spinnerSelectedDates.setSelection(0);
 
-                    Toast.makeText(getContext(),"Periodic entry added",Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,"Periodic entry added",Toast.LENGTH_LONG).show();
 
                 }
             }

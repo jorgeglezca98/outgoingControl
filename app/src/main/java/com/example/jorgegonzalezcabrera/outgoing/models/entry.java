@@ -9,6 +9,7 @@ import io.realm.RealmObject;
 
 import static com.example.jorgegonzalezcabrera.outgoing.models.entry.type.INCOME;
 import static com.example.jorgegonzalezcabrera.outgoing.models.entry.type.OUTGOING;
+import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getTypeFromOrdinal;
 
 public class entry extends RealmObject {
 
@@ -45,10 +46,7 @@ public class entry extends RealmObject {
     }
 
     public type getType() {
-        if(this.type==OUTGOING.ordinal())
-            return OUTGOING;
-        else
-            return INCOME;
+        return getTypeFromOrdinal(type);
     }
 
     public void setType(@Nonnull type type) {

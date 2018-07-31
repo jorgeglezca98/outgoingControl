@@ -1,5 +1,6 @@
 package com.example.jorgegonzalezcabrera.outgoing.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,6 +30,13 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
 
     RecyclerView recyclerViewAllTheActions;
     allActionsAdapter adapter;
+    Context context;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.context = context;
+    }
 
     @Nullable
     @Override
@@ -36,20 +44,19 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
         View view = inflater.inflate(R.layout.actions_fragment, container, false);
 
         recyclerViewAllTheActions = view.findViewById(R.id.recyclerViewAllTheActions);
-        RealmList<entry> parameter = new RealmList<>();
-        parameter.addAll(Realm.getDefaultInstance().where(entry.class).findAll());
-        adapter = new allActionsAdapter(parameter);
+        RealmList<entry> allTheActions = new RealmList<>();
+        allTheActions.addAll(Realm.getDefaultInstance().where(entry.class).findAll());
+        adapter = new allActionsAdapter(allTheActions);
         recyclerViewAllTheActions.setAdapter(adapter);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         recyclerViewAllTheActions.setLayoutManager(layoutManager);
         recyclerViewAllTheActions.addItemDecoration(new HeaderItemDecoration(R.layout.actions_by_month, this));
-        recyclerViewAllTheActions.addItemDecoration(new DividerItemDecoration(getContext(), layoutManager.getOrientation()));
+        recyclerViewAllTheActions.addItemDecoration(new DividerItemDecoration(context, layoutManager.getOrientation()));
 
         return view;
     }
 
     public void updateData(entry newEntry) {
-        allActionsAdapter adapter = (allActionsAdapter) recyclerViewAllTheActions.getAdapter();
         adapter.newEntryAdded(newEntry);
     }
 
