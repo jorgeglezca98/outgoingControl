@@ -69,10 +69,15 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
     public void bindHeaderData(View header, int headerPosition) {
         TextView date = header.findViewById(R.id.textViewMonth);
         DateFormat df = new SimpleDateFormat("MMMM 'de' yyyy", new Locale("es", "ES"));
-        if(adapter.get(headerPosition)==null){
+        if (adapter.get(headerPosition) == null) {
             date.setText(df.format(adapter.get(headerPosition + 1).getCreationDate()));
-        } else{
+        } else {
             date.setText(df.format(adapter.get(headerPosition).getCreationDate()));
         }
+    }
+
+    @Override
+    public boolean isHeader(int itemPosition) {
+        return adapter.get(itemPosition) == null;
     }
 }

@@ -1,6 +1,8 @@
 package com.example.jorgegonzalezcabrera.outgoing.others;
 
-import com.example.jorgegonzalezcabrera.outgoing.fragments.mainFragment;
+import android.support.annotation.NonNull;
+
+import com.example.jorgegonzalezcabrera.outgoing.fragments.mainFragment.OnNewEntryAddedInterface;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
@@ -11,16 +13,16 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimerTask;
 
+import javax.annotation.Nonnull;
+
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getTypeFromOrdinal;
-
 public class customizedTimerTask extends TimerTask {
 
-    private mainFragment.OnNewEntryAddedInterface entryAddedInterface;
+    private OnNewEntryAddedInterface entryAddedInterface;
 
-    public customizedTimerTask(mainFragment.OnNewEntryAddedInterface entryAddedInterface) {
+    public customizedTimerTask(@Nonnull OnNewEntryAddedInterface entryAddedInterface) {
         this.entryAddedInterface = entryAddedInterface;
     }
 
@@ -28,26 +30,28 @@ public class customizedTimerTask extends TimerTask {
     public void run() {
         GregorianCalendar currentDate = new GregorianCalendar();
         currentDate.setTime(new Date());
-        Realm database = Realm.getDefaultInstance();
-        database.beginTransaction();
+
         RealmResults<periodicEntry> periodicEntries = Realm.getDefaultInstance().where(periodicEntry.class).findAll();
-        database.commitTransaction();
-        for(int i=0;i<periodicEntries.size();i++){
-            if (periodicEntries.get(i).getFrequency() == periodicType.WEEKLY) {
-                weeklyActions(periodicEntries.get(i),currentDate);
-            } else if (periodicEntries.get(i).getFrequency() == periodicType.MONTHLY) {
-                monthlyActions(periodicEntries.get(i),currentDate);
-            } else if (periodicEntries.get(i).getFrequency() == periodicType.ANNUAL) {
-                annualActions(periodicEntries.get(i),currentDate);
+        periodicEntry periodicEntry;
+        for (int i = 0; i < periodicEntries.size(); i++) {
+            periodicEntry = periodicEntries.get(i);
+            if (periodicEntry != null) {
+                if (periodicEntry.getFrequency() == periodicType.WEEKLY) {
+                    weeklyActions(periodicEntry, currentDate);
+                } else if (periodicEntry.getFrequency() == periodicType.MONTHLY) {
+                    monthlyActions(periodicEntry, currentDate);
+                } else if (periodicEntry.getFrequency() == periodicType.ANNUAL) {
+                    annualActions(periodicEntry, currentDate);
+                }
             }
         }
     }
 
     private void annualActions(periodicEntry periodicEntry, GregorianCalendar currentDate) {
-        int i=0;
-        while(i<periodicEntry.getSelectedDates().size()){
-            if(periodicEntry.getSelectedDates().get(i)==currentDate.get(Calendar.MONTH)){
-                createEntry(periodicEntry,entryAddedInterface);
+        int i = 0;
+        while (i < periodicEntry.getSelectedDates().size()) {
+            if (periodicEntry.getSelectedDates().get(i) == currentDate.get(Calendar.MONTH)) {
+                createEntry(periodicEntry, entryAddedInterface, currentDate);
                 break;
             }
             i++;
@@ -55,10 +59,10 @@ public class customizedTimerTask extends TimerTask {
     }
 
     private void monthlyActions(periodicEntry periodicEntry, GregorianCalendar currentDate) {
-        int i=0;
-        while(i<periodicEntry.getSelectedDates().size()){
-            if(periodicEntry.getSelectedDates().get(i)==currentDate.get(Calendar.DAY_OF_MONTH)){
-                createEntry(periodicEntry,entryAddedInterface);
+        int i = 0;
+        while (i < periodicEntry.getSelectedDates().size()) {
+            if (periodicEntry.getSelectedDates().get(i) == currentDate.get(Calendar.DAY_OF_MONTH)) {
+                createEntry(periodicEntry, entryAddedInterface, currentDate);
                 break;
             }
             i++;
@@ -66,17 +70,17 @@ public class customizedTimerTask extends TimerTask {
     }
 
     private void weeklyActions(periodicEntry periodicEntry, GregorianCalendar currentDate) {
-        int i=0;
-        while(i<periodicEntry.getSelectedDates().size()){
-            if(periodicEntry.getSelectedDates().get(i)==currentDate.get(Calendar.DAY_OF_WEEK)){
-                createEntry(periodicEntry,entryAddedInterface);
+        int i = 0;
+        while (i < periodicEntry.getSelectedDates().size()) {
+            if (periodicEntry.getSelectedDates().get(i) == currentDate.get(Calendar.DAY_OF_WEEK)) {
+                createEntry(periodicEntry, entryAddedInterface, currentDate);
                 break;
             }
             i++;
         }
     }
 
-    public static void createEntry(final periodicEntry periodicEntry, mainFragment.OnNewEntryAddedInterface entryAddedInterface) {
+    public static void createEntry(final periodicEntry periodicEntry, OnNewEntryAddedInterface entryAddedInterface, final GregorianCalendar currentDate) {
         final entry newEntry = periodicEntry.getEntry();
 
         final Realm database = Realm.getDefaultInstance();
@@ -88,13 +92,14 @@ public class customizedTimerTask extends TimerTask {
             currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + newEntry.getValor());
         }
 
-        final GregorianCalendar currentDate = new GregorianCalendar();
-        currentDate.setTime(new Date());
-        currentDate.set(currentDate.get(Calendar.YEAR),currentDate.get(Calendar.MONTH),currentDate.get(Calendar.DAY_OF_MONTH),0,0,0);
+        currentDate.set(Calendar.HOUR_OF_DAY, 0);
+        currentDate.set(Calendar.MINUTE, 0);
+        currentDate.set(Calendar.SECOND, 0);
+        currentDate.set(Calendar.MILLISECOND, 0);
 
         database.executeTransaction(new Realm.Transaction() {
             @Override
-            public void execute(Realm realm) {
+            public void execute(@NonNull Realm realm) {
                 database.copyToRealmOrUpdate(currentConfiguration);
                 database.copyToRealm(newEntry);
                 periodicEntry.setLastChange(currentDate.getTime());

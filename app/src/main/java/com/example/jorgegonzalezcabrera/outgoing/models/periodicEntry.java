@@ -35,6 +35,7 @@ public class periodicEntry extends RealmObject {
         this.description = "Not described";
         this.frequency = -1;
         this.selectedDates = new RealmList<>();
+        this.selectedDates.add(this.frequency == periodicType.ANNUAL.ordinal() ? 0 : 1);
         this.lastChange = new Date();
     }
 

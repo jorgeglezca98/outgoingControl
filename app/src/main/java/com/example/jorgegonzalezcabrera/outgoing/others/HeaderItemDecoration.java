@@ -1,6 +1,7 @@
 package com.example.jorgegonzalezcabrera.outgoing.others;
 
 import android.graphics.Canvas;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +18,7 @@ public class HeaderItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
+    public void onDrawOver(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         super.onDrawOver(c, parent, state);
 
         View topChild = parent.getChildAt(0);
@@ -27,9 +28,39 @@ public class HeaderItemDecoration extends RecyclerView.ItemDecoration {
                 View currentHeader = getHeaderViewForItem(topChildPosition, parent);
                 fixLayoutSize(parent, currentHeader);
 
-                drawHeader(c, currentHeader);
+                View childInContact = getChildInContact(parent, currentHeader.getBottom());
+                if (childInContact != null) {
+                    if (mListener.isHeader(parent.getChildAdapterPosition(childInContact))) {
+                        makeTransition(c, currentHeader, childInContact);
+                    } else {
+                        drawHeader(c, currentHeader);
+                    }
+                }
             }
         }
+    }
+
+    private View getChildInContact(RecyclerView parent, int contactPoint) {
+        View childInContact = null;
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View child = parent.getChildAt(i);
+            if (child.getBottom() > contactPoint) {
+                if (child.getTop() <= contactPoint) {
+                    childInContact = child;
+                    break;
+                }
+            }
+        }
+        return childInContact;
+    }
+
+    private void makeTransition(Canvas c, View currentHeader, View nextHeader) {
+        c.save();
+        c.translate(0, 0);
+        currentHeader.draw(c);
+        c.translate(0, nextHeader.getTop());
+        nextHeader.draw(c);
+        c.restore();
     }
 
     private View getHeaderViewForItem(int itemPosition, RecyclerView parent) {
@@ -60,8 +91,11 @@ public class HeaderItemDecoration extends RecyclerView.ItemDecoration {
 
     public interface StickyHeaderInterface {
         int getHeaderPositionForItem(int itemPosition);
+
         void bindHeaderData(View header, int headerPosition);
+
+        boolean isHeader(int itemPosition);
     }
 }
 
-//Found in https://stackoverflow.com/questions/32949971/how-can-i-make-sticky-headers-in-recyclerview-without-external-lib
+//Based on https://stackoverflow.com/questions/32949971/how-can-i-make-sticky-headers-in-recyclerview-without-external-lib

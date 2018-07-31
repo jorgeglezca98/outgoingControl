@@ -34,7 +34,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class MainActivity extends FragmentActivity
-        implements NavigationView.OnNavigationItemSelectedListener, mainFragment.OnNewEntryAddedInterface{
+        implements NavigationView.OnNavigationItemSelectedListener, mainFragment.OnNewEntryAddedInterface {
 
     private ViewPager viewPager;
     private actionsFragment actionsFragment;
@@ -169,7 +169,8 @@ public class MainActivity extends FragmentActivity
 
 
     public void setTimers() {
-        Timer timer = new Timer(true);;
+        Timer timer = new Timer(true);
+        ;
         GregorianCalendar date = new GregorianCalendar();
         GregorianCalendar currentDate = new GregorianCalendar();
         currentDate.setTime(new Date());
@@ -184,28 +185,28 @@ public class MainActivity extends FragmentActivity
             if (periodicEntries.get(i).getFrequency() == periodicType.ANNUAL) {
                 date.add(Calendar.YEAR, 1);
                 while (date.before(currentDate)) {
-                    customizedTimerTask.createEntry(periodicEntries.get(i), this);
+                    customizedTimerTask.createEntry(periodicEntries.get(i), this, currentDate);
                     date.add(Calendar.YEAR, 1);
                 }
             } else if (periodicEntries.get(i).getFrequency() == periodicType.MONTHLY) {
                 date.add(Calendar.MONTH, 1);
                 while (date.before(currentDate)) {
-                    customizedTimerTask.createEntry(periodicEntries.get(i), this);
+                    customizedTimerTask.createEntry(periodicEntries.get(i), this, currentDate);
                     date.add(Calendar.MONTH, 1);
                 }
             } else if (periodicEntries.get(i).getFrequency() == periodicType.WEEKLY) {
                 date.add(Calendar.DAY_OF_YEAR, 7);
                 while (date.before(currentDate)) {
-                    customizedTimerTask.createEntry(periodicEntries.get(i), this);
+                    customizedTimerTask.createEntry(periodicEntries.get(i), this, currentDate);
                     date.add(Calendar.DAY_OF_YEAR, 7);
                 }
             }
 
         }
 
-        currentDate.add(Calendar.DAY_OF_YEAR,1);
-        currentDate.set(currentDate.get(Calendar.YEAR),currentDate.get(Calendar.MONTH),currentDate.get(Calendar.DAY_OF_MONTH),0,0,0);
-        timer.schedule(new customizedTimerTask(this), currentDate.getTime(),86400000);
+        currentDate.add(Calendar.DAY_OF_YEAR, 1);
+        currentDate.set(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        timer.schedule(new customizedTimerTask(this), currentDate.getTime(), 86400000);
     }
 
 
