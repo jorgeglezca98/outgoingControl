@@ -61,7 +61,8 @@ public class MainActivity extends FragmentActivity
         fragments.add(mainFragment);
         actionsFragment = new actionsFragment();
         fragments.add(actionsFragment);
-        fragments.add(new settingFragment());
+        com.example.jorgegonzalezcabrera.outgoing.fragments.settingFragment settingFragment = new settingFragment();
+        fragments.add(settingFragment);
         viewPager.setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int i) {
@@ -160,59 +161,53 @@ public class MainActivity extends FragmentActivity
     @Override
     public void OnNewEntryAdded(entry newEntry) {
         actionsFragment.updateData(newEntry);
-        if (newEntry.getType() == entry.type.OUTGOING) {
-            mainFragment.updateAfterOutgoing(newEntry);
-        } else {
-            mainFragment.updateAfterIncome(newEntry);
-        }
+        mainFragment.updateData(newEntry);
     }
 
 
     public void setTimers() {
         Timer timer = new Timer(true);
-        ;
-        GregorianCalendar date = new GregorianCalendar();
+
+        RealmResults<periodicEntry> periodicEntries = database.where(periodicEntry.class).findAll();
+
+        GregorianCalendar lastChange = new GregorianCalendar();
         GregorianCalendar currentDate = new GregorianCalendar();
         currentDate.setTime(new Date());
-
-        database.beginTransaction();
-        RealmResults<periodicEntry> periodicEntries = database.where(periodicEntry.class).findAll();
-        database.commitTransaction();
-
         for (int i = 0; i < periodicEntries.size(); i++) {
-            date.setTime(periodicEntries.get(i).getLastChange());
+            periodicEntry periodicEntry = periodicEntries.get(i);
+            if (periodicEntry != null) {
+                lastChange.setTime(periodicEntry.getLastChange());
 
-            if (periodicEntries.get(i).getFrequency() == periodicType.ANNUAL) {
-                date.add(Calendar.YEAR, 1);
-                while (date.before(currentDate)) {
-                    customizedTimerTask.createEntry(periodicEntries.get(i), this, currentDate);
-                    date.add(Calendar.YEAR, 1);
-                }
-            } else if (periodicEntries.get(i).getFrequency() == periodicType.MONTHLY) {
-                date.add(Calendar.MONTH, 1);
-                while (date.before(currentDate)) {
-                    customizedTimerTask.createEntry(periodicEntries.get(i), this, currentDate);
-                    date.add(Calendar.MONTH, 1);
-                }
-            } else if (periodicEntries.get(i).getFrequency() == periodicType.WEEKLY) {
-                date.add(Calendar.DAY_OF_YEAR, 7);
-                while (date.before(currentDate)) {
-                    customizedTimerTask.createEntry(periodicEntries.get(i), this, currentDate);
-                    date.add(Calendar.DAY_OF_YEAR, 7);
+                if (periodicEntry.getFrequency() == periodicType.ANNUAL) {
+                    lastChange.add(Calendar.YEAR, 1);
+                    while (lastChange.before(currentDate)) {
+                        customizedTimerTask.createEntry(periodicEntry, this, currentDate);
+                        lastChange.add(Calendar.YEAR, 1);
+                    }
+                } else if (periodicEntry.getFrequency() == periodicType.MONTHLY) {
+                    lastChange.add(Calendar.MONTH, 1);
+                    while (lastChange.before(currentDate)) {
+                        customizedTimerTask.createEntry(periodicEntry, this, currentDate);
+                        lastChange.add(Calendar.MONTH, 1);
+                    }
+                } else if (periodicEntry.getFrequency() == periodicType.WEEKLY) {
+                    lastChange.add(Calendar.DAY_OF_YEAR, 7);
+                    while (lastChange.before(currentDate)) {
+                        customizedTimerTask.createEntry(periodicEntry, this, currentDate);
+                        lastChange.add(Calendar.DAY_OF_YEAR, 7);
+                    }
                 }
             }
-
         }
 
         currentDate.add(Calendar.DAY_OF_YEAR, 1);
-        currentDate.set(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        currentDate.set(Calendar.HOUR_OF_DAY, 0);
+        currentDate.set(Calendar.MINUTE, 0);
+        currentDate.set(Calendar.SECOND, 0);
+        currentDate.set(Calendar.MILLISECOND, 0);
         timer.schedule(new customizedTimerTask(this), currentDate.getTime(), 86400000);
     }
-
 
 }
 
 //TODO: manage the periodic entry have just introduced
-//TODO: make sure that the data is updated in the database
-//TODO: permitir que se accedan valores regulares
-//TODO: the models should have a primarykey to make updates

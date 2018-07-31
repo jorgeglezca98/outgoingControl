@@ -9,8 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import io.realm.Realm;
-import io.realm.RealmList;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.erasableItemsAdapter;
@@ -18,6 +16,9 @@ import com.example.jorgegonzalezcabrera.outgoing.adapters.newOutgoingCategoriesA
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
+
+import io.realm.Realm;
+import io.realm.RealmList;
 
 public class initialConfigurationActivity extends AppCompatActivity {
 
@@ -35,14 +36,14 @@ public class initialConfigurationActivity extends AppCompatActivity {
         outgoingCategoriesRecyclerView = findViewById(R.id.recyclerViewOutgoingCategories);
         outgoingCategoriesAdapter = new newOutgoingCategoriesAdapter(this);
         outgoingCategoriesRecyclerView.setAdapter(outgoingCategoriesAdapter);
-        final LinearLayoutManager OutcomingCategoriesLayoutManager = new LinearLayoutManager(this);
-        outgoingCategoriesRecyclerView.setLayoutManager(OutcomingCategoriesLayoutManager);
+        final LinearLayoutManager outgoingCategoriesLayoutManager = new LinearLayoutManager(this);
+        outgoingCategoriesRecyclerView.setLayoutManager(outgoingCategoriesLayoutManager);
 
         incomeCategoriesRecyclerView = findViewById(R.id.recyclerViewIncomeCategories);
         incomeCategoriesAdapter = new erasableItemsAdapter();
         incomeCategoriesRecyclerView.setAdapter(incomeCategoriesAdapter);
-        final LinearLayoutManager incomeCategorieslayoutManager = new LinearLayoutManager(this);
-        incomeCategoriesRecyclerView.setLayoutManager(incomeCategorieslayoutManager);
+        final LinearLayoutManager incomeCategoriesLayoutManager = new LinearLayoutManager(this);
+        incomeCategoriesRecyclerView.setLayoutManager(incomeCategoriesLayoutManager);
 
         editTextInitialMoney = findViewById(R.id.editTextInitialMoney);
         ImageButton imageButtonAddOutgoingCategory = findViewById(R.id.imageButtonAddOutgoingCategory);
@@ -83,8 +84,8 @@ public class initialConfigurationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (checkData()) {
-                    appConfiguration newConfiguration = new appConfiguration(Double.valueOf(editTextInitialMoney.getText().toString()),
-                            getOutgoingCategories(), getIncomeCategories());
+                    double currentMoney = Double.valueOf(editTextInitialMoney.getText().toString());
+                    appConfiguration newConfiguration = new appConfiguration(currentMoney, getOutgoingCategories(), getIncomeCategories());
 
                     Realm database = Realm.getDefaultInstance();
                     database.beginTransaction();
@@ -102,9 +103,14 @@ public class initialConfigurationActivity extends AppCompatActivity {
     private RealmList<outgoingCategory> getOutgoingCategories() {
         RealmList<outgoingCategory> result = new RealmList<>();
         newOutgoingCategoriesAdapter.ViewHolder viewHolder;
+
         for (int i = 0; i < outgoingCategoriesAdapter.getItemCount(); i++) {
             viewHolder = (newOutgoingCategoriesAdapter.ViewHolder) outgoingCategoriesRecyclerView.findViewHolderForAdapterPosition(i);
-            result.add(new outgoingCategory(viewHolder.getSubcategories(), Double.valueOf(viewHolder.max.getText().toString()), viewHolder.name.getText().toString()));
+            if (viewHolder != null) {
+                double max = Double.valueOf(viewHolder.max.getText().toString());
+                String categoryName = viewHolder.name.getText().toString();
+                result.add(new outgoingCategory(viewHolder.getSubcategories(), max, categoryName));
+            }
         }
         return result;
     }
@@ -114,34 +120,38 @@ public class initialConfigurationActivity extends AppCompatActivity {
         erasableItemsAdapter.ViewHolder viewHolder;
         for (int i = 0; i < incomeCategoriesAdapter.getItemCount(); i++) {
             viewHolder = (erasableItemsAdapter.ViewHolder) incomeCategoriesRecyclerView.findViewHolderForAdapterPosition(i);
-            result.add(new incomeCategory(viewHolder.name.getText().toString()));
+            if (viewHolder != null) {
+                result.add(new incomeCategory(viewHolder.name.getText().toString()));
+            }
         }
         return result;
     }
 
     private boolean checkData() {
+        boolean result = true;
         if (editTextInitialMoney.getText().toString().isEmpty()) {
-            return false;
+            result = false;
         } else {
             newOutgoingCategoriesAdapter.ViewHolder outgoingViewHolder;
             for (int i = 0; i < outgoingCategoriesAdapter.getItemCount(); i++) {
                 outgoingViewHolder = (newOutgoingCategoriesAdapter.ViewHolder) outgoingCategoriesRecyclerView.findViewHolderForAdapterPosition(i);
                 if (outgoingViewHolder.name.getText().toString().isEmpty()) {
                     outgoingViewHolder.name.setHintTextColor(getResources().getColor(R.color.colorWrong));
-                    return false;
+                    result = false;
                 } else if (outgoingViewHolder.max.getText().toString().isEmpty()) {
-                    return false;
+                    result = false;
                 }
             }
+
             erasableItemsAdapter.ViewHolder incomeViewHolder;
             for (int i = 0; i < incomeCategoriesAdapter.getItemCount(); i++) {
                 incomeViewHolder = (erasableItemsAdapter.ViewHolder) incomeCategoriesRecyclerView.findViewHolderForAdapterPosition(i);
                 if (incomeViewHolder.name.getText().toString().isEmpty()) {
                     incomeViewHolder.name.setHintTextColor(getResources().getColor(R.color.colorWrong));
-                    return false;
+                    result = false;
                 }
             }
         }
-        return true;
+        return result;
     }
 }
