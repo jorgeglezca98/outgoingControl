@@ -16,12 +16,10 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
-import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
+import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSpinnerAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 import io.realm.Realm;
@@ -55,20 +53,8 @@ public class settingFragment extends Fragment {
         Button buttonAddPeriodicEntry = view.findViewById(R.id.buttonApplyNewPeriodicEntry);
 
         database = Realm.getDefaultInstance();
-        appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
 
-        final List<String> categories = new ArrayList<>();
-        for (int i = 0; i < currentConfiguration.getOutgoingCategories().size(); i++) {
-            for (int j = 0; j < currentConfiguration.getOutgoingCategories().get(i).getSubcategories().size(); j++) {
-                categories.add(currentConfiguration.getOutgoingCategories().get(i).getSubcategories().get(j).getName());
-            }
-        }
-        final int lastOutgoingCategoryPosition = categories.size() - 1;
-        for (int i = 0; i < currentConfiguration.getIncomeCategories().size(); i++) {
-            categories.add(currentConfiguration.getIncomeCategories().get(i).getName());
-        }
-
-        final ArrayAdapter<String> categoriesSpinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, categories);
+        final categoriesSpinnerAdapter categoriesSpinnerAdapter = new categoriesSpinnerAdapter(context);
         spinnerCategories.setAdapter(categoriesSpinnerAdapter);
 
         spinnerPeriodicityType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -101,7 +87,12 @@ public class settingFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (!editTextValue.getText().toString().isEmpty()) {
-                    entry.type type = spinnerCategories.getSelectedItemPosition() <= lastOutgoingCategoryPosition ? entry.type.OUTGOING : entry.type.INCOME;
+                    entry.type type;
+                    if (categoriesSpinnerAdapter.isOutgoingCategory(spinnerCategories.getSelectedItemPosition()))
+                        type = entry.type.OUTGOING;
+                    else
+                        type = entry.type.INCOME;
+
                     periodicEntry.periodicType frequency;
                     if (spinnerPeriodicityType.getSelectedItemPosition() == 0) {
                         frequency = periodicEntry.periodicType.ANNUAL;
@@ -111,24 +102,27 @@ public class settingFragment extends Fragment {
                         frequency = periodicEntry.periodicType.WEEKLY;
                     }
 
-                    int selectedDate = (Integer) spinnerSelectedDates.getSelectedItem();
-                    int value = Integer.valueOf(editTextValue.getText().toString());
-                    String category = categories.get(spinnerCategories.getSelectedItemPosition());
-                    String description = editTextDescription.getText().toString();
-                    periodicEntry newPeriodicEntry = new periodicEntry(value, type, category, description, frequency, selectedDate);
+                    String category = categoriesSpinnerAdapter.getItem(spinnerCategories.getSelectedItemPosition());
+                    if (category == null) {
+                        Toast.makeText(context, "Error: empty fields", Toast.LENGTH_LONG).show();
+                    } else {
+                        int selectedDate = (Integer) spinnerSelectedDates.getSelectedItem();
+                        int value = Integer.valueOf(editTextValue.getText().toString());
+                        String description = editTextDescription.getText().toString();
+                        periodicEntry newPeriodicEntry = new periodicEntry(value, type, category, description, frequency, selectedDate);
 
-                    database.beginTransaction();
-                    database.copyToRealm(newPeriodicEntry);
-                    database.commitTransaction();
+                        database.beginTransaction();
+                        database.copyToRealm(newPeriodicEntry);
+                        database.commitTransaction();
 
-                    editTextValue.setText("");
-                    editTextDescription.setText("");
-                    spinnerPeriodicityType.setSelection(0);
-                    spinnerCategories.setSelection(0);
-                    spinnerSelectedDates.setSelection(0);
+                        editTextValue.setText("");
+                        editTextDescription.setText("");
+                        spinnerPeriodicityType.setSelection(0);
+                        spinnerCategories.setSelection(0);
+                        spinnerSelectedDates.setSelection(0);
 
-                    Toast.makeText(context, "Periodic entry added", Toast.LENGTH_LONG).show();
-
+                        Toast.makeText(context, "Periodic entry added", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });

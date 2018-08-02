@@ -4,21 +4,13 @@ import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
 import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSpinnerAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
-import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
-import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
-import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nonnull;
 
 public class dialogs {
 
@@ -26,8 +18,7 @@ public class dialogs {
         void OnClick(String subcategory, int type, double value, String description);
     }
 
-    public static void newEntryDialog(Context context,@Nonnull List<outgoingCategory> outgoingCategories,
-                                      @Nonnull List<incomeCategory> incomeCategories, final OnNewEntryAccepted myInterface) {
+    public static void newEntryDialog(Context context, final OnNewEntryAccepted myInterface) {
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
@@ -39,21 +30,7 @@ public class dialogs {
         Button cancelButton = dialog.findViewById(R.id.buttonCancel);
         Button applyButton = dialog.findViewById(R.id.buttonApplyNewEntry);
 
-        List<String> categories = new ArrayList<>();
-        for (int i = 0; i < outgoingCategories.size(); i++) {
-            for (int j = 0; j < outgoingCategories.get(i).getSubcategories().size(); j++) {
-                subcategory subcategory = outgoingCategories.get(i).getSubcategories().get(j);
-                if(subcategory!=null){
-                    categories.add(subcategory.getName());
-                }
-            }
-        }
-        final int lastOutgoingCategoryPosition = categories.size() - 1;
-        for (int i = 0; i < incomeCategories.size(); i++) {
-            categories.add(incomeCategories.get(i).getName());
-        }
-
-        final ArrayAdapter<String> categoriesSpinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, categories);
+        final categoriesSpinnerAdapter categoriesSpinnerAdapter = new categoriesSpinnerAdapter(context);
         categorySpinner.setAdapter(categoriesSpinnerAdapter);
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -68,7 +45,7 @@ public class dialogs {
             public void onClick(View view) {
                 if (!valueEditText.getText().toString().isEmpty()) {
                     int typeOfCategory;
-                    if (categorySpinner.getSelectedItemPosition() <= lastOutgoingCategoryPosition)
+                    if (categoriesSpinnerAdapter.isOutgoingCategory(categorySpinner.getSelectedItemPosition()))
                         typeOfCategory = type.OUTGOING.ordinal();
                     else
                         typeOfCategory = type.INCOME.ordinal();
