@@ -25,7 +25,7 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
     }
 
     public void deleteLast() {
-        if (quantity > 1) {
+        if (quantity > 0) {
             quantity--;
             notifyItemRemoved(quantity);
         }

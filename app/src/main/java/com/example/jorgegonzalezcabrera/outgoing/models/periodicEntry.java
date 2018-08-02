@@ -1,13 +1,18 @@
 package com.example.jorgegonzalezcabrera.outgoing.models;
 
+import android.support.annotation.NonNull;
+
 import com.example.jorgegonzalezcabrera.outgoing.applications.myApplication;
+import com.example.jorgegonzalezcabrera.outgoing.fragments.mainFragment;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.annotation.Nonnull;
 
-import io.realm.RealmList;
+import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -25,7 +30,7 @@ public class periodicEntry extends RealmObject {
     private String description;
     private int frequency;
     private Date lastChange;
-    private RealmList<Integer> selectedDates;
+    private int selectedDate;
 
     public periodicEntry() {
         this.id = -1;
@@ -34,23 +39,19 @@ public class periodicEntry extends RealmObject {
         this.category = "";
         this.description = "Not described";
         this.frequency = -1;
-        this.selectedDates = new RealmList<>();
-        this.selectedDates.add(this.frequency == periodicType.ANNUAL.ordinal() ? 0 : 1);
+        this.selectedDate = this.frequency == periodicType.ANNUAL.ordinal() ? 0 : 1;
         this.lastChange = new Date();
     }
 
     public periodicEntry(double value, @Nonnull entry.type typeOfCategory, @Nonnull String category,
-                         String description, @Nonnull periodicType frequency, @Nonnull RealmList<Integer> selectedDates) {
+                         String description, @Nonnull periodicType frequency, int selectedDate) {
         this.id = myApplication.periodicEntryId.incrementAndGet();
         this.value = value;
         this.typeOfCategory = typeOfCategory.ordinal();
         this.category = category;
         this.description = description == null ? "Not described" : description;
         this.frequency = frequency.ordinal();
-        this.selectedDates = selectedDates;
-        if (selectedDates.size() == 0) {
-            selectedDates.add(this.frequency == periodicType.ANNUAL.ordinal() ? 0 : 1);
-        }
+        this.selectedDate = selectedDate;
         this.lastChange = new Date();
     }
 
@@ -104,12 +105,12 @@ public class periodicEntry extends RealmObject {
         this.frequency = frequency.ordinal();
     }
 
-    public RealmList<Integer> getSelectedDates() {
-        return selectedDates;
+    public int getSelectedDate() {
+        return selectedDate;
     }
 
-    public void setSelectedDates(RealmList<Integer> selectedDates) {
-        this.selectedDates = selectedDates;
+    public void setSelectedDate(int selectedDate) {
+        this.selectedDate = selectedDate;
     }
 
     public entry getEntry() {
@@ -120,7 +121,38 @@ public class periodicEntry extends RealmObject {
         return lastChange;
     }
 
-    public void setLastChange(Date lastChange) {
+    private void setLastChange(Date lastChange) {
         this.lastChange = lastChange;
     }
+
+    public static void createEntry(final periodicEntry periodicEntry, mainFragment.OnNewEntryAddedInterface entryAddedInterface, final GregorianCalendar currentDate) {
+        final entry newEntry = periodicEntry.getEntry();
+
+        final Realm database = Realm.getDefaultInstance();
+        final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
+
+        if (newEntry.getType() == entry.type.OUTGOING) {
+            currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - newEntry.getValor());
+        } else {
+            currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + newEntry.getValor());
+        }
+
+        currentDate.set(Calendar.HOUR_OF_DAY, 0);
+        currentDate.set(Calendar.MINUTE, 0);
+        currentDate.set(Calendar.SECOND, 0);
+        currentDate.set(Calendar.MILLISECOND, 0);
+
+        database.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                database.copyToRealmOrUpdate(currentConfiguration);
+                database.copyToRealm(newEntry);
+                periodicEntry.setLastChange(currentDate.getTime());
+                database.copyToRealmOrUpdate(periodicEntry);
+            }
+        });
+
+        entryAddedInterface.OnNewEntryAdded(newEntry);
+    }
+
 }

@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Vector;
 
 import io.realm.Realm;
-import io.realm.RealmList;
 
 public class settingFragment extends Fragment {
 
@@ -112,8 +111,7 @@ public class settingFragment extends Fragment {
                         frequency = periodicEntry.periodicType.WEEKLY;
                     }
 
-                    RealmList<Integer> selectedDate = new RealmList<>();
-                    selectedDate.add((Integer) spinnerSelectedDates.getSelectedItem());
+                    int selectedDate = (Integer) spinnerSelectedDates.getSelectedItem();
                     int value = Integer.valueOf(editTextValue.getText().toString());
                     String category = categories.get(spinnerCategories.getSelectedItemPosition());
                     String description = editTextDescription.getText().toString();
@@ -129,7 +127,7 @@ public class settingFragment extends Fragment {
                     spinnerCategories.setSelection(0);
                     spinnerSelectedDates.setSelection(0);
 
-                    Toast.makeText(context,"Periodic entry added",Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Periodic entry added", Toast.LENGTH_LONG).show();
 
                 }
             }

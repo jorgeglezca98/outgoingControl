@@ -174,33 +174,33 @@ public class MainActivity extends FragmentActivity
         GregorianCalendar currentDate = new GregorianCalendar();
         currentDate.setTime(new Date());
         for (int i = 0; i < periodicEntries.size(); i++) {
-            periodicEntry periodicEntry = periodicEntries.get(i);
-            if (periodicEntry != null) {
-                lastChange.setTime(periodicEntry.getLastChange());
+            periodicEntry periodicEntriesItem = periodicEntries.get(i);
+            if (periodicEntriesItem != null) {
+                lastChange.setTime(periodicEntriesItem.getLastChange());
 
-                if (periodicEntry.getFrequency() == periodicType.ANNUAL) {
+                if (periodicEntriesItem.getFrequency() == periodicType.ANNUAL) {
                     lastChange.add(Calendar.YEAR, 1);
                     while (lastChange.before(currentDate)) {
-                        customizedTimerTask.createEntry(periodicEntry, this, currentDate);
+                        periodicEntry.createEntry(periodicEntriesItem, this, currentDate);
                         lastChange.add(Calendar.YEAR, 1);
                     }
-                } else if (periodicEntry.getFrequency() == periodicType.MONTHLY) {
+                } else if (periodicEntriesItem.getFrequency() == periodicType.MONTHLY) {
                     lastChange.add(Calendar.MONTH, 1);
                     while (lastChange.before(currentDate)) {
-                        customizedTimerTask.createEntry(periodicEntry, this, currentDate);
+                        periodicEntry.createEntry(periodicEntriesItem, this, currentDate);
                         lastChange.add(Calendar.MONTH, 1);
                     }
-                } else if (periodicEntry.getFrequency() == periodicType.WEEKLY) {
-                    lastChange.add(Calendar.DAY_OF_YEAR, 7);
+                } else if (periodicEntriesItem.getFrequency() == periodicType.WEEKLY) {
+                    lastChange.add(Calendar.DATE, 7);
                     while (lastChange.before(currentDate)) {
-                        customizedTimerTask.createEntry(periodicEntry, this, currentDate);
-                        lastChange.add(Calendar.DAY_OF_YEAR, 7);
+                        periodicEntry.createEntry(periodicEntriesItem, this, currentDate);
+                        lastChange.add(Calendar.DATE, 7);
                     }
                 }
             }
         }
 
-        currentDate.add(Calendar.DAY_OF_YEAR, 1);
+        currentDate.add(Calendar.DATE, 1);
         currentDate.set(Calendar.HOUR_OF_DAY, 0);
         currentDate.set(Calendar.MINUTE, 0);
         currentDate.set(Calendar.SECOND, 0);
@@ -209,5 +209,3 @@ public class MainActivity extends FragmentActivity
     }
 
 }
-
-//TODO: manage the periodic entry have just introduced

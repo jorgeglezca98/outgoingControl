@@ -63,15 +63,20 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             entry entry = entries.firstElement().last();
             if(entry!=null){
                 dateOfLastEntry.setTime(entry.getCreationDate());
+                if (dateOfNewEntry.get(Calendar.MONTH) == dateOfLastEntry.get(Calendar.MONTH)) {
+                    if (dateOfNewEntry.get(Calendar.YEAR) == dateOfLastEntry.get(Calendar.YEAR)) {
+                        entries.firstElement().add(1, newEntry);
+                        notifyItemInserted(1);
+                    }
+                } else {
+                    entries.add(0, new RealmList<entry>());
+                    entries.firstElement().add(0, null);
+                    notifyItemInserted(0);
+                    entries.firstElement().add(1, newEntry);
+                    notifyItemInserted(1);
+                }
             }
-        }
-
-        if (dateOfNewEntry.get(Calendar.MONTH) == dateOfLastEntry.get(Calendar.MONTH)) {
-            if (dateOfNewEntry.get(Calendar.YEAR) == dateOfLastEntry.get(Calendar.YEAR)) {
-                entries.firstElement().add(1, newEntry);
-                notifyItemInserted(1);
-            }
-        } else {
+        } else{
             entries.add(0, new RealmList<entry>());
             entries.firstElement().add(0, null);
             notifyItemInserted(0);

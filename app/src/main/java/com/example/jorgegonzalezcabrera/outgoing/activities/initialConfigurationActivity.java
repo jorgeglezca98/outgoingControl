@@ -131,7 +131,7 @@ public class initialConfigurationActivity extends AppCompatActivity {
         boolean result = true;
         if (editTextInitialMoney.getText().toString().isEmpty()) {
             result = false;
-        } else {
+        } else if (incomeCategoriesAdapter.getItemCount() > 0) {
             newOutgoingCategoriesAdapter.ViewHolder outgoingViewHolder;
             for (int i = 0; i < outgoingCategoriesAdapter.getItemCount(); i++) {
                 outgoingViewHolder = (newOutgoingCategoriesAdapter.ViewHolder) outgoingCategoriesRecyclerView.findViewHolderForAdapterPosition(i);
