@@ -113,8 +113,7 @@ public class mainFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 final appConfiguration updatedConfiguration = database.where(appConfiguration.class).findFirst();
-                newEntryDialog(context, updatedConfiguration.getOutgoingCategories(),
-                        updatedConfiguration.getIncomeCategories(), new dialogs.OnNewEntryAccepted() {
+                newEntryDialog(context, new dialogs.OnNewEntryAccepted() {
                             @Override
                             public void OnClick(final String subcategory, final int type, final double value, final String description) {
                                 final entry newEntry = new entry(value, getTypeFromOrdinal(type), subcategory, description);
