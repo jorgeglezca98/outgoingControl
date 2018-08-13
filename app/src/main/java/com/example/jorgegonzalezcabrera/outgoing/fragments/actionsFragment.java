@@ -37,6 +37,7 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
     private Context context;
     private EditText editTextMinValue;
     private EditText editTextMaxValue;
+    private EditText editTextDescriptionFilter;
 
     @Override
     public void onAttach(Context context) {
@@ -81,6 +82,7 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
         Button buttonApplyFilters = view.findViewById(R.id.buttonApplyFilters);
         editTextMinValue = view.findViewById(R.id.editTextMinValue);
         editTextMaxValue = view.findViewById(R.id.editTextMaxValue);
+        editTextDescriptionFilter = view.findViewById(R.id.editTextDescriptionFilter);
         buttonApplyFilters.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -101,6 +103,10 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
         if(!editTextMaxValue.getText().toString().isEmpty()){
             double maxValue = Double.valueOf(editTextMaxValue.getText().toString());
             filteredResults.lessThanOrEqualTo("valor",maxValue);
+        }
+
+        if(!editTextDescriptionFilter.getText().toString().isEmpty()){
+            filteredResults.contains("description",editTextDescriptionFilter.getText().toString());
         }
         allTheActions.clear();
         allTheActions.addAll(filteredResults.findAll());
