@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,6 +12,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
@@ -25,12 +28,15 @@ import java.util.Locale;
 
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmQuery;
 
 public class actionsFragment extends Fragment implements StickyHeaderInterface {
 
-    RecyclerView recyclerViewAllTheActions;
-    allEntriesAdapter adapter;
-    Context context;
+    private allEntriesAdapter adapter;
+    private RealmList<entry> allTheActions;
+    private Context context;
+    private EditText editTextMinValue;
+    private EditText editTextMaxValue;
 
     @Override
     public void onAttach(Context context) {
@@ -38,22 +44,67 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
         this.context = context;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        allTheActions = new RealmList<>();
+        allTheActions.addAll(Realm.getDefaultInstance().where(entry.class).findAll());
+        adapter = new allEntriesAdapter(allTheActions);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.actions_fragment, container, false);
 
-        recyclerViewAllTheActions = view.findViewById(R.id.recyclerViewAllTheActions);
-        RealmList<entry> allTheActions = new RealmList<>();
-        allTheActions.addAll(Realm.getDefaultInstance().where(entry.class).findAll());
-        adapter = new allEntriesAdapter(allTheActions);
+        RecyclerView recyclerViewAllTheActions = view.findViewById(R.id.recyclerViewAllTheActions);
         recyclerViewAllTheActions.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         recyclerViewAllTheActions.setLayoutManager(layoutManager);
         recyclerViewAllTheActions.addItemDecoration(new HeaderItemDecoration(R.layout.entries_by_month, this));
         recyclerViewAllTheActions.addItemDecoration(new DividerItemDecoration(context, layoutManager.getOrientation()));
 
+        final ConstraintLayout expandableFilterLayout = view.findViewById(R.id.expandableFilterLayout);
+        Button filterButton = view.findViewById(R.id.buttonFilter);
+        filterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(expandableFilterLayout.getVisibility()==View.VISIBLE){
+                    expandableFilterLayout.setVisibility(View.GONE);
+                } else if(expandableFilterLayout.getVisibility()==View.GONE){
+                    expandableFilterLayout.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        Button buttonApplyFilters = view.findViewById(R.id.buttonApplyFilters);
+        editTextMinValue = view.findViewById(R.id.editTextMinValue);
+        editTextMaxValue = view.findViewById(R.id.editTextMaxValue);
+        buttonApplyFilters.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                applyFilters();
+            }
+        });
+
         return view;
+    }
+
+    private void applyFilters(){
+        RealmQuery<entry> filteredResults = Realm.getDefaultInstance().where(entry.class);
+        if(!editTextMinValue.getText().toString().isEmpty()){
+            double minValue = Double.valueOf(editTextMinValue.getText().toString());
+            filteredResults.greaterThanOrEqualTo("valor",minValue);
+        }
+
+        if(!editTextMaxValue.getText().toString().isEmpty()){
+            double maxValue = Double.valueOf(editTextMaxValue.getText().toString());
+            filteredResults.lessThanOrEqualTo("valor",maxValue);
+        }
+        allTheActions.clear();
+        allTheActions.addAll(filteredResults.findAll());
+        adapter.changeData(allTheActions);
     }
 
     public void updateData(entry newEntry) {

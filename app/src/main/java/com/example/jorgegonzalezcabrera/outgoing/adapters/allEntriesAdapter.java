@@ -55,6 +55,25 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
+    public void changeData(@Nonnull RealmList<entry> allEntries){
+        Date firstDayOfMonth = new Date();
+        entries.clear();
+        for (int i = allEntries.size() - 1; i >= 0; i--) {
+            entry entry = allEntries.get(i);
+            if (entry != null) {
+                if (firstDayOfMonth.before(entry.getCreationDate())) {
+                    entries.lastElement().add(allEntries.get(i));
+                } else {
+                    entries.add(new RealmList<entry>());
+                    entries.lastElement().add(null); //It is the way I know that there is a header in this position.
+                    entries.lastElement().add(allEntries.get(i));
+                    firstDayOfMonth = firstDateOfTheMonth(entry.getCreationDate());
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
+
     public void newEntryAdded(@Nonnull entry newEntry) {
         GregorianCalendar dateOfNewEntry = new GregorianCalendar();
         dateOfNewEntry.setTime(newEntry.getCreationDate());
