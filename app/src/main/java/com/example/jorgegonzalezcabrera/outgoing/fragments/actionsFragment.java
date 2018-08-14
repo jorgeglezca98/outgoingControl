@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.allEntriesAdapter;
+import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSelectionAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.others.HeaderItemDecoration;
 import com.example.jorgegonzalezcabrera.outgoing.others.HeaderItemDecoration.StickyHeaderInterface;
@@ -38,6 +40,8 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
     private EditText editTextMinValue;
     private EditText editTextMaxValue;
     private EditText editTextDescriptionFilter;
+    private RecyclerView recyclerViewCategoriesSelection;
+    private categoriesSelectionAdapter categoriesSelectionAdapter;
 
     @Override
     public void onAttach(Context context) {
@@ -61,23 +65,29 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
 
         RecyclerView recyclerViewAllTheActions = view.findViewById(R.id.recyclerViewAllTheActions);
         recyclerViewAllTheActions.setAdapter(adapter);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        recyclerViewAllTheActions.setLayoutManager(layoutManager);
+        LinearLayoutManager actionsLayoutManager = new LinearLayoutManager(context);
+        recyclerViewAllTheActions.setLayoutManager(actionsLayoutManager);
         recyclerViewAllTheActions.addItemDecoration(new HeaderItemDecoration(R.layout.entries_by_month, this));
-        recyclerViewAllTheActions.addItemDecoration(new DividerItemDecoration(context, layoutManager.getOrientation()));
+        recyclerViewAllTheActions.addItemDecoration(new DividerItemDecoration(context, actionsLayoutManager.getOrientation()));
 
         final ConstraintLayout expandableFilterLayout = view.findViewById(R.id.expandableFilterLayout);
         Button filterButton = view.findViewById(R.id.buttonFilter);
         filterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(expandableFilterLayout.getVisibility()==View.VISIBLE){
+                if (expandableFilterLayout.getVisibility() == View.VISIBLE) {
                     expandableFilterLayout.setVisibility(View.GONE);
-                } else if(expandableFilterLayout.getVisibility()==View.GONE){
+                } else if (expandableFilterLayout.getVisibility() == View.GONE) {
                     expandableFilterLayout.setVisibility(View.VISIBLE);
                 }
             }
         });
+
+        recyclerViewCategoriesSelection = view.findViewById(R.id.recyclerViewCategoriesSelection);
+        categoriesSelectionAdapter = new categoriesSelectionAdapter();
+        recyclerViewCategoriesSelection.setAdapter(categoriesSelectionAdapter);
+        StaggeredGridLayoutManager categoriesSelectionLayoutManager = new StaggeredGridLayoutManager(2, LinearLayoutManager.HORIZONTAL);
+        recyclerViewCategoriesSelection.setLayoutManager(categoriesSelectionLayoutManager);
 
         Button buttonApplyFilters = view.findViewById(R.id.buttonApplyFilters);
         editTextMinValue = view.findViewById(R.id.editTextMinValue);
@@ -93,21 +103,30 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
         return view;
     }
 
-    private void applyFilters(){
+    private void applyFilters() {
         RealmQuery<entry> filteredResults = Realm.getDefaultInstance().where(entry.class);
-        if(!editTextMinValue.getText().toString().isEmpty()){
+        if (!editTextMinValue.getText().toString().isEmpty()) {
             double minValue = Double.valueOf(editTextMinValue.getText().toString());
-            filteredResults.greaterThanOrEqualTo("valor",minValue);
+            filteredResults.greaterThanOrEqualTo("valor", minValue);
         }
 
-        if(!editTextMaxValue.getText().toString().isEmpty()){
+        if (!editTextMaxValue.getText().toString().isEmpty()) {
             double maxValue = Double.valueOf(editTextMaxValue.getText().toString());
-            filteredResults.lessThanOrEqualTo("valor",maxValue);
+            filteredResults.lessThanOrEqualTo("valor", maxValue);
         }
 
-        if(!editTextDescriptionFilter.getText().toString().isEmpty()){
-            filteredResults.contains("description",editTextDescriptionFilter.getText().toString());
+        if (!editTextDescriptionFilter.getText().toString().isEmpty()) {
+            filteredResults.contains("description", editTextDescriptionFilter.getText().toString());
         }
+
+        categoriesSelectionAdapter.ViewHolder viewHolder;
+        for (int i = 0; i < categoriesSelectionAdapter.getItemCount(); i++) {
+            viewHolder = (categoriesSelectionAdapter.ViewHolder) recyclerViewCategoriesSelection.findViewHolderForAdapterPosition(i);
+            if (viewHolder != null && !viewHolder.checkboxCategory.isChecked()) {
+                filteredResults.notEqualTo("category", viewHolder.checkboxCategory.getText().toString());
+            }
+        }
+
         allTheActions.clear();
         allTheActions.addAll(filteredResults.findAll());
         adapter.changeData(allTheActions);
