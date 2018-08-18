@@ -2,23 +2,20 @@ package com.example.jorgegonzalezcabrera.outgoing.activities;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.View;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.actionsFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.mainFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.settingFragment;
+import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry.periodicType;
@@ -33,26 +30,28 @@ import java.util.Vector;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class MainActivity extends FragmentActivity
-        implements NavigationView.OnNavigationItemSelectedListener, mainFragment.OnNewEntryAddedInterface {
+import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newEntryDialog;
+import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getTypeFromOrdinal;
+
+public class MainActivity extends FragmentActivity {
 
     private ViewPager viewPager;
     private actionsFragment actionsFragment;
     private mainFragment mainFragment;
     private Realm database;
+    private OnNewEntryAddedInterface onNewEntryAddedInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
 
         database = Realm.getDefaultInstance();
 
         TabLayout tabLayout = findViewById(R.id.tabLayout);
-        tabLayout.addTab(tabLayout.newTab().setText("Main"));
-        tabLayout.addTab(tabLayout.newTab().setText("Actions"));
-        tabLayout.addTab(tabLayout.newTab().setText("Settings"));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.home));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.list));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.setting));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         viewPager = findViewById(R.id.viewPager);
@@ -93,77 +92,52 @@ public class MainActivity extends FragmentActivity
             }
         });
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        onNewEntryAddedInterface = new OnNewEntryAddedInterface() {
+            @Override
+            public void OnNewEntryAdded(entry newEntry) {
+                actionsFragment.updateData(newEntry);
+                mainFragment.updateData(newEntry);
+            }
+        };
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final appConfiguration updatedConfiguration = database.where(appConfiguration.class).findFirst();
+                newEntryDialog(MainActivity.this, new dialogs.OnNewEntryAccepted() {
+                    @Override
+                    public void OnClick(final String subcategory, final int type, final double value, final String description) {
+                        final entry newEntry = new entry(value, getTypeFromOrdinal(type), subcategory, description);
+                        if (updatedConfiguration != null) {
+                            if (getTypeFromOrdinal(type) == entry.type.OUTGOING) {
+                                updatedConfiguration.setCurrentMoney(updatedConfiguration.getCurrentMoney() - newEntry.getValor());
+                            } else {
+                                updatedConfiguration.setCurrentMoney(updatedConfiguration.getCurrentMoney() + newEntry.getValor());
+                            }
+                        }
+                        database.executeTransaction(new Realm.Transaction() {
+                            @Override
+                            public void execute(@NonNull Realm realm) {
+                                if (updatedConfiguration != null) {
+                                    database.copyToRealmOrUpdate(updatedConfiguration);
+                                }
+                                database.copyToRealm(newEntry);
+                            }
+                        });
+
+                        onNewEntryAddedInterface.OnNewEntryAdded(newEntry);
+                    }
+                });
+            }
+        });
 
         setTimers();
     }
 
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+    public interface OnNewEntryAddedInterface {
+        void OnNewEntryAdded(entry newEntry);
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        }
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-    @Override
-    public void OnNewEntryAdded(entry newEntry) {
-        actionsFragment.updateData(newEntry);
-        mainFragment.updateData(newEntry);
-    }
-
 
     public void setTimers() {
         Timer timer = new Timer(true);
@@ -181,19 +155,19 @@ public class MainActivity extends FragmentActivity
                 if (periodicEntriesItem.getFrequency() == periodicType.ANNUAL) {
                     lastChange.add(Calendar.YEAR, 1);
                     while (lastChange.before(currentDate)) {
-                        periodicEntry.createEntry(periodicEntriesItem, this, currentDate);
+                        periodicEntry.createEntry(periodicEntriesItem, onNewEntryAddedInterface, currentDate);
                         lastChange.add(Calendar.YEAR, 1);
                     }
                 } else if (periodicEntriesItem.getFrequency() == periodicType.MONTHLY) {
                     lastChange.add(Calendar.MONTH, 1);
                     while (lastChange.before(currentDate)) {
-                        periodicEntry.createEntry(periodicEntriesItem, this, currentDate);
+                        periodicEntry.createEntry(periodicEntriesItem, onNewEntryAddedInterface, currentDate);
                         lastChange.add(Calendar.MONTH, 1);
                     }
                 } else if (periodicEntriesItem.getFrequency() == periodicType.WEEKLY) {
                     lastChange.add(Calendar.DATE, 7);
                     while (lastChange.before(currentDate)) {
-                        periodicEntry.createEntry(periodicEntriesItem, this, currentDate);
+                        periodicEntry.createEntry(periodicEntriesItem, onNewEntryAddedInterface, currentDate);
                         lastChange.add(Calendar.DATE, 7);
                     }
                 }
@@ -205,7 +179,7 @@ public class MainActivity extends FragmentActivity
         currentDate.set(Calendar.MINUTE, 0);
         currentDate.set(Calendar.SECOND, 0);
         currentDate.set(Calendar.MILLISECOND, 0);
-        timer.schedule(new customizedTimerTask(this), currentDate.getTime(), 86400000);
+        timer.schedule(new customizedTimerTask(onNewEntryAddedInterface), currentDate.getTime(), 86400000);
     }
 
 }

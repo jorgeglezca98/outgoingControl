@@ -1,6 +1,6 @@
 package com.example.jorgegonzalezcabrera.outgoing.others;
 
-import com.example.jorgegonzalezcabrera.outgoing.fragments.mainFragment.OnNewEntryAddedInterface;
+import com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.OnNewEntryAddedInterface;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry.periodicType;
 

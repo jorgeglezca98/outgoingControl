@@ -2,8 +2,8 @@ package com.example.jorgegonzalezcabrera.outgoing.models;
 
 import android.support.annotation.NonNull;
 
+import com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.OnNewEntryAddedInterface;
 import com.example.jorgegonzalezcabrera.outgoing.applications.myApplication;
-import com.example.jorgegonzalezcabrera.outgoing.fragments.mainFragment;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
 
 import java.util.Calendar;
@@ -125,16 +125,17 @@ public class periodicEntry extends RealmObject {
         this.lastChange = lastChange;
     }
 
-    public static void createEntry(final periodicEntry periodicEntry, mainFragment.OnNewEntryAddedInterface entryAddedInterface, final GregorianCalendar currentDate) {
+    public static void createEntry(final periodicEntry periodicEntry, OnNewEntryAddedInterface entryAddedInterface, final GregorianCalendar currentDate) {
         final entry newEntry = periodicEntry.getEntry();
 
         final Realm database = Realm.getDefaultInstance();
         final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
-
-        if (newEntry.getType() == entry.type.OUTGOING) {
-            currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - newEntry.getValor());
-        } else {
-            currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + newEntry.getValor());
+        if (currentConfiguration != null) {
+            if (newEntry.getType() == entry.type.OUTGOING) {
+                currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - newEntry.getValor());
+            } else {
+                currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + newEntry.getValor());
+            }
         }
 
         currentDate.set(Calendar.HOUR_OF_DAY, 0);
@@ -145,7 +146,9 @@ public class periodicEntry extends RealmObject {
         database.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(@NonNull Realm realm) {
-                database.copyToRealmOrUpdate(currentConfiguration);
+                if (currentConfiguration != null) {
+                    database.copyToRealmOrUpdate(currentConfiguration);
+                }
                 database.copyToRealm(newEntry);
                 periodicEntry.setLastChange(currentDate.getTime());
                 database.copyToRealmOrUpdate(periodicEntry);

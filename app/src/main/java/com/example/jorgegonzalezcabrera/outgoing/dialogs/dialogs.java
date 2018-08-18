@@ -32,6 +32,7 @@ public class dialogs {
 
         final categoriesSpinnerAdapter categoriesSpinnerAdapter = new categoriesSpinnerAdapter(context);
         categorySpinner.setAdapter(categoriesSpinnerAdapter);
+        categorySpinner.setSelection(1);
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override

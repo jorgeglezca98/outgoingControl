@@ -66,6 +66,7 @@ public class settingFragment extends Fragment {
 
         final categoriesSpinnerAdapter categoriesSpinnerAdapter = new categoriesSpinnerAdapter(context);
         spinnerCategories.setAdapter(categoriesSpinnerAdapter);
+        spinnerCategories.setSelection(1);
 
         spinnerPeriodicityType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

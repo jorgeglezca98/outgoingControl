@@ -19,7 +19,7 @@
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#E0E0E0">
+                android:background="#F0F0F0">
 
                 <TextView
                     android:id="@+id/textView8"
@@ -28,7 +28,7 @@
                     android:layout_marginEnd="0dp"
                     android:layout_marginStart="0dp"
                     android:layout_marginTop="0dp"
-                    android:background="@color/colorAccent"
+                    android:background="@color/primary1"
                     android:padding="7dp"
                     android:text="New entry"
                     android:textSize="20dp"
@@ -147,6 +147,7 @@
                         android:id="@+id/buttonApplyNewPeriodicEntry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="#E0E0E0"
                         android:text="Add" />
                 </LinearLayout>
 
@@ -163,17 +164,18 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:background="#F0F0F0">
 
                 <TextView
                     android:id="@+id/textView9"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorAccent"
+                    android:background="@color/primary1"
                     android:padding="7dp"
                     android:text="Categories"
                     android:textSize="20sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <android.support.v4.view.ViewPager
                     android:id="@+id/viewPagerCategories"
@@ -183,9 +185,9 @@
                 <Button
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="#E0E0E0"
                     android:text="Apply"
-                    android:textAllCaps="false"
-                    android:background="#E0E0E0"/>
+                    android:textAllCaps="false" />
 
             </LinearLayout>
 
