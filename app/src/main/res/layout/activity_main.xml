@@ -40,6 +40,30 @@
         app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabFilterActions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toBottomOf="@+id/fab"
+        app:layout_constraintEnd_toEndOf="@+id/fab"
+        app:layout_constraintStart_toStartOf="@+id/fab"
+        app:layout_constraintTop_toTopOf="@+id/fab"
+        app:srcCompat="@drawable/add" />
+
+    <TextView
+        android:id="@+id/labelFilterActions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:text="Filters"
+        android:textColor="@color/primary1"
+        android:textStyle="bold"
+        android:alpha="0"
+        app:layout_constraintBottom_toBottomOf="@+id/fabFilterActions"
+        app:layout_constraintEnd_toStartOf="@+id/fabFilterActions"
+        app:layout_constraintTop_toTopOf="@+id/fabFilterActions" />
+
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabAddEntry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -58,7 +82,7 @@
         android:text="Add entry"
         android:textColor="@color/primary1"
         android:textStyle="bold"
-        android:visibility="invisible"
+        android:alpha="0"
         app:layout_constraintBottom_toBottomOf="@+id/fabAddEntry"
         app:layout_constraintEnd_toStartOf="@+id/fabAddEntry"
         app:layout_constraintTop_toTopOf="@+id/fabAddEntry" />
@@ -80,9 +104,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
         android:text="Add periodic entry"
+        android:alpha="0"
         android:textColor="@color/primary1"
         android:textStyle="bold"
-        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/fabAddPeriodicEntry"
         app:layout_constraintEnd_toStartOf="@+id/fabAddPeriodicEntry"
         app:layout_constraintTop_toTopOf="@+id/fabAddPeriodicEntry" />
@@ -92,7 +116,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="25dp"
-        android:layout_marginEnd="25dp"
+        android:layout_marginEnd="20dp"
         app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

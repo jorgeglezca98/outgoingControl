@@ -39,11 +39,19 @@ import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.get
 public class MainActivity extends FragmentActivity {
 
     private ViewPager viewPager;
+    private FragmentStatePagerAdapter viewPagerAdapter;
     private actionsFragment actionsFragment;
     private mainFragment mainFragment;
     private Realm database;
     private OnNewEntryAddedInterface onNewEntryAddedInterface;
     private boolean floatingMenuOpen;
+    private FloatingActionButton fabMenu;
+    private FloatingActionButton fabAddEntry;
+    private FloatingActionButton fabAddPeriodicEntry;
+    private FloatingActionButton fabFilterActions;
+    private TextView labelFilterActions;
+    private TextView labelAddEntry;
+    private TextView labelAddPeriodicEntry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +72,9 @@ public class MainActivity extends FragmentActivity {
         fragments.add(mainFragment);
         actionsFragment = new actionsFragment();
         fragments.add(actionsFragment);
-        com.example.jorgegonzalezcabrera.outgoing.fragments.settingFragment settingFragment = new settingFragment();
+        settingFragment settingFragment = new settingFragment();
         fragments.add(settingFragment);
-        viewPager.setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
+        viewPagerAdapter = new FragmentStatePagerAdapter(getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int i) {
                 return fragments.get(i);
@@ -76,18 +84,28 @@ public class MainActivity extends FragmentActivity {
             public int getCount() {
                 return fragments.size();
             }
-        });
+        };
+        viewPager.setAdapter(viewPagerAdapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
+                if (fragments.get(tab.getPosition()) == actionsFragment && floatingMenuOpen) {
+                    fabFilterActions.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -146, getResources().getDisplayMetrics()));
+                    labelFilterActions.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -146, getResources().getDisplayMetrics()));
+                    labelFilterActions.animate().alpha(1.0f).setDuration(450);
+                }
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
+                if (fragments.get(tab.getPosition()) == actionsFragment && floatingMenuOpen) {
+                    fabFilterActions.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
+                    labelFilterActions.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
+                    labelFilterActions.animate().alpha(0.0f).setDuration(300);
+                }
             }
 
             @Override
@@ -105,30 +123,21 @@ public class MainActivity extends FragmentActivity {
         };
 
         floatingMenuOpen = false;
-        final FloatingActionButton fabMenu = findViewById(R.id.fab);
-        final FloatingActionButton fabAddEntry = findViewById(R.id.fabAddEntry);
-        final FloatingActionButton fabAddPeriodicEntry = findViewById(R.id.fabAddPeriodicEntry);
-        final TextView labelAddEntry = findViewById(R.id.labelAddEntry);
-        final TextView labelAddPeriodicEntry = findViewById(R.id.labelAddPeriodicEntry);
+        fabMenu = findViewById(R.id.fab);
+        fabAddEntry = findViewById(R.id.fabAddEntry);
+        fabAddPeriodicEntry = findViewById(R.id.fabAddPeriodicEntry);
+        labelAddEntry = findViewById(R.id.labelAddEntry);
+        labelAddPeriodicEntry = findViewById(R.id.labelAddPeriodicEntry);
+        fabFilterActions = findViewById(R.id.fabFilterActions);
+        labelFilterActions = findViewById(R.id.labelFilterActions);
+
         fabMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (floatingMenuOpen) {
-                    fabMenu.animate().rotation(0);
-                    fabAddEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
-                    labelAddEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
-                    labelAddEntry.setVisibility(View.INVISIBLE);
-                    fabAddPeriodicEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
-                    labelAddPeriodicEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
-                    labelAddPeriodicEntry.setVisibility(View.INVISIBLE);
+                    closeFloatingMenu();
                 } else {
-                    fabMenu.animate().rotation(45);
-                    fabAddEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -56, getResources().getDisplayMetrics()));
-                    labelAddEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -56, getResources().getDisplayMetrics()));
-                    labelAddEntry.setVisibility(View.VISIBLE);
-                    fabAddPeriodicEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -101, getResources().getDisplayMetrics()));
-                    labelAddPeriodicEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -101, getResources().getDisplayMetrics()));
-                    labelAddPeriodicEntry.setVisibility(View.VISIBLE);
+                    openFloatingMenu();
                 }
                 floatingMenuOpen = !floatingMenuOpen;
             }
@@ -162,6 +171,8 @@ public class MainActivity extends FragmentActivity {
                         onNewEntryAddedInterface.OnNewEntryAdded(newEntry);
                     }
                 });
+
+                closeFloatingMenu();
             }
         });
 
@@ -169,10 +180,53 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 newPeriodicEntryDialog(MainActivity.this);
+                closeFloatingMenu();
+            }
+        });
+
+        fabFilterActions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                actionsFragment.expandFilters();
+                closeFloatingMenu();
             }
         });
 
         setTimers();
+    }
+
+    private void closeFloatingMenu() {
+        fabMenu.animate().rotation(0);
+
+        fabAddEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
+        labelAddEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
+        labelAddEntry.animate().alpha(0.0f).setDuration(300);
+
+        fabAddPeriodicEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
+        labelAddPeriodicEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
+        labelAddPeriodicEntry.animate().alpha(0.0f).setDuration(300);
+
+        fabFilterActions.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
+        labelFilterActions.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
+        labelFilterActions.animate().alpha(0.0f).setDuration(300);
+    }
+
+    private void openFloatingMenu() {
+        fabMenu.animate().rotation(45);
+
+        fabAddEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -56, getResources().getDisplayMetrics()));
+        labelAddEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -56, getResources().getDisplayMetrics()));
+        labelAddEntry.animate().alpha(1.0f).setDuration(150);
+
+        fabAddPeriodicEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -101, getResources().getDisplayMetrics()));
+        labelAddPeriodicEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -101, getResources().getDisplayMetrics()));
+        labelAddPeriodicEntry.animate().alpha(1.0f).setDuration(300);
+
+        if (actionsFragment == viewPagerAdapter.getItem(viewPager.getCurrentItem())) {
+            fabFilterActions.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -146, getResources().getDisplayMetrics()));
+            labelFilterActions.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -146, getResources().getDisplayMetrics()));
+            labelFilterActions.animate().alpha(1.0f).setDuration(450);
+        }
     }
 
     public interface OnNewEntryAddedInterface {

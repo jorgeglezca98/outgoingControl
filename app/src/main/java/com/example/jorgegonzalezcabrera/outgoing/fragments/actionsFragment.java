@@ -42,6 +42,7 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
     private EditText editTextDescriptionFilter;
     private RecyclerView recyclerViewCategoriesSelection;
     private categoriesSelectionAdapter categoriesSelectionAdapter;
+    private ConstraintLayout expandableFilterLayout;
 
     @Override
     public void onAttach(Context context) {
@@ -70,18 +71,7 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
         recyclerViewAllTheActions.addItemDecoration(new HeaderItemDecoration(R.layout.entries_by_month, this));
         recyclerViewAllTheActions.addItemDecoration(new DividerItemDecoration(context, actionsLayoutManager.getOrientation()));
 
-        final ConstraintLayout expandableFilterLayout = view.findViewById(R.id.expandableFilterLayout);
-        Button filterButton = view.findViewById(R.id.buttonFilter);
-        filterButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (expandableFilterLayout.getVisibility() == View.VISIBLE) {
-                    expandableFilterLayout.setVisibility(View.GONE);
-                } else if (expandableFilterLayout.getVisibility() == View.GONE) {
-                    expandableFilterLayout.setVisibility(View.VISIBLE);
-                }
-            }
-        });
+        expandableFilterLayout = view.findViewById(R.id.expandableFilterLayout);
 
         recyclerViewCategoriesSelection = view.findViewById(R.id.recyclerViewCategoriesSelection);
         categoriesSelectionAdapter = new categoriesSelectionAdapter();
@@ -90,17 +80,46 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
         recyclerViewCategoriesSelection.setLayoutManager(categoriesSelectionLayoutManager);
 
         Button buttonApplyFilters = view.findViewById(R.id.buttonApplyFilters);
+        Button buttonCancelFilters = view.findViewById(R.id.buttonCancelFilters);
         editTextMinValue = view.findViewById(R.id.editTextMinValue);
         editTextMaxValue = view.findViewById(R.id.editTextMaxValue);
         editTextDescriptionFilter = view.findViewById(R.id.editTextDescriptionFilter);
+
         buttonApplyFilters.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 applyFilters();
+                expandableFilterLayout.setVisibility(View.GONE);
+            }
+        });
+
+        buttonCancelFilters.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cleanFilters();
+                expandableFilterLayout.setVisibility(View.GONE);
             }
         });
 
         return view;
+    }
+
+    public void cleanFilters() {
+        editTextMinValue.setText("");
+        editTextMaxValue.setText("");
+        editTextDescriptionFilter.setText("");
+
+        categoriesSelectionAdapter.ViewHolder viewHolder;
+        for (int i = 0; i < categoriesSelectionAdapter.getItemCount(); i++) {
+            viewHolder = (categoriesSelectionAdapter.ViewHolder) recyclerViewCategoriesSelection.findViewHolderForAdapterPosition(i);
+            if (viewHolder != null) {
+                viewHolder.checkboxCategory.setChecked(true);
+            }
+        }
+    }
+
+    public void expandFilters() {
+        expandableFilterLayout.setVisibility(View.VISIBLE);
     }
 
     private void applyFilters() {
