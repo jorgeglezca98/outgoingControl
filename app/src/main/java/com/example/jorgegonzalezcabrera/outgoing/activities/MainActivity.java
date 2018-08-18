@@ -139,7 +139,6 @@ public class MainActivity extends FragmentActivity {
                 } else {
                     openFloatingMenu();
                 }
-                floatingMenuOpen = !floatingMenuOpen;
             }
         });
 
@@ -209,6 +208,7 @@ public class MainActivity extends FragmentActivity {
         fabFilterActions.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
         labelFilterActions.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
         labelFilterActions.animate().alpha(0.0f).setDuration(300);
+        floatingMenuOpen = !floatingMenuOpen;
     }
 
     private void openFloatingMenu() {
@@ -227,6 +227,7 @@ public class MainActivity extends FragmentActivity {
             labelFilterActions.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -146, getResources().getDisplayMetrics()));
             labelFilterActions.animate().alpha(1.0f).setDuration(450);
         }
+        floatingMenuOpen = !floatingMenuOpen;
     }
 
     public interface OnNewEntryAddedInterface {
