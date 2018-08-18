@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".activities.MainActivity">
 
     <android.support.v7.widget.Toolbar
@@ -40,13 +40,62 @@
         app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabAddEntry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toBottomOf="@+id/fab"
+        app:layout_constraintEnd_toEndOf="@+id/fab"
+        app:layout_constraintStart_toStartOf="@+id/fab"
+        app:layout_constraintTop_toTopOf="@+id/fab"
+        app:srcCompat="@drawable/add" />
+
+    <TextView
+        android:id="@+id/labelAddEntry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:text="Add entry"
+        android:textColor="@color/primary1"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/fabAddEntry"
+        app:layout_constraintEnd_toStartOf="@+id/fabAddEntry"
+        app:layout_constraintTop_toTopOf="@+id/fabAddEntry" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabAddPeriodicEntry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toBottomOf="@+id/fab"
+        app:layout_constraintEnd_toEndOf="@+id/fab"
+        app:layout_constraintStart_toStartOf="@+id/fab"
+        app:layout_constraintTop_toTopOf="@+id/fab"
+        app:srcCompat="@drawable/add" />
+
+    <TextView
+        android:id="@+id/labelAddPeriodicEntry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:text="Add periodic entry"
+        android:textColor="@color/primary1"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/fabAddPeriodicEntry"
+        app:layout_constraintEnd_toStartOf="@+id/fabAddPeriodicEntry"
+        app:layout_constraintTop_toTopOf="@+id/fabAddPeriodicEntry" />
+
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="25dp"
         android:layout_marginEnd="25dp"
+        app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        app:srcCompat="@drawable/add" />
 
 </android.support.constraint.ConstraintLayout>

@@ -8,7 +8,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.TypedValue;
 import android.view.View;
+import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
@@ -31,6 +33,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newEntryDialog;
+import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newPeriodicEntryDialog;
 import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getTypeFromOrdinal;
 
 public class MainActivity extends FragmentActivity {
@@ -40,6 +43,7 @@ public class MainActivity extends FragmentActivity {
     private mainFragment mainFragment;
     private Realm database;
     private OnNewEntryAddedInterface onNewEntryAddedInterface;
+    private boolean floatingMenuOpen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +104,37 @@ public class MainActivity extends FragmentActivity {
             }
         };
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        floatingMenuOpen = false;
+        final FloatingActionButton fabMenu = findViewById(R.id.fab);
+        final FloatingActionButton fabAddEntry = findViewById(R.id.fabAddEntry);
+        final FloatingActionButton fabAddPeriodicEntry = findViewById(R.id.fabAddPeriodicEntry);
+        final TextView labelAddEntry = findViewById(R.id.labelAddEntry);
+        final TextView labelAddPeriodicEntry = findViewById(R.id.labelAddPeriodicEntry);
+        fabMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (floatingMenuOpen) {
+                    fabMenu.animate().rotation(0);
+                    fabAddEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
+                    labelAddEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
+                    labelAddEntry.setVisibility(View.INVISIBLE);
+                    fabAddPeriodicEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
+                    labelAddPeriodicEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
+                    labelAddPeriodicEntry.setVisibility(View.INVISIBLE);
+                } else {
+                    fabMenu.animate().rotation(45);
+                    fabAddEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -56, getResources().getDisplayMetrics()));
+                    labelAddEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -56, getResources().getDisplayMetrics()));
+                    labelAddEntry.setVisibility(View.VISIBLE);
+                    fabAddPeriodicEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -101, getResources().getDisplayMetrics()));
+                    labelAddPeriodicEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -101, getResources().getDisplayMetrics()));
+                    labelAddPeriodicEntry.setVisibility(View.VISIBLE);
+                }
+                floatingMenuOpen = !floatingMenuOpen;
+            }
+        });
+
+        fabAddEntry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 final appConfiguration updatedConfiguration = database.where(appConfiguration.class).findFirst();
@@ -129,6 +162,13 @@ public class MainActivity extends FragmentActivity {
                         onNewEntryAddedInterface.OnNewEntryAdded(newEntry);
                     }
                 });
+            }
+        });
+
+        fabAddPeriodicEntry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                newPeriodicEntryDialog(MainActivity.this);
             }
         });
 
