@@ -9,4 +9,9 @@
     <color name="primary2">#198686</color>
     <color name="primary3">#005A5A</color>
     <color name="primary4">#004141</color>
+    <color name="complement0">#FD7F1E</color>
+    <color name="complement1">#FFB073</color>
+    <color name="complement2">#FF9849</color>
+    <color name="complement3">#D45D02</color>
+    <color name="complement4">#A74800</color>
 </resources>

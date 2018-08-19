@@ -172,11 +172,11 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
             String formattedValue;
             if (entry.getType() == type.OUTGOING) {
-                formattedValue = "-" + String.valueOf(entry.getValor()) + "€";
+                formattedValue = "-" + String.format(new Locale("es", "ES"), "%.2f", entry.getValor()) + "€";
                 value.setText(formattedValue);
                 value.setTextColor(Color.parseColor("#ea9999"));
             } else {
-                formattedValue = "+" + String.valueOf(entry.getValor()) + " €";
+                formattedValue = "+" + String.format(new Locale("es", "ES"), "%.2f", entry.getValor()) + "€";
                 value.setText(formattedValue);
                 value.setTextColor(Color.parseColor("#b6d7a8"));
             }

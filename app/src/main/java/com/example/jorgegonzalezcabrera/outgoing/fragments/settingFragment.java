@@ -10,8 +10,11 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 
 import java.util.Vector;
 
@@ -28,11 +31,15 @@ public class settingFragment extends Fragment {
         View view = inflater.inflate(R.layout.setting_fragment, container, false);
 
         bindDeleteCategory(view);
+        bindResetCurrentMoney(view);
 
         return view;
     }
 
-    private void bindDeleteCategory(View view){
+    private void bindResetCurrentMoney(View view) {
+    }
+
+    private void bindDeleteCategory(View view) {
         ViewPager categoriesViewPager = view.findViewById(R.id.viewPagerCategories);
         final Vector<Fragment> viewPagerFragments = new Vector<>();
         viewPagerFragments.add(new deleteCategoryFragment());
