@@ -1,34 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:background="#E0E0E0"
-    android:paddingBottom="1dp">
-
-    <TextView
-        android:id="@+id/textViewCategoryName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="#FFFFFF"
-        android:gravity="start"
-        android:maxLines="1"
-        android:padding="5dp"
-        android:paddingStart="15dp"
-        android:paddingEnd="5dp"
-        android:text="Textview"
-        android:textSize="18dp"/>
-
-    <TextView
-        android:id="@+id/textViewSurplusMoney"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="2"
-        android:background="#FFFFFF"
-        android:gravity="center"
-        android:maxLines="1"
-        android:padding="5dp"
-        android:text="TextView"
-        android:textSize="18dp"/>
-</LinearLayout>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/frameLayoutSurplusMoney"
+    android:background="#F0F0F0"
+    android:layout_width="175dp"
+    android:layout_height="175dp"
+    android:padding="1dp">
+</FrameLayout>

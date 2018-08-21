@@ -1,17 +1,19 @@
 package com.example.jorgegonzalezcabrera.outgoing.adapters;
 
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.FrameLayout;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.fragments.backSurplusMoneyFragment;
+import com.example.jorgegonzalezcabrera.outgoing.fragments.frontSurplusMoneyFragment;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
 
-import java.util.Locale;
 import java.util.Vector;
 
 import javax.annotation.Nonnull;
@@ -32,8 +34,9 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
 
     private int layout;
     private Vector<surplusMoneyByCategory> items;
+    private FragmentManager fragmentManager;
 
-    public surplusMoneyTableAdapter(@Nonnull Vector<surplusMoneyByCategory> items) {
+    public surplusMoneyTableAdapter(FragmentManager fragmentManager, @Nonnull Vector<surplusMoneyByCategory> items) {
         this.items = new Vector<>();
         for (int i = 0; i < items.size(); i++) {
             if (items.get(i) != null) {
@@ -41,6 +44,7 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
             }
         }
         this.layout = R.layout.surplus_money_item;
+        this.fragmentManager = fragmentManager;
     }
 
     public void updateData(String category, double value) {
@@ -73,20 +77,61 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView categoryName;
-        private TextView surplusMoney;
+        private FrameLayout container;
+        private int viewId;
+        private boolean isShowingBack;
+        private frontSurplusMoneyFragment frontFragment;
+        private backSurplusMoneyFragment backFragment;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            categoryName = itemView.findViewById(R.id.textViewCategoryName);
-            surplusMoney = itemView.findViewById(R.id.textViewSurplusMoney);
+            container = itemView.findViewById(R.id.frameLayoutSurplusMoney);
+            viewId = View.generateViewId();
+            container.setId(viewId);
+            isShowingBack = false;
+
+            frontFragment = new frontSurplusMoneyFragment();
+            backFragment = new backSurplusMoneyFragment();
+            fragmentManager
+                    .beginTransaction()
+                    .add(viewId, frontFragment)
+                    .commit();
         }
 
         void bind(@NonNull surplusMoneyByCategory surplusMoneyByCategory) {
-            categoryName.setText(surplusMoneyByCategory.category.getName());
-            String value = String.format(new Locale("es", "ES"), "%.2f", surplusMoneyByCategory.surplusMoney) + "€";
-            surplusMoney.setText(value);
+
+            frontFragment.setData(surplusMoneyByCategory);
+            backFragment.setData(surplusMoneyByCategory);
+
+            container.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (isShowingBack) {
+                        fragmentManager
+                                .beginTransaction()
+                                .setCustomAnimations(
+                                        R.animator.right_in,
+                                        R.animator.right_out,
+                                        R.animator.left_in,
+                                        R.animator.left_out)
+                                .replace(viewId, frontFragment)
+                                .commit();
+                        isShowingBack = false;
+                    } else{
+                        fragmentManager
+                                .beginTransaction()
+                                .setCustomAnimations(
+                                        R.animator.right_in,
+                                        R.animator.right_out,
+                                        R.animator.left_in,
+                                        R.animator.left_out)
+                                .replace(viewId, backFragment)
+                                .commit();
+                        isShowingBack = true;
+                    }
+                }
+            });
         }
     }
 }

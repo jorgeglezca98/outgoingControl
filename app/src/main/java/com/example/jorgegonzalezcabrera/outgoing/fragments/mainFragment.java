@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,11 +25,9 @@ import io.realm.Realm;
 
 public class mainFragment extends Fragment {
 
-    private Realm database;
     private TextView textViewCurrentMoney;
     private TextView textViewOutgoingsOfTheMonth;
     private TextView textViewIncomesOfTheMonth;
-    private RecyclerView recyclerViewSurplusMoney;
     private surplusMoneyTableAdapter surplusMoneyAdapter;
     private double totalOutgoings;
     private double totalIncomes;
@@ -53,7 +51,7 @@ public class mainFragment extends Fragment {
     }
 
     public void bindUI(View view) {
-        database = Realm.getDefaultInstance();
+        Realm database = Realm.getDefaultInstance();
         appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
 
         textViewCurrentMoney = view.findViewById(R.id.textViewCurrentMoney);
@@ -87,15 +85,15 @@ public class mainFragment extends Fragment {
         String incomesOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalIncomes) + "€";
         textViewIncomesOfTheMonth.setText(incomesOfTheMonth);
 
-        recyclerViewSurplusMoney = view.findViewById(R.id.recyclerViewSurplusMoney);
-        surplusMoneyAdapter = new surplusMoneyTableAdapter(surplusMoneyByCategoryVector);
+        RecyclerView recyclerViewSurplusMoney = view.findViewById(R.id.recyclerViewSurplusMoney);
+        surplusMoneyAdapter = new surplusMoneyTableAdapter(getFragmentManager(), surplusMoneyByCategoryVector);
         recyclerViewSurplusMoney.setAdapter(surplusMoneyAdapter);
-        recyclerViewSurplusMoney.setLayoutManager(new LinearLayoutManager(context));
+        recyclerViewSurplusMoney.setLayoutManager(new GridLayoutManager(context, 2));
     }
 
     public void updateData(final entry newEntry) {
-        if(getView() != null){
-            if(newEntry.getType() == entry.type.OUTGOING){
+        if (getView() != null) {
+            if (newEntry.getType() == entry.type.OUTGOING) {
                 appConfiguration currentConfiguration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
                 String currentMoney = String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€";
                 textViewCurrentMoney.setText(currentMoney);
