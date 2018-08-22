@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/frameLayoutSurplusMoney"
     android:background="#F0F0F0"
-    android:layout_width="175dp"
+    android:layout_width="match_parent"
     android:layout_height="175dp"
     android:padding="1dp">
 </FrameLayout>

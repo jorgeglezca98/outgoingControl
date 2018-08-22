@@ -48,6 +48,9 @@ public class frontSurplusMoneyFragment extends Fragment {
 
             textViewPercentageSurplusMoney.setText(percentageSurplusMoney);
             textViewCategoryName.setText(surplusMoneyByCategory.category.getName());
+
+            progressBarSurplusMoney.setProgress((int) Math.round(spentMoney));
+            progressBarSurplusMoney.setMax((int) Math.round(surplusMoneyByCategory.category.getMaximum()));
         }
 
     }

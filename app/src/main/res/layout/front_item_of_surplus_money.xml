@@ -17,7 +17,11 @@
         android:id="@+id/progressBarSurplusMoney"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/textViewCategoryName"/>
+        android:layout_below="@+id/textViewCategoryName"
+        android:indeterminate="false"
+        android:progressDrawable="@drawable/circular_progress_bar"
+        android:background="@drawable/circle_shape"
+        style="?android:attr/progressBarStyleHorizontal"/>
 
     <TextView
         android:id="@+id/textViewPercentageSurplusMoney"
