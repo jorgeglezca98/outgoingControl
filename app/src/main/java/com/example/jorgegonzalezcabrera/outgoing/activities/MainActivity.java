@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
@@ -35,6 +34,7 @@ import io.realm.RealmResults;
 import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newEntryDialog;
 import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newPeriodicEntryDialog;
 import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getTypeFromOrdinal;
+import static com.example.jorgegonzalezcabrera.outgoing.utilities.utils.dpToPixels;
 
 public class MainActivity extends FragmentActivity {
 
@@ -93,8 +93,8 @@ public class MainActivity extends FragmentActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
                 if (fragments.get(tab.getPosition()) == actionsFragment && floatingMenuOpen) {
-                    fabFilterActions.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -146, getResources().getDisplayMetrics()));
-                    labelFilterActions.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -146, getResources().getDisplayMetrics()));
+                    fabFilterActions.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
+                    labelFilterActions.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
                     labelFilterActions.animate().alpha(1.0f).setDuration(450);
                 }
             }
@@ -102,8 +102,8 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
                 if (fragments.get(tab.getPosition()) == actionsFragment && floatingMenuOpen) {
-                    fabFilterActions.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
-                    labelFilterActions.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
+                    fabFilterActions.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
+                    labelFilterActions.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
                     labelFilterActions.animate().alpha(0.0f).setDuration(300);
                 }
             }
@@ -197,16 +197,16 @@ public class MainActivity extends FragmentActivity {
     private void closeFloatingMenu() {
         fabMenu.animate().rotation(0);
 
-        fabAddEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
-        labelAddEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
+        fabAddEntry.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
+        labelAddEntry.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
         labelAddEntry.animate().alpha(0.0f).setDuration(300);
 
-        fabAddPeriodicEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
-        labelAddPeriodicEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
+        fabAddPeriodicEntry.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
+        labelAddPeriodicEntry.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
         labelAddPeriodicEntry.animate().alpha(0.0f).setDuration(300);
 
-        fabFilterActions.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
-        labelFilterActions.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
+        fabFilterActions.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
+        labelFilterActions.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
         labelFilterActions.animate().alpha(0.0f).setDuration(300);
         floatingMenuOpen = !floatingMenuOpen;
     }
@@ -214,17 +214,17 @@ public class MainActivity extends FragmentActivity {
     private void openFloatingMenu() {
         fabMenu.animate().rotation(45);
 
-        fabAddEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -56, getResources().getDisplayMetrics()));
-        labelAddEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -56, getResources().getDisplayMetrics()));
+        fabAddEntry.animate().translationY(dpToPixels(MainActivity.this, -56.0f));
+        labelAddEntry.animate().translationY(dpToPixels(MainActivity.this, -56.0f));
         labelAddEntry.animate().alpha(1.0f).setDuration(150);
 
-        fabAddPeriodicEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -101, getResources().getDisplayMetrics()));
-        labelAddPeriodicEntry.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -101, getResources().getDisplayMetrics()));
+        fabAddPeriodicEntry.animate().translationY(dpToPixels(MainActivity.this, -101.0f));
+        labelAddPeriodicEntry.animate().translationY(dpToPixels(MainActivity.this, -101.0f));
         labelAddPeriodicEntry.animate().alpha(1.0f).setDuration(300);
 
         if (actionsFragment == viewPagerAdapter.getItem(viewPager.getCurrentItem())) {
-            fabFilterActions.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -146, getResources().getDisplayMetrics()));
-            labelFilterActions.animate().translationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -146, getResources().getDisplayMetrics()));
+            fabFilterActions.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
+            labelFilterActions.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
             labelFilterActions.animate().alpha(1.0f).setDuration(450);
         }
         floatingMenuOpen = !floatingMenuOpen;

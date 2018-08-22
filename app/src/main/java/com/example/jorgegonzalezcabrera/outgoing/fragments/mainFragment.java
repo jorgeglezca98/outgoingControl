@@ -17,6 +17,7 @@ import com.example.jorgegonzalezcabrera.outgoing.adapters.surplusMoneyTableAdapt
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
+import com.example.jorgegonzalezcabrera.outgoing.others.ItemOffsetDecoration;
 
 import java.util.Locale;
 import java.util.Vector;
@@ -89,6 +90,7 @@ public class mainFragment extends Fragment {
         surplusMoneyAdapter = new surplusMoneyTableAdapter(getFragmentManager(), surplusMoneyByCategoryVector);
         recyclerViewSurplusMoney.setAdapter(surplusMoneyAdapter);
         recyclerViewSurplusMoney.setLayoutManager(new GridLayoutManager(context, 2));
+        recyclerViewSurplusMoney.addItemDecoration(new ItemOffsetDecoration(context,5));
     }
 
     public void updateData(final entry newEntry) {
