@@ -14,7 +14,7 @@
         android:paddingBottom="5dp"
         android:paddingTop="5dp"
         android:text="Marzo de 2018"
-        android:background="#b7b7b7"
+        android:background="@color/primary1"
         android:textStyle="bold"
         android:textColor="#000000"
         app:layout_constraintEnd_toEndOf="parent"

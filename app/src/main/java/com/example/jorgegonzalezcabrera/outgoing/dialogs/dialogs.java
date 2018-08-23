@@ -7,6 +7,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -17,6 +18,9 @@ import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import io.realm.Realm;
@@ -73,7 +77,7 @@ public class dialogs {
         dialog.show();
     }
 
-    public static void newPeriodicEntryDialog(final Context context){
+    public static void newPeriodicEntryDialog(final Context context) {
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
@@ -163,6 +167,60 @@ public class dialogs {
         });
 
         dialog.show();
+    }
+
+    public static void newDatePickerDialog(Date currentDate,
+                                           Context context,
+                                           final OnDateRemovedListener onDateRemovedListener,
+                                           final OnDateSetListener onDateSetListener) {
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.setContentView(R.layout.date_picker_dialog);
+
+        final DatePicker datePicker = dialog.findViewById(R.id.datePicker);
+        datePicker.setMaxDate((new Date()).getTime());
+
+        GregorianCalendar updatedDate = new GregorianCalendar();
+        updatedDate.setTime(currentDate);
+        datePicker.updateDate(updatedDate.get(Calendar.YEAR), updatedDate.get(Calendar.MONTH), updatedDate.get(Calendar.DAY_OF_MONTH));
+
+        Button buttonRemove = dialog.findViewById(R.id.buttonRemoveDatePicker);
+        buttonRemove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onDateRemovedListener.onDateRemoved();
+                dialog.dismiss();
+            }
+        });
+
+        Button buttonSetDate = dialog.findViewById(R.id.buttonSetDate);
+        buttonSetDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onDateSetListener.onDateSet(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+
+    }
+
+    public static void newDatePickerDialog(Context context,
+                                           final OnDateRemovedListener onDateRemovedListener,
+                                           final OnDateSetListener onDateSetListener) {
+
+        newDatePickerDialog(new Date(), context, onDateRemovedListener, onDateSetListener);
+
+    }
+
+    public interface OnDateSetListener {
+        void onDateSet(int year, int month, int day);
+    }
+
+    public interface OnDateRemovedListener {
+        void onDateRemoved();
     }
 
 }

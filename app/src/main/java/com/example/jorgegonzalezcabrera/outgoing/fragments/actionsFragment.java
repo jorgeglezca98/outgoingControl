@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,22 +14,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.allEntriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSelectionAdapter;
+import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.others.HeaderItemDecoration;
 import com.example.jorgegonzalezcabrera.outgoing.others.HeaderItemDecoration.StickyHeaderInterface;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
+
+import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newDatePickerDialog;
 
 public class actionsFragment extends Fragment implements StickyHeaderInterface {
 
@@ -42,7 +48,11 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
     private EditText editTextDescriptionFilter;
     private RecyclerView recyclerViewCategoriesSelection;
     private categoriesSelectionAdapter categoriesSelectionAdapter;
-    private ConstraintLayout expandableFilterLayout;
+    private LinearLayout expandableFilterLayout;
+    private EditText editTextMinDate;
+    private EditText editTextMaxDate;
+    private Date minDate;
+    private Date maxDate;
 
     @Override
     public void onAttach(Context context) {
@@ -97,7 +107,58 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
             @Override
             public void onClick(View view) {
                 cleanFilters();
+                applyFilters();
                 expandableFilterLayout.setVisibility(View.GONE);
+            }
+        });
+
+        editTextMinDate = view.findViewById(R.id.editTextMinDate);
+        editTextMinDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Date initialDate = editTextMinDate.getText().toString().isEmpty() ? new Date() : minDate;
+                newDatePickerDialog(initialDate, context, new dialogs.OnDateRemovedListener() {
+                    @Override
+                    public void onDateRemoved() {
+                        editTextMinDate.setText("");
+                    }
+                }, new dialogs.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(int year, int month, int day) {
+                        GregorianCalendar dateSet = new GregorianCalendar();
+                        dateSet.set(year, month, day, 0, 0, 0);
+                        dateSet.set(Calendar.MILLISECOND, 0);
+
+                        minDate = dateSet.getTime();
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", new Locale("es", "ES"));
+                        editTextMinDate.setText(dateFormat.format(minDate));
+                    }
+                });
+            }
+        });
+        editTextMaxDate = view.findViewById(R.id.editTextMaxDate);
+        editTextMaxDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Date initialDate = editTextMaxDate.getText().toString().isEmpty() ? new Date() : maxDate;
+                newDatePickerDialog(initialDate, context, new dialogs.OnDateRemovedListener() {
+                    @Override
+                    public void onDateRemoved() {
+                        editTextMaxDate.setText("");
+                    }
+                }, new dialogs.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(int year, int month, int day) {
+                        GregorianCalendar dateSet = new GregorianCalendar();
+                        dateSet.set(year, month, day, 0, 0, 0);
+                        dateSet.set(Calendar.MILLISECOND, 0);
+                        dateSet.add(Calendar.DATE, 1);
+
+                        maxDate = dateSet.getTime();
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", new Locale("es", "ES"));
+                        editTextMaxDate.setText(dateFormat.format(maxDate));
+                    }
+                });
             }
         });
 
@@ -108,6 +169,8 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
         editTextMinValue.setText("");
         editTextMaxValue.setText("");
         editTextDescriptionFilter.setText("");
+        editTextMinDate.setText("");
+        editTextMaxDate.setText("");
 
         categoriesSelectionAdapter.ViewHolder viewHolder;
         for (int i = 0; i < categoriesSelectionAdapter.getItemCount(); i++) {
@@ -144,6 +207,14 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
             if (viewHolder != null && !viewHolder.checkboxCategory.isChecked()) {
                 filteredResults.notEqualTo("category", viewHolder.checkboxCategory.getText().toString());
             }
+        }
+
+        if (!editTextMinDate.getText().toString().isEmpty()) {
+            filteredResults.greaterThanOrEqualTo("creationDate", minDate);
+        }
+
+        if (!editTextMaxDate.getText().toString().isEmpty()) {
+            filteredResults.lessThan("creationDate", maxDate);
         }
 
         allTheActions.clear();

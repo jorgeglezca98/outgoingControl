@@ -212,7 +212,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void openFloatingMenu() {
-        fabMenu.animate().rotation(45);
+        fabMenu.animate().rotation(180);
 
         fabAddEntry.animate().translationY(dpToPixels(MainActivity.this, -56.0f));
         labelAddEntry.animate().translationY(dpToPixels(MainActivity.this, -56.0f));
