@@ -19,7 +19,7 @@
             android:layout_marginTop="0dp"
             android:background="@color/primary1"
             android:padding="7dp"
-            android:text="New entry"
+            android:text="@string/New_periodic_entry"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -72,7 +72,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="10dp"
-            android:text="Value"
+            android:text="@string/value_title"
             android:textSize="17sp"
             android:textStyle="bold|italic"
             app:layout_constraintStart_toStartOf="parent"
@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="Category"
+            android:text="@string/category_title"
             android:textSize="17sp"
             android:textStyle="bold|italic"
             app:layout_constraintStart_toStartOf="parent"
@@ -96,12 +96,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="Concept"
+            android:text="@string/description_title"
             android:textSize="17sp"
             android:textStyle="bold|italic"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spinnerCategorySelection" />
-
 
         <LinearLayout
             android:id="@+id/linearLayoutPeriodicitySpinners"
@@ -125,20 +124,16 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <Button
+            android:id="@+id/buttonApplyNewPeriodicEntry"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="#E0E0E0"
+            android:text="@string/add_item"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/linearLayoutPeriodicitySpinners">
-
-            <Button
-                android:id="@+id/buttonApplyNewPeriodicEntry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#E0E0E0"
-                android:text="Add" />
-        </LinearLayout>
+            app:layout_constraintTop_toBottomOf="@id/linearLayoutPeriodicitySpinners" />
 
     </android.support.constraint.ConstraintLayout>
 

@@ -10,22 +10,24 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:hint="@string/default_erasable_hint"
         android:inputType="textPersonName"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imageButtonRemoveItem"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/imageButtonRemoveItem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="#00000000"
+        android:contentDescription="@string/remove"
         android:scaleX="0.5"
         android:scaleY="0.5"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/editTextErasableItem"
-        app:layout_constraintBottom_toBottomOf="@+id/editTextErasableItem"
         android:src="@drawable/remove"
-        android:background="#00000000"/>
+        app:layout_constraintBottom_toBottomOf="@+id/editTextErasableItem"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/editTextErasableItem" />
 
 </android.support.constraint.ConstraintLayout>

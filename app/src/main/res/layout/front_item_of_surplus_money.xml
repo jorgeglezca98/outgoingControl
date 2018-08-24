@@ -10,30 +10,28 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="3dp"
-        android:textStyle="bold"
-        android:text="Name"/>
+        android:textStyle="bold" />
 
     <ProgressBar
         android:id="@+id/progressBarSurplusMoney"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/textViewCategoryName"
-        android:indeterminate="false"
-        android:progressDrawable="@drawable/circular_progress_bar"
         android:background="@drawable/circle_shape"
-        style="?android:attr/progressBarStyleHorizontal"/>
+        android:indeterminate="false"
+        android:progressDrawable="@drawable/circular_progress_bar" />
 
     <TextView
         android:id="@+id/textViewPercentageSurplusMoney"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_alignBottom="@id/progressBarSurplusMoney"
+        android:layout_alignEnd="@id/progressBarSurplusMoney"
         android:layout_alignStart="@id/progressBarSurplusMoney"
         android:layout_alignTop="@id/progressBarSurplusMoney"
-        android:layout_alignEnd="@id/progressBarSurplusMoney"
-        android:layout_alignBottom="@id/progressBarSurplusMoney"
-        android:text="%"
+        android:background="#00000000"
         android:gravity="center"
-        android:textStyle="bold"
-        android:background="#00000000"/>
+        android:textStyle="bold" />
 
 </RelativeLayout>

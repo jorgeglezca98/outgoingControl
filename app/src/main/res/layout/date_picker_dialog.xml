@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:background="@color/primary1"
         android:padding="7dp"
-        android:text="Set date"
+        android:text="@string/set_date_title"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -18,34 +18,37 @@
         android:id="@+id/datePicker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:calendarViewShown="false"
-        android:datePickerMode="spinner"
         android:layout_marginEnd="5dp"
-        android:layout_marginStart="5dp"/>
+        android:layout_marginStart="5dp"
+        android:calendarViewShown="false"
+        android:datePickerMode="spinner" />
 
     <LinearLayout
+        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/buttonRemoveDatePicker"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="1dp"
             android:layout_weight="1"
             android:background="#E0E0E0"
-            android:text="Remove"
+            android:text="@string/remove"
             android:textAllCaps="false" />
 
         <Button
             android:id="@+id/buttonSetDate"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="1dp"
             android:layout_weight="1"
             android:background="#E0E0E0"
-            android:text="Set"
+            android:text="@string/set"
             android:textAllCaps="false" />
     </LinearLayout>
 

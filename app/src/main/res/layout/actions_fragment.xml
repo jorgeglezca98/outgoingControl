@@ -21,7 +21,7 @@
             android:minHeight="30dp"
             android:paddingEnd="5dp"
             android:paddingStart="5dp"
-            android:text="Filters"
+            android:text="@string/filters_title"
             android:textColor="#000000"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -32,7 +32,7 @@
             android:layout_marginEnd="5dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
-            android:text="Value"
+            android:text="@string/value_title"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -51,7 +51,7 @@
                 android:layout_marginEnd="15dp"
                 android:layout_weight="1"
                 android:ems="10"
-                android:hint="Min"
+                android:hint="@string/minimum_hint"
                 android:inputType="numberDecimal"
                 android:textSize="16sp" />
 
@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:hint="Max"
+                android:hint="@string/maximum_hint"
                 android:inputType="numberDecimal"
                 android:textSize="16sp" />
         </LinearLayout>
@@ -72,7 +72,7 @@
             android:layout_marginEnd="5dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
-            android:text="Description"
+            android:text="@string/description_title"
             android:textStyle="bold" />
 
         <EditText
@@ -82,6 +82,7 @@
             android:layout_marginEnd="5dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
+            android:hint="@string/description_filter_hint"
             android:inputType="text"
             android:maxLines="1"
             android:textSize="16sp" />
@@ -92,7 +93,7 @@
             android:layout_marginEnd="5dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
-            android:text="Categories"
+            android:text="@string/categories_title"
             android:textStyle="bold" />
 
         <android.support.v7.widget.RecyclerView
@@ -107,7 +108,7 @@
             android:layout_marginEnd="5dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
-            android:text="Date"
+            android:text="@string/date_title"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -127,7 +128,7 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:focusable="false"
-                android:hint="Min"
+                android:hint="@string/minimum_hint"
                 android:inputType="date"
                 android:textSize="16sp" />
 
@@ -138,7 +139,7 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:focusable="false"
-                android:hint="Max"
+                android:hint="@string/maximum_hint"
                 android:inputType="date"
                 android:textSize="16sp" />
 
@@ -149,27 +150,30 @@
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"
             android:gravity="bottom"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            style="?android:attr/buttonBarStyle">
 
             <Button
                 android:id="@+id/buttonCancelFilters"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="1dp"
                 android:layout_weight="1"
                 android:background="@color/primary4"
-                android:text="Remove"
+                android:text="@string/remove"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF" />
 
             <Button
                 android:id="@+id/buttonApplyFilters"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="1dp"
                 android:layout_weight="1"
                 android:background="@color/primary4"
-                android:text="Search"
+                android:text="@string/search"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF" />
 

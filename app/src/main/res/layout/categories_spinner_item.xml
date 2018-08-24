@@ -7,7 +7,7 @@
         android:id="@+id/textViewCategoriesSpinnerItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="17sp"
-        android:padding="3dp"/>
+        android:padding="3dp"
+        android:textSize="17sp" />
 
 </android.support.constraint.ConstraintLayout>

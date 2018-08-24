@@ -4,4 +4,4 @@
     android:layout_width="match_parent"
     android:layout_height="175dp"
     android:background="#FFFFFF"
-    android:elevation="3dp"/>
+    android:elevation="3dp" />
