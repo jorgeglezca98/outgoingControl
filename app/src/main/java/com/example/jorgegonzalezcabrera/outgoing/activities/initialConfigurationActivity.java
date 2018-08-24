@@ -2,156 +2,134 @@ package com.example.jorgegonzalezcabrera.outgoing.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
-import com.example.jorgegonzalezcabrera.outgoing.adapters.erasableItemsAdapter;
-import com.example.jorgegonzalezcabrera.outgoing.adapters.newOutgoingCategoriesAdapter;
+import com.example.jorgegonzalezcabrera.outgoing.fragments.initialMoneyInitialConfiguration;
+import com.example.jorgegonzalezcabrera.outgoing.fragments.secondPageInitialConfiguration;
+import com.example.jorgegonzalezcabrera.outgoing.fragments.thirdPageInitialConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
-import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
-import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
+
+import java.util.Vector;
 
 import io.realm.Realm;
-import io.realm.RealmList;
 
 public class initialConfigurationActivity extends AppCompatActivity {
 
-    private RecyclerView outgoingCategoriesRecyclerView;
-    private RecyclerView incomeCategoriesRecyclerView;
-    private EditText editTextInitialMoney;
-    private newOutgoingCategoriesAdapter outgoingCategoriesAdapter;
-    private erasableItemsAdapter incomeCategoriesAdapter;
+    private initialMoneyInitialConfiguration firstFragment;
+    private secondPageInitialConfiguration secondFragment;
+    private thirdPageInitialConfiguration thirdFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_initial_configuration);
 
-        outgoingCategoriesRecyclerView = findViewById(R.id.recyclerViewOutgoingCategories);
-        outgoingCategoriesAdapter = new newOutgoingCategoriesAdapter(this);
-        outgoingCategoriesRecyclerView.setAdapter(outgoingCategoriesAdapter);
-        final LinearLayoutManager outgoingCategoriesLayoutManager = new LinearLayoutManager(this);
-        outgoingCategoriesRecyclerView.setLayoutManager(outgoingCategoriesLayoutManager);
+        final ViewPager configurationViewPager = findViewById(R.id.viewPagerInitialConfiguration);
+        final TabLayout configurationTabLayout = findViewById(R.id.tabLayoutInitialConfiguration);
+        configurationTabLayout.setupWithViewPager(configurationViewPager, true);
 
-        incomeCategoriesRecyclerView = findViewById(R.id.recyclerViewIncomeCategories);
-        incomeCategoriesAdapter = new erasableItemsAdapter();
-        incomeCategoriesRecyclerView.setAdapter(incomeCategoriesAdapter);
-        final LinearLayoutManager incomeCategoriesLayoutManager = new LinearLayoutManager(this);
-        incomeCategoriesRecyclerView.setLayoutManager(incomeCategoriesLayoutManager);
+        final Vector<Fragment> fragments = new Vector<>();
+        firstFragment = new initialMoneyInitialConfiguration();
+        fragments.add(firstFragment);
+        secondFragment = new secondPageInitialConfiguration();
+        fragments.add(secondFragment);
+        thirdFragment = new thirdPageInitialConfiguration();
+        fragments.add(thirdFragment);
 
-        editTextInitialMoney = findViewById(R.id.editTextInitialMoney);
-        ImageButton imageButtonAddOutgoingCategory = findViewById(R.id.imageButtonAddOutgoingCategory);
-        ImageButton imageButtonDeleteOutgoingCategory = findViewById(R.id.imageButtonDeleteOutgoingCategory);
-        ImageButton imageButtonAddIncomeCategory = findViewById(R.id.imageButtonAddIncomeCategory);
-        ImageButton imageButtonDeleteIncomeCategory = findViewById(R.id.imageButtonDeleteIncomeCategory);
-        Button buttonApplyConfiguration = findViewById(R.id.buttonApplyConfiguration);
-
-        imageButtonAddOutgoingCategory.setOnClickListener(new View.OnClickListener() {
+        configurationViewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
-            public void onClick(View view) {
-                outgoingCategoriesAdapter.addOne();
+            public Fragment getItem(int i) {
+                return fragments.get(i);
+            }
+
+            @Override
+            public int getCount() {
+                return fragments.size();
             }
         });
+        configurationViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(configurationTabLayout));
 
-        imageButtonDeleteOutgoingCategory.setOnClickListener(new View.OnClickListener() {
+        final FloatingActionButton backButton = findViewById(R.id.fabBack);
+        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                outgoingCategoriesAdapter.deleteLast();
-            }
-        });
-
-        imageButtonAddIncomeCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                incomeCategoriesAdapter.addOne();
-            }
-        });
-
-        imageButtonDeleteIncomeCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                incomeCategoriesAdapter.deleteLast();
-            }
-        });
-
-        buttonApplyConfiguration.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (checkData()) {
-                    double currentMoney = Double.valueOf(editTextInitialMoney.getText().toString());
-                    appConfiguration newConfiguration = new appConfiguration(currentMoney, getOutgoingCategories(), getIncomeCategories());
-
-                    Realm database = Realm.getDefaultInstance();
-                    database.beginTransaction();
-                    database.copyToRealm(newConfiguration);
-                    database.commitTransaction();
-
-                    Intent intent = new Intent(initialConfigurationActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
+                int selectedTabPosition = configurationTabLayout.getSelectedTabPosition();
+                if (selectedTabPosition > 0) {
+                    TabLayout.Tab newSelectedTab = configurationTabLayout.getTabAt(selectedTabPosition - 1);
+                    if (newSelectedTab != null) {
+                        newSelectedTab.select();
+                    }
                 }
             }
         });
-    }
+        final FloatingActionButton forwardButton = findViewById(R.id.fabForward);
+        forwardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int selectedTabPosition = configurationTabLayout.getSelectedTabPosition();
+                if (selectedTabPosition == (configurationTabLayout.getTabCount() - 1)) {
+                    if (thirdFragment.checkData()) {
+                        double currentMoney = firstFragment.getData();
+                        appConfiguration newConfiguration = new appConfiguration(currentMoney, secondFragment.getData(), thirdFragment.getData());
 
-    private RealmList<outgoingCategory> getOutgoingCategories() {
-        RealmList<outgoingCategory> result = new RealmList<>();
-        newOutgoingCategoriesAdapter.ViewHolder viewHolder;
+                        Realm database = Realm.getDefaultInstance();
+                        database.beginTransaction();
+                        database.copyToRealm(newConfiguration);
+                        database.commitTransaction();
 
-        for (int i = 0; i < outgoingCategoriesAdapter.getItemCount(); i++) {
-            viewHolder = (newOutgoingCategoriesAdapter.ViewHolder) outgoingCategoriesRecyclerView.findViewHolderForAdapterPosition(i);
-            if (viewHolder != null) {
-                double max = Double.valueOf(viewHolder.max.getText().toString());
-                String categoryName = viewHolder.name.getText().toString();
-                result.add(new outgoingCategory(viewHolder.getSubcategories(), max, categoryName));
+                        Intent intent = new Intent(initialConfigurationActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                } else {
+                    boolean dataChecked = selectedTabPosition == 0 ? firstFragment.checkData() : secondFragment.checkData();
+                    if (dataChecked) {
+                        TabLayout.Tab newSelectedTab = configurationTabLayout.getTabAt(selectedTabPosition + 1);
+                        if (newSelectedTab != null) {
+                            newSelectedTab.select();
+                        }
+                    }
+                }
+
             }
-        }
-        return result;
-    }
+        });
 
-    private RealmList<incomeCategory> getIncomeCategories() {
-        RealmList<incomeCategory> result = new RealmList<>();
-        erasableItemsAdapter.ViewHolder viewHolder;
-        for (int i = 0; i < incomeCategoriesAdapter.getItemCount(); i++) {
-            viewHolder = (erasableItemsAdapter.ViewHolder) incomeCategoriesRecyclerView.findViewHolderForAdapterPosition(i);
-            if (viewHolder != null) {
-                result.add(new incomeCategory(viewHolder.name.getText().toString()));
-            }
-        }
-        return result;
-    }
+        configurationTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                configurationViewPager.setCurrentItem(tab.getPosition());
+                if (tab.getPosition() == 0) {
+                    backButton.hide();
+                }
 
-    private boolean checkData() {
-        boolean result = true;
-        if (editTextInitialMoney.getText().toString().isEmpty()) {
-            result = false;
-        } else if (incomeCategoriesAdapter.getItemCount() > 0) {
-            newOutgoingCategoriesAdapter.ViewHolder outgoingViewHolder;
-            for (int i = 0; i < outgoingCategoriesAdapter.getItemCount(); i++) {
-                outgoingViewHolder = (newOutgoingCategoriesAdapter.ViewHolder) outgoingCategoriesRecyclerView.findViewHolderForAdapterPosition(i);
-                if (outgoingViewHolder.name.getText().toString().isEmpty()) {
-                    outgoingViewHolder.name.setHintTextColor(getResources().getColor(R.color.colorWrong));
-                    result = false;
-                } else if (outgoingViewHolder.max.getText().toString().isEmpty()) {
-                    result = false;
+                if (tab.getPosition() == configurationTabLayout.getTabCount() - 1) {
+                    forwardButton.setImageResource(R.drawable.check);
+                    forwardButton.animate().rotation(0).start();
                 }
             }
 
-            erasableItemsAdapter.ViewHolder incomeViewHolder;
-            for (int i = 0; i < incomeCategoriesAdapter.getItemCount(); i++) {
-                incomeViewHolder = (erasableItemsAdapter.ViewHolder) incomeCategoriesRecyclerView.findViewHolderForAdapterPosition(i);
-                if (incomeViewHolder.name.getText().toString().isEmpty()) {
-                    incomeViewHolder.name.setHintTextColor(getResources().getColor(R.color.colorWrong));
-                    result = false;
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                if (tab.getPosition() == configurationTabLayout.getTabCount() - 1) {
+                    forwardButton.setImageResource(R.drawable.up_pointing_arrow);
+                    forwardButton.animate().rotation(90).start();
+                }
+                if (tab.getPosition() == 0) {
+                    backButton.show();
                 }
             }
-        }
-        return result;
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
     }
 }

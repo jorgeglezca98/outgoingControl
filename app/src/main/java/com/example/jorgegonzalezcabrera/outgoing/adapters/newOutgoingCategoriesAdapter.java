@@ -49,10 +49,10 @@ public class newOutgoingCategoriesAdapter extends RecyclerView.Adapter<newOutgoi
         notifyItemInserted(quantity - 1);
     }
 
-    public void deleteLast() {
-        if (quantity > 1) {
+    private void deleteItemAt(int position) {
+        if (quantity > 1 && position < quantity) {
             quantity--;
-            notifyItemRemoved(quantity);
+            notifyItemRemoved(position);
         }
     }
 
@@ -61,8 +61,8 @@ public class newOutgoingCategoriesAdapter extends RecyclerView.Adapter<newOutgoi
         public EditText name;
         public EditText max;
         public ImageButton imageButtonAddSubcategory;
-        public ImageButton imageButtonDeleteSubcategory;
         public RecyclerView recyclerViewSubcategories;
+        public ImageButton imageButtonRemoveCategory;
         erasableItemsAdapter adapter;
 
         ViewHolder(@NonNull View itemView) {
@@ -71,12 +71,12 @@ public class newOutgoingCategoriesAdapter extends RecyclerView.Adapter<newOutgoi
             name = itemView.findViewById(R.id.editTextCategoryName);
             max = itemView.findViewById(R.id.editTextMaxValue);
             imageButtonAddSubcategory = itemView.findViewById(R.id.imageButtonAddSubcategory);
-            imageButtonDeleteSubcategory = itemView.findViewById(R.id.imageButtonDeleteSubcategory);
             recyclerViewSubcategories = itemView.findViewById(R.id.recyclerViewSubcategories);
+            imageButtonRemoveCategory = itemView.findViewById(R.id.imageButtonRemoveCategory);
         }
 
         void bind() {
-            adapter = new erasableItemsAdapter();
+            adapter = new erasableItemsAdapter("Subcategory");
             recyclerViewSubcategories.setAdapter(adapter);
             LinearLayoutManager layoutManager = new LinearLayoutManager(context);
             recyclerViewSubcategories.setLayoutManager(layoutManager);
@@ -88,10 +88,12 @@ public class newOutgoingCategoriesAdapter extends RecyclerView.Adapter<newOutgoi
                 }
             });
 
-            imageButtonDeleteSubcategory.setOnClickListener(new View.OnClickListener() {
+            imageButtonRemoveCategory.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    adapter.deleteLast();
+                    name.setText("");
+                    max.setText("");
+                    deleteItemAt(getAdapterPosition());
                 }
             });
         }

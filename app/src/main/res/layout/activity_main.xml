@@ -124,6 +124,6 @@
         app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/expand_options" />
+        app:srcCompat="@drawable/up_pointing_arrow" />
 
 </android.support.constraint.ConstraintLayout>

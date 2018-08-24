@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 
@@ -13,10 +14,12 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
 
     private int layout;
     private int quantity;
+    private String hint;
 
-    public erasableItemsAdapter() {
-        layout = R.layout.erasable_item;
-        quantity = 1;
+    public erasableItemsAdapter(@NonNull String hint) {
+        this.layout = R.layout.erasable_item;
+        this.quantity = 1;
+        this.hint = hint;
     }
 
     public void addOne() {
@@ -24,10 +27,10 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
         notifyItemInserted(quantity - 1);
     }
 
-    public void deleteLast() {
-        if (quantity > 0) {
+    private void deleteItemAt(int position) {
+        if (quantity > 0 && position < quantity) {
             quantity--;
-            notifyItemRemoved(quantity);
+            notifyItemRemoved(position);
         }
     }
 
@@ -40,6 +43,7 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
 
     @Override
     public void onBindViewHolder(@NonNull erasableItemsAdapter.ViewHolder viewHolder, int i) {
+        viewHolder.bind();
     }
 
     @Override
@@ -50,10 +54,23 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public EditText name;
+        ImageButton deleteItemButton;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.editTextErasableItem);
+            deleteItemButton = itemView.findViewById(R.id.imageButtonRemoveItem);
+        }
+
+        void bind(){
+            name.setHint(hint);
+            deleteItemButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    name.setText("");
+                    deleteItemAt(getAdapterPosition());
+                }
+            });
         }
     }
 }
