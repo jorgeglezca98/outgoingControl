@@ -5,11 +5,17 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
@@ -20,12 +26,10 @@ import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry.periodicType;
-import com.example.jorgegonzalezcabrera.outgoing.others.customizedTimerTask;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Timer;
 import java.util.Vector;
 
 import io.realm.Realm;
@@ -36,7 +40,7 @@ import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newPerio
 import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getTypeFromOrdinal;
 import static com.example.jorgegonzalezcabrera.outgoing.utilities.utils.dpToPixels;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends AppCompatActivity {
 
     private ViewPager viewPager;
     private FragmentStatePagerAdapter viewPagerAdapter;
@@ -57,6 +61,9 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = findViewById(R.id.toolBar);
+        setSupportActionBar(toolbar);
 
         database = Realm.getDefaultInstance();
 
@@ -191,7 +198,31 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
-        setTimers();
+        updateData();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refreshMenuItem:
+                View menuItem = findViewById(R.id.refreshMenuItem);
+                Animation rotation = AnimationUtils.loadAnimation(this, R.anim.rotate);
+                rotation.setRepeatCount(Animation.INFINITE);
+                menuItem.startAnimation(rotation);
+                updateData();
+                menuItem.clearAnimation();
+                Toast.makeText(this, "Updated", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
     }
 
     private void closeFloatingMenu() {
@@ -234,9 +265,7 @@ public class MainActivity extends FragmentActivity {
         void OnNewEntryAdded(entry newEntry);
     }
 
-    public void setTimers() {
-        Timer timer = new Timer(true);
-
+    public void updateData() {
         RealmResults<periodicEntry> periodicEntries = database.where(periodicEntry.class).findAll();
 
         GregorianCalendar lastChange = new GregorianCalendar();
@@ -250,31 +279,24 @@ public class MainActivity extends FragmentActivity {
                 if (periodicEntriesItem.getFrequency() == periodicType.ANNUAL) {
                     lastChange.add(Calendar.YEAR, 1);
                     while (lastChange.before(currentDate)) {
-                        periodicEntry.createEntry(periodicEntriesItem, onNewEntryAddedInterface, currentDate);
+                        periodicEntry.createEntry(periodicEntriesItem, onNewEntryAddedInterface, lastChange);
                         lastChange.add(Calendar.YEAR, 1);
                     }
                 } else if (periodicEntriesItem.getFrequency() == periodicType.MONTHLY) {
                     lastChange.add(Calendar.MONTH, 1);
                     while (lastChange.before(currentDate)) {
-                        periodicEntry.createEntry(periodicEntriesItem, onNewEntryAddedInterface, currentDate);
+                        periodicEntry.createEntry(periodicEntriesItem, onNewEntryAddedInterface, lastChange);
                         lastChange.add(Calendar.MONTH, 1);
                     }
                 } else if (periodicEntriesItem.getFrequency() == periodicType.WEEKLY) {
                     lastChange.add(Calendar.DATE, 7);
                     while (lastChange.before(currentDate)) {
-                        periodicEntry.createEntry(periodicEntriesItem, onNewEntryAddedInterface, currentDate);
+                        periodicEntry.createEntry(periodicEntriesItem, onNewEntryAddedInterface, lastChange);
                         lastChange.add(Calendar.DATE, 7);
                     }
                 }
             }
         }
-
-        currentDate.add(Calendar.DATE, 1);
-        currentDate.set(Calendar.HOUR_OF_DAY, 0);
-        currentDate.set(Calendar.MINUTE, 0);
-        currentDate.set(Calendar.SECOND, 0);
-        currentDate.set(Calendar.MILLISECOND, 0);
-        timer.schedule(new customizedTimerTask(onNewEntryAddedInterface), currentDate.getTime(), 86400000);
     }
 
 }
