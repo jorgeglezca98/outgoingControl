@@ -6,15 +6,17 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.initialMoneyInitialConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.secondPageInitialConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.thirdPageInitialConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
+import com.example.jorgegonzalezcabrera.outgoing.others.customViewPager;
 
 import java.util.Vector;
 
@@ -31,7 +33,7 @@ public class initialConfigurationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_initial_configuration);
 
-        final ViewPager configurationViewPager = findViewById(R.id.viewPagerInitialConfiguration);
+        final customViewPager configurationViewPager = findViewById(R.id.viewPagerInitialConfiguration);
         final TabLayout configurationTabLayout = findViewById(R.id.tabLayoutInitialConfiguration);
         configurationTabLayout.setupWithViewPager(configurationViewPager, true);
 
