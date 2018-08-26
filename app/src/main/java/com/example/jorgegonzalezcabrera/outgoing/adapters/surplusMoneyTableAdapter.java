@@ -47,11 +47,15 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
         this.fragmentManager = fragmentManager;
     }
 
-    public void updateData(String category, double value) {
+    public void updateData(String category, double value, boolean addedData) {
         for (int i = 0; i < items.size(); i++) {
             RealmList<subcategory> subcategories = items.get(i).category.getSubcategories();
             if (subcategories.where().equalTo("name", category).findFirst() != null) {
-                items.get(i).surplusMoney -= value;
+                if(addedData){
+                    items.get(i).surplusMoney -= value;
+                } else{
+                    items.get(i).surplusMoney += value;
+                }
                 notifyItemChanged(i);
                 return;
             }

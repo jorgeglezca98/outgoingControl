@@ -124,8 +124,8 @@ public class MainActivity extends AppCompatActivity {
         onNewEntryAddedInterface = new OnNewEntryAddedInterface() {
             @Override
             public void OnNewEntryAdded(entry newEntry) {
-                actionsFragment.updateData(newEntry);
-                mainFragment.updateData(newEntry);
+                actionsFragment.updateDataAdded(newEntry);
+                mainFragment.updateDataAdded(newEntry);
             }
         };
 

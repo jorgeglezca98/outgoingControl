@@ -66,7 +66,7 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
 
         allTheActions = new RealmList<>();
         allTheActions.addAll(Realm.getDefaultInstance().where(entry.class).findAll());
-        adapter = new allEntriesAdapter(allTheActions);
+        adapter = new allEntriesAdapter(context, allTheActions);
     }
 
     @Nullable
@@ -222,7 +222,7 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
         adapter.changeData(allTheActions);
     }
 
-    public void updateData(entry newEntry) {
+    public void updateDataAdded(entry newEntry) {
         adapter.newEntryAdded(newEntry);
     }
 

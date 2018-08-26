@@ -90,10 +90,10 @@ public class mainFragment extends Fragment {
         surplusMoneyAdapter = new surplusMoneyTableAdapter(getFragmentManager(), surplusMoneyByCategoryVector);
         recyclerViewSurplusMoney.setAdapter(surplusMoneyAdapter);
         recyclerViewSurplusMoney.setLayoutManager(new GridLayoutManager(context, 2));
-        recyclerViewSurplusMoney.addItemDecoration(new ItemOffsetDecoration(context,5));
+        recyclerViewSurplusMoney.addItemDecoration(new ItemOffsetDecoration(context, 5));
     }
 
-    public void updateData(final entry newEntry) {
+    public void updateDataAdded(final entry newEntry) {
         if (getView() != null) {
             if (newEntry.getType() == entry.type.OUTGOING) {
                 appConfiguration currentConfiguration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
@@ -102,7 +102,7 @@ public class mainFragment extends Fragment {
                 totalOutgoings += newEntry.getValor();
                 String outgoingsOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€";
                 textViewOutgoingsOfTheMonth.setText(outgoingsOfTheMonth);
-                surplusMoneyAdapter.updateData(newEntry.getCategory(), newEntry.getValor());
+                surplusMoneyAdapter.updateData(newEntry.getCategory(), newEntry.getValor(), true);
             } else {
                 appConfiguration currentConfiguration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
                 String currentMoney = String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€";

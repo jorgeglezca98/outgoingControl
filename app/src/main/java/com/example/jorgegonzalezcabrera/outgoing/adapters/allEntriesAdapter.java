@@ -1,11 +1,15 @@
 package com.example.jorgegonzalezcabrera.outgoing.adapters;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
@@ -33,10 +37,12 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private int actionLayout;
     private int headerLayout;
     private Vector<RealmList<entry>> entries;
+    private Context context;
 
-    public allEntriesAdapter(@Nonnull RealmList<entry> allEntries) {
+    public allEntriesAdapter(@NonNull Context context, @Nonnull RealmList<entry> allEntries) {
         this.actionLayout = R.layout.entry_item;
         this.headerLayout = R.layout.entries_by_month;
+        this.context = context;
 
         Date firstDayOfMonth = new Date();
         entries = new Vector<>();
@@ -55,7 +61,7 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    public void changeData(@Nonnull RealmList<entry> allEntries){
+    public void changeData(@Nonnull RealmList<entry> allEntries) {
         Date firstDayOfMonth = new Date();
         entries.clear();
         for (int i = allEntries.size() - 1; i >= 0; i--) {
@@ -78,9 +84,9 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         GregorianCalendar dateOfNewEntry = new GregorianCalendar();
         dateOfNewEntry.setTime(newEntry.getCreationDate());
         GregorianCalendar dateOfLastEntry = new GregorianCalendar();
-        if(!entries.isEmpty()){
+        if (!entries.isEmpty()) {
             entry entry = entries.firstElement().last();
-            if(entry!=null){
+            if (entry != null) {
                 dateOfLastEntry.setTime(entry.getCreationDate());
                 if (dateOfNewEntry.get(Calendar.MONTH) == dateOfLastEntry.get(Calendar.MONTH)) {
                     if (dateOfNewEntry.get(Calendar.YEAR) == dateOfLastEntry.get(Calendar.YEAR)) {
@@ -95,7 +101,7 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     notifyItemInserted(1);
                 }
             }
-        } else{
+        } else {
             entries.add(0, new RealmList<entry>());
             entries.firstElement().add(0, null);
             notifyItemInserted(0);
@@ -154,6 +160,7 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         private TextView category;
         private TextView description;
         private TextView value;
+        private ImageButton imageButtonExpandableMenu;
 
         actionViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -162,24 +169,48 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             category = itemView.findViewById(R.id.textViewCategoryOfAction);
             description = itemView.findViewById(R.id.textViewDescriptionOfAction);
             value = itemView.findViewById(R.id.textViewValueOfAction);
+            imageButtonExpandableMenu = itemView.findViewById(R.id.imageButtonExpandableMenu);
         }
 
-        void bind(@Nonnull entry entry) {
+        void bind(@Nonnull final entry selectedEntry) {
             DateFormat df = new SimpleDateFormat("dd", new Locale("es", "ES"));
-            day.setText(df.format(entry.getCreationDate()));
-            category.setText(entry.getCategory());
-            description.setText(entry.getDescription());
+            day.setText(df.format(selectedEntry.getCreationDate()));
+            category.setText(selectedEntry.getCategory());
+            description.setText(selectedEntry.getDescription());
 
             String formattedValue;
-            if (entry.getType() == type.OUTGOING) {
-                formattedValue = "-" + String.format(new Locale("es", "ES"), "%.2f", entry.getValor()) + "€";
+            if (selectedEntry.getType() == type.OUTGOING) {
+                formattedValue = "-" + String.format(new Locale("es", "ES"), "%.2f", selectedEntry.getValor()) + "€";
                 value.setText(formattedValue);
                 value.setTextColor(Color.parseColor("#ea9999"));
             } else {
-                formattedValue = "+" + String.format(new Locale("es", "ES"), "%.2f", entry.getValor()) + "€";
+                formattedValue = "+" + String.format(new Locale("es", "ES"), "%.2f", selectedEntry.getValor()) + "€";
                 value.setText(formattedValue);
                 value.setTextColor(Color.parseColor("#b6d7a8"));
             }
+
+            imageButtonExpandableMenu.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    PopupMenu popup = new PopupMenu(context, imageButtonExpandableMenu);
+
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem menuItem) {
+                            switch (menuItem.getItemId()) {
+                                case R.id.editEntryMenuItem:
+                                    return true;
+                                case R.id.removeEntryMenuItem:
+                                    return true;
+                                default:
+                                    return false;
+                            }
+                        }
+                    });
+                    popup.inflate(R.menu.entry_popup_menu);
+                    popup.show();
+                }
+            });
         }
     }
 

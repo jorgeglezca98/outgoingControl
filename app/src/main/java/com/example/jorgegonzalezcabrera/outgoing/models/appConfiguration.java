@@ -18,7 +18,7 @@ public class appConfiguration extends RealmObject {
     private RealmList<incomeCategory> incomeCategories;
 
     public appConfiguration(double currentMoney, @Nonnull RealmList<outgoingCategory> outgoingCategories, @Nonnull RealmList<incomeCategory> incomeCategories) {
-        this.id = myApplication.periodicEntryId.incrementAndGet();
+        this.id = myApplication.appConfigurationId.incrementAndGet();
         this.currentMoney = currentMoney;
         this.outgoingCategories = new RealmList<>();
         for (int i = 0; i < outgoingCategories.size(); i++) {

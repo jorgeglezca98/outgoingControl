@@ -44,6 +44,8 @@
     <string name="reset_current_money_title">Reset current money</string>
     <string name="right_current_money">Right current money</string>
     <string name="refresh_title">Refresh</string>
+    <string name="edit">Edit</string>
+    <string name="popup_menu">Popup menu</string>
 
     <string-array name="periodic_types">
         <item>Annual</item>

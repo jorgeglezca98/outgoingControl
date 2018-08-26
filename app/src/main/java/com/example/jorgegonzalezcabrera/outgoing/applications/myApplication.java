@@ -3,6 +3,7 @@ package com.example.jorgegonzalezcabrera.outgoing.applications;
 import android.app.Application;
 
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
+import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,6 +15,7 @@ public class myApplication extends Application {
 
     public static AtomicInteger periodicEntryId;
     public static AtomicInteger appConfigurationId;
+    public static AtomicInteger entryId;
 
     @Override
     public void onCreate() {
@@ -27,6 +29,9 @@ public class myApplication extends Application {
 
         Number higherAppConfigurationId = Realm.getDefaultInstance().where(appConfiguration.class).max("id");
         appConfigurationId = new AtomicInteger((higherAppConfigurationId == null) ? 0 : higherAppConfigurationId.intValue());
+
+        Number higherEntryId = Realm.getDefaultInstance().where(entry.class).max("id");
+        entryId = new AtomicInteger((higherEntryId == null) ? 0 : higherEntryId.intValue());
     }
 }
 //TODO: explore configuration possibilities
