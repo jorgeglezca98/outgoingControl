@@ -17,6 +17,8 @@ import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.erasableItemsAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
 
+import java.util.Vector;
+
 import io.realm.RealmList;
 
 public class thirdPageInitialConfiguration extends Fragment {
@@ -57,28 +59,22 @@ public class thirdPageInitialConfiguration extends Fragment {
     }
 
     public boolean checkData() {
-        boolean check = true;
-        if (incomeCategoriesAdapter.getItemCount() > 0) {
-            erasableItemsAdapter.ViewHolder incomeViewHolder;
-            for (int i = 0; i < incomeCategoriesAdapter.getItemCount(); i++) {
-                incomeViewHolder = (erasableItemsAdapter.ViewHolder) incomeCategoriesRecyclerView.findViewHolderForAdapterPosition(i);
-                if (incomeViewHolder != null && incomeViewHolder.name.getText().toString().isEmpty()) {
-                    incomeViewHolder.name.setHintTextColor(getResources().getColor(R.color.colorWrong));
-                    check = false;
-                }
+        Vector<String> adapterItems = incomeCategoriesAdapter.getItems();
+        int i = 0;
+        while (i < adapterItems.size()) {
+            if (adapterItems.get(i).isEmpty()) {
+                return false;
             }
+            i++;
         }
-        return check;
+        return true;
     }
 
     public RealmList<incomeCategory> getData() {
+        Vector<String> adapterItems = incomeCategoriesAdapter.getItems();
         RealmList<incomeCategory> data = new RealmList<>();
-        erasableItemsAdapter.ViewHolder viewHolder;
-        for (int i = 0; i < incomeCategoriesAdapter.getItemCount(); i++) {
-            viewHolder = (erasableItemsAdapter.ViewHolder) incomeCategoriesRecyclerView.findViewHolderForAdapterPosition(i);
-            if (viewHolder != null) {
-                data.add(new incomeCategory(viewHolder.name.getText().toString()));
-            }
+        for (int i = 0; i < adapterItems.size(); i++) {
+            data.add(new incomeCategory(adapterItems.get(i)));
         }
         return data;
     }

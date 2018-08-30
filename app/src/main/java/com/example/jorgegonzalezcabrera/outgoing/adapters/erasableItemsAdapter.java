@@ -2,6 +2,8 @@ package com.example.jorgegonzalezcabrera.outgoing.adapters;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,28 +12,35 @@ import android.widget.ImageButton;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 
+import java.util.Vector;
+
 public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdapter.ViewHolder> {
 
     private int layout;
-    private int quantity;
+    private Vector<String> items;
     private String hint;
 
     public erasableItemsAdapter(@NonNull String hint) {
         this.layout = R.layout.erasable_item;
-        this.quantity = 1;
+        this.items = new Vector<>();
+        this.items.add("");
         this.hint = hint;
     }
 
     public void addOne() {
-        quantity++;
-        notifyItemInserted(quantity - 1);
+        items.add("");
+        notifyItemInserted(getItemCount() - 1);
     }
 
     private void deleteItemAt(int position) {
-        if (quantity > 0 && position < quantity) {
-            quantity--;
+        if (getItemCount() > 0 && position < getItemCount()) {
+            items.remove(position);
             notifyItemRemoved(position);
         }
+    }
+
+    public Vector<String> getItems() {
+        return items;
     }
 
     @NonNull
@@ -48,7 +57,7 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
 
     @Override
     public int getItemCount() {
-        return quantity;
+        return items.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -58,11 +67,29 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            name = itemView.findViewById(R.id.editTextErasableItem);
             deleteItemButton = itemView.findViewById(R.id.imageButtonRemoveItem);
+            name = itemView.findViewById(R.id.editTextErasableItem);
+            name.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    items.remove(getAdapterPosition());
+                    items.add(getAdapterPosition(), charSequence.toString());
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+
+                }
+            });
         }
 
-        void bind(){
+        void bind() {
+            name.setText(items.get(getAdapterPosition()));
             name.setHint(hint);
             deleteItemButton.setOnClickListener(new View.OnClickListener() {
                 @Override
