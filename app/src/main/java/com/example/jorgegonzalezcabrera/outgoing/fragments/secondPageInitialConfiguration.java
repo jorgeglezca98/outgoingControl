@@ -16,13 +16,13 @@ import android.widget.TextView;
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.newOutgoingCategoriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
+import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
 
 import io.realm.RealmList;
 
 public class secondPageInitialConfiguration extends Fragment {
 
     private newOutgoingCategoriesAdapter outgoingCategoriesAdapter;
-    private RecyclerView recyclerViewOutgoingCategories;
 
     @Nullable
     @Override
@@ -38,7 +38,7 @@ public class secondPageInitialConfiguration extends Fragment {
             }
         });
 
-        recyclerViewOutgoingCategories = view.findViewById(R.id.recyclerViewOutgoingsCategoriesRequest);
+        RecyclerView recyclerViewOutgoingCategories = view.findViewById(R.id.recyclerViewOutgoingsCategoriesRequest);
         outgoingCategoriesAdapter = new newOutgoingCategoriesAdapter(getContext());
         recyclerViewOutgoingCategories.setAdapter(outgoingCategoriesAdapter);
         final LinearLayoutManager outgoingCategoriesLayoutManager = new LinearLayoutManager(getContext());
@@ -58,32 +58,23 @@ public class secondPageInitialConfiguration extends Fragment {
 
     public boolean checkData() {
         boolean check = true;
-        newOutgoingCategoriesAdapter.ViewHolder outgoingViewHolder;
-        for (int i = 0; i < outgoingCategoriesAdapter.getItemCount(); i++) {
-            outgoingViewHolder = (newOutgoingCategoriesAdapter.ViewHolder) recyclerViewOutgoingCategories.findViewHolderForAdapterPosition(i);
-            if (outgoingViewHolder != null) {
-                if (outgoingViewHolder.name.getText().toString().isEmpty()) {
-                    outgoingViewHolder.name.setHintTextColor(getResources().getColor(R.color.colorWrong));
-                    check = false;
-                } else if (outgoingViewHolder.max.getText().toString().isEmpty()) {
-                    outgoingViewHolder.max.setHintTextColor(getResources().getColor(R.color.colorWrong));
-                    check = false;
-                }
+        RealmList<outgoingCategory> outgoingCategories = outgoingCategoriesAdapter.getCategories();
+        for (int i = 0; i < outgoingCategories.size(); i++) {
+            outgoingCategory category = outgoingCategories.get(i);
+            if (!category.checkData()) {
+                check = false;
             }
         }
         return check;
     }
 
     public RealmList<outgoingCategory> getData() {
-        RealmList<outgoingCategory> data = new RealmList<>();
-        newOutgoingCategoriesAdapter.ViewHolder viewHolder;
-
-        for (int i = 0; i < outgoingCategoriesAdapter.getItemCount(); i++) {
-            viewHolder = (newOutgoingCategoriesAdapter.ViewHolder) recyclerViewOutgoingCategories.findViewHolderForAdapterPosition(i);
-            if (viewHolder != null) {
-                double max = Double.valueOf(viewHolder.max.getText().toString());
-                String categoryName = viewHolder.name.getText().toString();
-                data.add(new outgoingCategory(viewHolder.getSubcategories(), max, categoryName));
+        RealmList<outgoingCategory> data = outgoingCategoriesAdapter.getCategories();
+        for (int i = 0; i < data.size(); i++) {
+            outgoingCategory category = data.get(i);
+            if (category.getSubcategories().isEmpty()) {
+                category.getSubcategories().add(new subcategory(category.getName()));
+                outgoingCategoriesAdapter.notifyItemChanged(i);
             }
         }
         return data;

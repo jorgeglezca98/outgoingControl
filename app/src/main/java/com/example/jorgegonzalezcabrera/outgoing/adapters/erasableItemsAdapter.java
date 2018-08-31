@@ -19,28 +19,66 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
     private int layout;
     private Vector<String> items;
     private String hint;
+    private onItemsChange onItemsChange;
 
     public erasableItemsAdapter(@NonNull String hint) {
         this.layout = R.layout.erasable_item;
         this.items = new Vector<>();
         this.items.add("");
         this.hint = hint;
+        this.onItemsChange = new onItemsChange() {
+            @Override
+            public void onItemModified(int position, @NonNull String item) {
+            }
+
+            @Override
+            public void onItemRemoved(int position) {
+            }
+
+            @Override
+            public void onItemAdded(int position) {
+            }
+
+            @Override
+            public void onItemsChanged(@NonNull Vector<String> newItems) {
+            }
+        };
+    }
+
+    erasableItemsAdapter(String hint, erasableItemsAdapter.onItemsChange onItemsChange) {
+        this.layout = R.layout.erasable_item;
+        this.items = new Vector<>();
+        this.items.add("");
+        this.hint = hint;
+        this.onItemsChange = onItemsChange;
     }
 
     public void addOne() {
         items.add("");
         notifyItemInserted(getItemCount() - 1);
+        onItemsChange.onItemAdded(getItemCount() - 1);
     }
 
     private void deleteItemAt(int position) {
         if (getItemCount() > 0 && position < getItemCount()) {
             items.remove(position);
             notifyItemRemoved(position);
+            onItemsChange.onItemRemoved(position);
         }
     }
 
     public Vector<String> getItems() {
         return items;
+    }
+
+    public interface onItemsChange {
+        void onItemModified(int position, @NonNull String item);
+
+        void onItemRemoved(int position);
+
+        void onItemAdded(int position);
+
+        void onItemsChanged(@NonNull Vector<String> newItems);
     }
 
     @NonNull
@@ -58,6 +96,12 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    public void updateItems(Vector<String> newItems) {
+        items = newItems;
+        notifyDataSetChanged();
+        onItemsChange.onItemsChanged(newItems);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -79,6 +123,7 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                     items.remove(getAdapterPosition());
                     items.add(getAdapterPosition(), charSequence.toString());
+                    onItemsChange.onItemModified(getAdapterPosition(), charSequence.toString());
                 }
 
                 @Override
@@ -90,11 +135,11 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
 
         void bind() {
             name.setText(items.get(getAdapterPosition()));
+            onItemsChange.onItemModified(getAdapterPosition(), items.get(getAdapterPosition()));
             name.setHint(hint);
             deleteItemButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    name.setText("");
                     deleteItemAt(getAdapterPosition());
                 }
             });

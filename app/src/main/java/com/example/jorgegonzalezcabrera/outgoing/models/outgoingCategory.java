@@ -42,9 +42,6 @@ public class outgoingCategory extends RealmObject {
                 this.subcategories.add(subcategories.get(i));
             }
         }
-        if (this.subcategories.isEmpty()) {
-            this.subcategories.add(new subcategory(name));
-        }
     }
 
     public double getMaximum() {
@@ -61,5 +58,20 @@ public class outgoingCategory extends RealmObject {
 
     public void setName(@Nonnull String name) {
         this.name = name;
+    }
+
+    public boolean checkData() {
+        if (maximum == 0.0d || name.isEmpty()) {
+            return false;
+        } else {
+            subcategory subcategory;
+            for (int i = 0; i < getSubcategories().size(); i++) {
+                subcategory = getSubcategories().get(i);
+                if (subcategory == null || subcategory.getName().isEmpty()) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
