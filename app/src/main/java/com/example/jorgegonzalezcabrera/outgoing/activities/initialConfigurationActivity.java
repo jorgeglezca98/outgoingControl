@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.initialMoneyInitialConfiguration;
@@ -87,6 +88,8 @@ public class initialConfigurationActivity extends AppCompatActivity {
                         Intent intent = new Intent(initialConfigurationActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();
+                    } else {
+                        Toast.makeText(initialConfigurationActivity.this, "Complete all fields first", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     boolean dataChecked = selectedTabPosition == 0 ? firstFragment.checkData() : secondFragment.checkData();
@@ -95,6 +98,8 @@ public class initialConfigurationActivity extends AppCompatActivity {
                         if (newSelectedTab != null) {
                             newSelectedTab.select();
                         }
+                    } else {
+                        Toast.makeText(initialConfigurationActivity.this, "Complete all fields first", Toast.LENGTH_SHORT).show();
                     }
                 }
 
