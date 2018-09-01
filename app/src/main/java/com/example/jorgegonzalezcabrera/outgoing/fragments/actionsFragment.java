@@ -24,6 +24,7 @@ import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.others.HeaderItemDecoration;
 import com.example.jorgegonzalezcabrera.outgoing.others.HeaderItemDecoration.StickyHeaderInterface;
+import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -53,10 +54,26 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
     private EditText editTextMaxDate;
     private Date minDate;
     private Date maxDate;
+    private localUtils.OnEntriesChangeInterface onEntriesChangeInterface;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
+        try {
+            onEntriesChangeInterface = (localUtils.OnEntriesChangeInterface) context;
+        } catch (Exception e) {
+            onEntriesChangeInterface = new localUtils.OnEntriesChangeInterface() {
+                @Override
+                public void addEntry(@NonNull entry newEntry) {
+                }
+
+                @Override
+                public void removeEntry(@NonNull entry removedEntry) {
+                }
+            };
+        }
+
         this.context = context;
     }
 
@@ -66,7 +83,7 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
 
         allTheActions = new RealmList<>();
         allTheActions.addAll(Realm.getDefaultInstance().where(entry.class).findAll());
-        adapter = new allEntriesAdapter(context, allTheActions);
+        adapter = new allEntriesAdapter(context, allTheActions, onEntriesChangeInterface);
     }
 
     @Nullable

@@ -18,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
-import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.actionsFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.mainFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.settingFragment;
@@ -26,6 +25,7 @@ import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry.periodicType;
+import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -37,17 +37,16 @@ import io.realm.RealmResults;
 
 import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newEntryDialog;
 import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newPeriodicEntryDialog;
-import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getTypeFromOrdinal;
 import static com.example.jorgegonzalezcabrera.outgoing.utilities.utils.dpToPixels;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements localUtils.OnEntriesChangeInterface {
 
     private ViewPager viewPager;
     private FragmentStatePagerAdapter viewPagerAdapter;
     private actionsFragment actionsFragment;
     private mainFragment mainFragment;
     private Realm database;
-    private OnNewEntryAddedInterface onNewEntryAddedInterface;
+    private localUtils.OnEntriesChangeInterface onEntriesChangeInterface;
     private boolean floatingMenuOpen;
     private FloatingActionButton fabMenu;
     private FloatingActionButton fabAddEntry;
@@ -121,13 +120,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        onNewEntryAddedInterface = new OnNewEntryAddedInterface() {
-            @Override
-            public void OnNewEntryAdded(entry newEntry) {
-                actionsFragment.updateDataAdded(newEntry);
-                mainFragment.updateDataAdded(newEntry);
-            }
-        };
+        onEntriesChangeInterface = this;
 
         floatingMenuOpen = false;
         fabMenu = findViewById(R.id.fab);
@@ -152,32 +145,7 @@ public class MainActivity extends AppCompatActivity {
         fabAddEntry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final appConfiguration updatedConfiguration = database.where(appConfiguration.class).findFirst();
-                newEntryDialog(MainActivity.this, new dialogs.OnNewEntryAccepted() {
-                    @Override
-                    public void OnClick(final String subcategory, final int type, final double value, final String description) {
-                        final entry newEntry = new entry(value, getTypeFromOrdinal(type), subcategory, description);
-                        if (updatedConfiguration != null) {
-                            if (getTypeFromOrdinal(type) == entry.type.OUTGOING) {
-                                updatedConfiguration.setCurrentMoney(updatedConfiguration.getCurrentMoney() - newEntry.getValor());
-                            } else {
-                                updatedConfiguration.setCurrentMoney(updatedConfiguration.getCurrentMoney() + newEntry.getValor());
-                            }
-                        }
-                        database.executeTransaction(new Realm.Transaction() {
-                            @Override
-                            public void execute(@NonNull Realm realm) {
-                                if (updatedConfiguration != null) {
-                                    database.copyToRealmOrUpdate(updatedConfiguration);
-                                }
-                                database.copyToRealm(newEntry);
-                            }
-                        });
-
-                        onNewEntryAddedInterface.OnNewEntryAdded(newEntry);
-                    }
-                });
-
+                newEntryDialog(MainActivity.this, onEntriesChangeInterface);
                 closeFloatingMenu();
             }
         });
@@ -261,8 +229,59 @@ public class MainActivity extends AppCompatActivity {
         floatingMenuOpen = !floatingMenuOpen;
     }
 
-    public interface OnNewEntryAddedInterface {
-        void OnNewEntryAdded(entry newEntry);
+    @Override
+    public void addEntry(@NonNull final entry newEntry) {
+        final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
+        if (currentConfiguration != null) {
+            if (newEntry.getType() == entry.type.OUTGOING) {
+                currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - newEntry.getValor());
+            } else {
+                currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + newEntry.getValor());
+            }
+        }
+
+        database.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                if (currentConfiguration != null) {
+                    database.copyToRealmOrUpdate(currentConfiguration);
+                }
+                database.copyToRealm(newEntry);
+            }
+        });
+        entry newEntryFromRealm = database.where(entry.class).equalTo("id", newEntry.getId()).findFirst();
+        actionsFragment.updateDataAdded(newEntryFromRealm);
+        mainFragment.updateDataAdded(newEntryFromRealm);
+    }
+
+    @Override
+    public void removeEntry(@NonNull final entry removedEntry) {
+        final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
+        if (currentConfiguration != null) {
+            if (removedEntry.getType() == entry.type.OUTGOING) {
+                currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + removedEntry.getValor());
+            } else {
+                currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - removedEntry.getValor());
+            }
+        }
+
+        database.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                if (currentConfiguration != null) {
+                    database.copyToRealmOrUpdate(currentConfiguration);
+                }
+            }
+        });
+
+        mainFragment.updateDataRemoved(removedEntry);
+
+        database.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                removedEntry.deleteFromRealm();
+            }
+        });
     }
 
     public void updateData() {
@@ -279,19 +298,19 @@ public class MainActivity extends AppCompatActivity {
                 if (periodicEntriesItem.getFrequency() == periodicType.ANNUAL) {
                     lastChange.add(Calendar.YEAR, 1);
                     while (lastChange.before(currentDate)) {
-                        periodicEntry.createEntry(periodicEntriesItem, onNewEntryAddedInterface, lastChange);
+                        periodicEntry.createEntry(periodicEntriesItem, onEntriesChangeInterface, lastChange);
                         lastChange.add(Calendar.YEAR, 1);
                     }
                 } else if (periodicEntriesItem.getFrequency() == periodicType.MONTHLY) {
                     lastChange.add(Calendar.MONTH, 1);
                     while (lastChange.before(currentDate)) {
-                        periodicEntry.createEntry(periodicEntriesItem, onNewEntryAddedInterface, lastChange);
+                        periodicEntry.createEntry(periodicEntriesItem, onEntriesChangeInterface, lastChange);
                         lastChange.add(Calendar.MONTH, 1);
                     }
                 } else if (periodicEntriesItem.getFrequency() == periodicType.WEEKLY) {
                     lastChange.add(Calendar.DATE, 7);
                     while (lastChange.before(currentDate)) {
-                        periodicEntry.createEntry(periodicEntriesItem, onNewEntryAddedInterface, lastChange);
+                        periodicEntry.createEntry(periodicEntriesItem, onEntriesChangeInterface, lastChange);
                         lastChange.add(Calendar.DATE, 7);
                     }
                 }

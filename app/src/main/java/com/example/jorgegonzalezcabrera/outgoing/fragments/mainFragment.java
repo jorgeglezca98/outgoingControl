@@ -113,4 +113,25 @@ public class mainFragment extends Fragment {
             }
         }
     }
+
+    public void updateDataRemoved(entry removedEntry) {
+        if (getView() != null) {
+            if (removedEntry.getType() == entry.type.OUTGOING) {
+                appConfiguration currentConfiguration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
+                String currentMoney = String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€";
+                textViewCurrentMoney.setText(currentMoney);
+                totalOutgoings -= removedEntry.getValor();
+                String outgoingsOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€";
+                textViewOutgoingsOfTheMonth.setText(outgoingsOfTheMonth);
+                surplusMoneyAdapter.updateData(removedEntry.getCategory(), removedEntry.getValor(), false);
+            } else {
+                appConfiguration currentConfiguration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
+                String currentMoney = String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€";
+                textViewCurrentMoney.setText(currentMoney);
+                totalIncomes -= removedEntry.getValor();
+                String incomesOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalIncomes) + "€";
+                textViewIncomesOfTheMonth.setText(incomesOfTheMonth);
+            }
+        }
+    }
 }

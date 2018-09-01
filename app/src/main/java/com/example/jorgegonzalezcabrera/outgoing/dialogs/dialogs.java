@@ -17,6 +17,7 @@ import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSpinnerAdapt
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
+import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -25,13 +26,11 @@ import java.util.Vector;
 
 import io.realm.Realm;
 
+import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getTypeFromOrdinal;
+
 public class dialogs {
 
-    public interface OnNewEntryAccepted {
-        void OnClick(String subcategory, int type, double value, String description);
-    }
-
-    public static void newEntryDialog(Context context, final OnNewEntryAccepted myInterface) {
+    public static void newEntryDialog(Context context, final localUtils.OnEntriesChangeInterface onEntriesChange) {
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
@@ -68,7 +67,7 @@ public class dialogs {
                     String description = descriptionEditText.getText().toString();
                     double value = Double.valueOf(valueEditText.getText().toString());
 
-                    myInterface.OnClick(subcategory, typeOfCategory, value, description);
+                    onEntriesChange.addEntry(new entry(value, getTypeFromOrdinal(typeOfCategory), subcategory, description));
                     dialog.dismiss();
                 }
             }

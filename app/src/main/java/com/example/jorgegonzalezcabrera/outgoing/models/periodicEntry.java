@@ -2,9 +2,9 @@ package com.example.jorgegonzalezcabrera.outgoing.models;
 
 import android.support.annotation.NonNull;
 
-import com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.OnNewEntryAddedInterface;
 import com.example.jorgegonzalezcabrera.outgoing.applications.myApplication;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
+import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.OnEntriesChangeInterface;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -125,37 +125,24 @@ public class periodicEntry extends RealmObject {
         this.lastChange = lastChange;
     }
 
-    public static void createEntry(final periodicEntry periodicEntry, OnNewEntryAddedInterface entryAddedInterface, final GregorianCalendar currentDate) {
+    public static void createEntry(final periodicEntry periodicEntry, OnEntriesChangeInterface entryAddedInterface, final GregorianCalendar currentDate) {
         final entry newEntry = periodicEntry.getEntry();
-
-        final Realm database = Realm.getDefaultInstance();
-        final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
-        if (currentConfiguration != null) {
-            if (newEntry.getType() == entry.type.OUTGOING) {
-                currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - newEntry.getValor());
-            } else {
-                currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + newEntry.getValor());
-            }
-        }
 
         currentDate.set(Calendar.HOUR_OF_DAY, 0);
         currentDate.set(Calendar.MINUTE, 0);
         currentDate.set(Calendar.SECOND, 0);
         currentDate.set(Calendar.MILLISECOND, 0);
+        periodicEntry.setLastChange(currentDate.getTime());
 
+        final Realm database = Realm.getDefaultInstance();
         database.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(@NonNull Realm realm) {
-                if (currentConfiguration != null) {
-                    database.copyToRealmOrUpdate(currentConfiguration);
-                }
-                database.copyToRealm(newEntry);
-                periodicEntry.setLastChange(currentDate.getTime());
                 database.copyToRealmOrUpdate(periodicEntry);
             }
         });
 
-        entryAddedInterface.OnNewEntryAdded(newEntry);
+        entryAddedInterface.addEntry(newEntry);
     }
 
 }

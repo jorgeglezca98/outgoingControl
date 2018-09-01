@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
+import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -38,11 +39,13 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private int headerLayout;
     private Vector<RealmList<entry>> entries;
     private Context context;
+    private localUtils.OnEntriesChangeInterface onEntriesChangeInterface;
 
-    public allEntriesAdapter(@NonNull Context context, @Nonnull RealmList<entry> allEntries) {
+    public allEntriesAdapter(@NonNull Context context, @Nonnull RealmList<entry> allEntries, @NonNull localUtils.OnEntriesChangeInterface onEntriesChangeInterface) {
         this.actionLayout = R.layout.entry_item;
         this.headerLayout = R.layout.entries_by_month;
         this.context = context;
+        this.onEntriesChangeInterface = onEntriesChangeInterface;
 
         Date firstDayOfMonth = new Date();
         entries = new Vector<>();
@@ -201,6 +204,9 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                 case R.id.editEntryMenuItem:
                                     return true;
                                 case R.id.removeEntryMenuItem:
+                                    entry itemToRemove = get(getAdapterPosition());
+                                    deleteItemAt(getAdapterPosition());
+                                    onEntriesChangeInterface.removeEntry(itemToRemove);
                                     return true;
                                 default:
                                     return false;
@@ -211,6 +217,22 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     popup.show();
                 }
             });
+        }
+    }
+
+    private void deleteItemAt(int position) {
+        if (position >= 0 && position < getItemCount()) {
+            int i = 0, j = position;
+            while (j >= entries.get(i).size()) {
+                j -= entries.get(i).size();
+                i++;
+            }
+            entries.get(i).remove(j);
+            notifyItemRemoved(position);
+            if (entries.get(i).size() == 1) {
+                entries.remove(i);
+                notifyItemRemoved(position - 1);
+            }
         }
     }
 

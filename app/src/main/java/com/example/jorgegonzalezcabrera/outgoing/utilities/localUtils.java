@@ -1,5 +1,8 @@
 package com.example.jorgegonzalezcabrera.outgoing.utilities;
 
+import android.support.annotation.NonNull;
+
+import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
 import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
@@ -12,6 +15,13 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class localUtils {
+
+    public interface OnEntriesChangeInterface {
+        void addEntry(@NonNull entry newEntry);
+
+        void removeEntry(@NonNull entry removedEntry);
+    }
+
 
     public static type getTypeFromOrdinal(int ordinal) {
         return (ordinal == type.OUTGOING.ordinal()) ? type.OUTGOING : type.INCOME;
