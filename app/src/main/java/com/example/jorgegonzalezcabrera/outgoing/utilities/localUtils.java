@@ -20,6 +20,8 @@ public class localUtils {
         void addEntry(@NonNull entry newEntry);
 
         void removeEntry(@NonNull entry removedEntry);
+
+        void editEntry(@NonNull entry nextVersion);
     }
 
 

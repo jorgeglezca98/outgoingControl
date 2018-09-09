@@ -95,18 +95,15 @@ public class mainFragment extends Fragment {
 
     public void updateDataAdded(final entry newEntry) {
         if (getView() != null) {
+            appConfiguration currentConfiguration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
+            String currentMoney = String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€";
+            textViewCurrentMoney.setText(currentMoney);
             if (newEntry.getType() == entry.type.OUTGOING) {
-                appConfiguration currentConfiguration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
-                String currentMoney = String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€";
-                textViewCurrentMoney.setText(currentMoney);
                 totalOutgoings += newEntry.getValor();
                 String outgoingsOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€";
                 textViewOutgoingsOfTheMonth.setText(outgoingsOfTheMonth);
                 surplusMoneyAdapter.updateData(newEntry.getCategory(), newEntry.getValor(), true);
             } else {
-                appConfiguration currentConfiguration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
-                String currentMoney = String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€";
-                textViewCurrentMoney.setText(currentMoney);
                 totalIncomes += newEntry.getValor();
                 String incomesOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalIncomes) + "€";
                 textViewIncomesOfTheMonth.setText(incomesOfTheMonth);
@@ -116,22 +113,45 @@ public class mainFragment extends Fragment {
 
     public void updateDataRemoved(entry removedEntry) {
         if (getView() != null) {
+            appConfiguration currentConfiguration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
+            String currentMoney = String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€";
+            textViewCurrentMoney.setText(currentMoney);
             if (removedEntry.getType() == entry.type.OUTGOING) {
-                appConfiguration currentConfiguration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
-                String currentMoney = String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€";
-                textViewCurrentMoney.setText(currentMoney);
                 totalOutgoings -= removedEntry.getValor();
                 String outgoingsOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€";
                 textViewOutgoingsOfTheMonth.setText(outgoingsOfTheMonth);
                 surplusMoneyAdapter.updateData(removedEntry.getCategory(), removedEntry.getValor(), false);
             } else {
-                appConfiguration currentConfiguration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
-                String currentMoney = String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€";
-                textViewCurrentMoney.setText(currentMoney);
                 totalIncomes -= removedEntry.getValor();
                 String incomesOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalIncomes) + "€";
                 textViewIncomesOfTheMonth.setText(incomesOfTheMonth);
             }
+        }
+    }
+
+    public void updateDataModified(entry currentVersion, entry nextVersion) {
+        if (getView() != null) {
+            appConfiguration currentConfiguration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
+            String currentMoney = String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€";
+            textViewCurrentMoney.setText(currentMoney);
+
+            if (currentVersion.getType() == entry.type.OUTGOING) {
+                totalOutgoings -= currentVersion.getValor();
+            } else {
+                totalIncomes -= currentVersion.getValor();
+            }
+
+            if (nextVersion.getType() == entry.type.OUTGOING) {
+                totalOutgoings += nextVersion.getValor();
+            } else {
+                totalIncomes += nextVersion.getValor();
+            }
+
+            String outgoingsOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€";
+            textViewOutgoingsOfTheMonth.setText(outgoingsOfTheMonth);
+            String incomesOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalIncomes) + "€";
+            textViewIncomesOfTheMonth.setText(incomesOfTheMonth);
+            surplusMoneyAdapter.modifyData(currentVersion, nextVersion);
         }
     }
 }

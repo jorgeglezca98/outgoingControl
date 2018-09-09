@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.backSurplusMoneyFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.frontSurplusMoneyFragment;
+import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
 
@@ -47,17 +48,48 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
         this.fragmentManager = fragmentManager;
     }
 
-    public void updateData(String category, double value, boolean addedData) {
+    public void updateData(String category, double value, boolean addData) {
         for (int i = 0; i < items.size(); i++) {
             RealmList<subcategory> subcategories = items.get(i).category.getSubcategories();
             if (subcategories.where().equalTo("name", category).findFirst() != null) {
-                if(addedData){
+                if (addData) {
                     items.get(i).surplusMoney -= value;
-                } else{
+                } else {
                     items.get(i).surplusMoney += value;
                 }
                 notifyItemChanged(i);
                 return;
+            }
+        }
+    }
+
+    // This method does not manage the creation date, so it must be managed somewhere else
+    public void modifyData(entry currentEntry, entry nextEntry) {
+        if (!currentEntry.getCategory().equals(nextEntry.getCategory())) {
+            boolean included = false, deleted = false;
+            for (int i = 0; i < items.size() && !(included && deleted); i++) {
+                RealmList<subcategory> subcategories = items.get(i).category.getSubcategories();
+                if (subcategories.where().equalTo("name", currentEntry.getCategory()).findFirst() != null) {
+                    items.get(i).surplusMoney += currentEntry.getValor();
+                    notifyItemChanged(i);
+                    deleted = true;
+                }
+                if (subcategories.where().equalTo("name", nextEntry.getCategory()).findFirst() != null) {
+                    items.get(i).surplusMoney -= nextEntry.getValor();
+                    notifyItemChanged(i);
+                    included = true;
+                }
+            }
+        } else if (currentEntry.getValor() != nextEntry.getValor()) {
+            boolean changed = false;
+            for (int i = 0; i < items.size() && !changed; i++) {
+                RealmList<subcategory> subcategories = items.get(i).category.getSubcategories();
+                if (subcategories.where().equalTo("name", currentEntry.getCategory()).findFirst() != null) {
+                    items.get(i).surplusMoney += currentEntry.getValor();
+                    items.get(i).surplusMoney -= nextEntry.getValor();
+                    notifyItemChanged(i);
+                    changed = true;
+                }
             }
         }
     }
@@ -122,7 +154,7 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
                                 .replace(viewId, frontFragment)
                                 .commit();
                         isShowingBack = false;
-                    } else{
+                    } else {
                         fragmentManager
                                 .beginTransaction()
                                 .setCustomAnimations(

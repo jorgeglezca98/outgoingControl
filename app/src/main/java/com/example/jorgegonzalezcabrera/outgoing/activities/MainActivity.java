@@ -284,6 +284,39 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         });
     }
 
+    @Override
+    public void editEntry(@NonNull final entry nextVersion) {
+        entry currentVersion = database.where(entry.class).equalTo("id", nextVersion.getId()).findFirst();
+
+        final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
+        if (currentConfiguration != null) {
+            if (currentVersion.getType() == entry.type.OUTGOING) {
+                currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + currentVersion.getValor());
+            } else {
+                currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - currentVersion.getValor());
+            }
+
+            if (nextVersion.getType() == entry.type.OUTGOING) {
+                currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - nextVersion.getValor());
+            } else {
+                currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + nextVersion.getValor());
+            }
+        }
+
+        actionsFragment.updateDataModified(nextVersion);
+        mainFragment.updateDataModified(currentVersion, nextVersion);
+
+        database.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                if (currentConfiguration != null) {
+                    database.copyToRealmOrUpdate(currentConfiguration);
+                }
+                database.copyToRealmOrUpdate(nextVersion);
+            }
+        });
+    }
+
     public void updateData() {
         RealmResults<periodicEntry> periodicEntries = database.where(periodicEntry.class).findAll();
 

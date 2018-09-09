@@ -71,6 +71,11 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
                 @Override
                 public void removeEntry(@NonNull entry removedEntry) {
                 }
+
+                @Override
+                public void editEntry(@NonNull entry nextVersion) {
+
+                }
             };
         }
 
@@ -241,6 +246,10 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
 
     public void updateDataAdded(entry newEntry) {
         adapter.newEntryAdded(newEntry);
+    }
+
+    public void updateDataModified(entry nextVersion) {
+        adapter.entryModified(nextVersion);
     }
 
     @Override

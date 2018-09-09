@@ -46,6 +46,10 @@ public class entry extends RealmObject {
         return id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public double getValor() {
         return valor;
     }
@@ -72,6 +76,10 @@ public class entry extends RealmObject {
 
     public Date getCreationDate() {
         return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 
     public String getDescription() {

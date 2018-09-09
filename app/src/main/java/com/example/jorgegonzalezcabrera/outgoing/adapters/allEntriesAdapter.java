@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
@@ -41,7 +42,9 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private Context context;
     private localUtils.OnEntriesChangeInterface onEntriesChangeInterface;
 
-    public allEntriesAdapter(@NonNull Context context, @Nonnull RealmList<entry> allEntries, @NonNull localUtils.OnEntriesChangeInterface onEntriesChangeInterface) {
+    public allEntriesAdapter(@NonNull Context context,
+                             @Nonnull RealmList<entry> allEntries,
+                             @NonNull final localUtils.OnEntriesChangeInterface onEntriesChangeInterface) {
         this.actionLayout = R.layout.entry_item;
         this.headerLayout = R.layout.entries_by_month;
         this.context = context;
@@ -87,29 +90,143 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         GregorianCalendar dateOfNewEntry = new GregorianCalendar();
         dateOfNewEntry.setTime(newEntry.getCreationDate());
         GregorianCalendar dateOfLastEntry = new GregorianCalendar();
-        if (!entries.isEmpty()) {
-            entry entry = entries.firstElement().last();
-            if (entry != null) {
-                dateOfLastEntry.setTime(entry.getCreationDate());
-                if (dateOfNewEntry.get(Calendar.MONTH) == dateOfLastEntry.get(Calendar.MONTH)) {
-                    if (dateOfNewEntry.get(Calendar.YEAR) == dateOfLastEntry.get(Calendar.YEAR)) {
-                        entries.firstElement().add(1, newEntry);
-                        notifyItemInserted(1);
-                    }
-                } else {
-                    entries.add(0, new RealmList<entry>());
-                    entries.firstElement().add(0, null);
-                    notifyItemInserted(0);
-                    entries.firstElement().add(1, newEntry);
-                    notifyItemInserted(1);
+        int itemPosition = 0;
+        int i = 0;
+
+        while (i < entries.size()) {
+            dateOfLastEntry.setTime(entries.get(i).get(1).getCreationDate());
+            if (dateOfLastEntry.get(Calendar.MONTH) == dateOfNewEntry.get(Calendar.MONTH) &&
+                    dateOfLastEntry.get(Calendar.YEAR) == dateOfNewEntry.get(Calendar.YEAR)) {
+                break;
+            } else if (dateOfLastEntry.before(dateOfNewEntry)) {
+                break;
+            }
+
+            i++;
+            itemPosition += entries.get(i).size();
+        }
+
+        if (i != entries.size() && dateOfLastEntry.get(Calendar.MONTH) == dateOfNewEntry.get(Calendar.MONTH) &&
+                dateOfLastEntry.get(Calendar.YEAR) == dateOfNewEntry.get(Calendar.YEAR)) {
+            int j = 1;
+            itemPosition++;
+            while (j < entries.get(i).size()) {
+                dateOfLastEntry.setTime(entries.get(i).get(j).getCreationDate());
+                if (dateOfLastEntry.before(dateOfNewEntry)) {
+                    entries.get(i).add(j, newEntry);
+                    notifyItemInserted(itemPosition);
+                    break;
                 }
+                j++;
+                itemPosition++;
+            }
+            if (j == entries.get(i).size()) {
+                entries.get(i).add(j, newEntry);
+                notifyItemInserted(itemPosition);
             }
         } else {
-            entries.add(0, new RealmList<entry>());
-            entries.firstElement().add(0, null);
-            notifyItemInserted(0);
-            entries.firstElement().add(1, newEntry);
-            notifyItemInserted(1);
+            entries.add(i, new RealmList<entry>());
+            entries.get(i).add(0, null);
+            notifyItemInserted(itemPosition);
+            entries.get(i).add(1, newEntry);
+            notifyItemInserted(itemPosition + 1);
+        }
+    }
+
+    private void deleteItemAt(int position) {
+        if (position >= 0 && position < getItemCount()) {
+            int i = 0, j = position;
+            while (j >= entries.get(i).size()) {
+                j -= entries.get(i).size();
+                i++;
+            }
+            entries.get(i).remove(j);
+            notifyItemRemoved(position);
+            if (entries.get(i).size() == 1) {
+                entries.remove(i);
+                notifyItemRemoved(position - 1);
+            }
+        }
+    }
+
+    public void entryModified(@Nonnull entry newEntry) {
+        GregorianCalendar dateOfNewEntry = new GregorianCalendar();
+        dateOfNewEntry.setTime(newEntry.getCreationDate());
+        GregorianCalendar dateOfLastEntry = new GregorianCalendar();
+        int toPosition = 0;
+        int fromPosition = 0;
+
+        int iPositionOldEntry = 0;
+        int jPositionOldEntry = 1;
+        entry oldEntry = null;
+        while (iPositionOldEntry < entries.size() && oldEntry == null) {
+            jPositionOldEntry = 1;
+            fromPosition++;
+            while (jPositionOldEntry < entries.get(iPositionOldEntry).size()
+                    && entries.get(iPositionOldEntry).get(jPositionOldEntry).getId() != newEntry.getId()) {
+                jPositionOldEntry++;
+                fromPosition++;
+            }
+            if (jPositionOldEntry < entries.get(iPositionOldEntry).size()) {
+                oldEntry = entries.get(iPositionOldEntry).get(jPositionOldEntry);
+            } else {
+                iPositionOldEntry++;
+            }
+        }
+
+        if (oldEntry.getCreationDate().equals(newEntry.getCreationDate())) {
+            entries.get(iPositionOldEntry).remove(jPositionOldEntry);
+            entries.get(iPositionOldEntry).add(jPositionOldEntry, newEntry);
+            notifyItemChanged(fromPosition);
+        } else {
+            if (entries.get(iPositionOldEntry).size() == 2) {
+                entries.get(iPositionOldEntry).remove(0);
+                fromPosition--;
+                notifyItemRemoved(fromPosition);
+            }
+
+            int iPositionNewEntry = 0;
+            int jPositionNewEntry = 1;
+            while (iPositionNewEntry < entries.size()) {
+                dateOfLastEntry.setTime(entries.get(iPositionNewEntry).get(1).getCreationDate());
+                if (dateOfLastEntry.get(Calendar.MONTH) == dateOfNewEntry.get(Calendar.MONTH) &&
+                        dateOfLastEntry.get(Calendar.YEAR) == dateOfNewEntry.get(Calendar.YEAR)) {
+                    break;
+                } else if (dateOfLastEntry.before(dateOfNewEntry)) {
+                    break;
+                }
+
+                iPositionNewEntry++;
+                toPosition += entries.get(iPositionNewEntry).size();
+            }
+
+            if (dateOfLastEntry.get(Calendar.MONTH) == dateOfNewEntry.get(Calendar.MONTH) &&
+                    dateOfLastEntry.get(Calendar.YEAR) == dateOfNewEntry.get(Calendar.YEAR)) {
+                toPosition++;
+                while (jPositionNewEntry < entries.get(iPositionNewEntry).size()) {
+                    dateOfLastEntry.setTime(entries.get(iPositionNewEntry).get(jPositionNewEntry).getCreationDate());
+                    if (dateOfLastEntry.before(dateOfNewEntry)) {
+                        entries.get(iPositionNewEntry).add(jPositionNewEntry, newEntry);
+                        break;
+                    }
+                    jPositionNewEntry++;
+                    toPosition++;
+                }
+                if (jPositionNewEntry == entries.get(iPositionNewEntry).size()) {
+                    entries.get(iPositionNewEntry).add(jPositionNewEntry, newEntry);
+                }
+            } else {
+                entries.add(iPositionNewEntry, new RealmList<entry>());
+                entries.get(iPositionNewEntry).add(1, newEntry);
+                toPosition++;
+            }
+
+            notifyItemMoved(fromPosition, toPosition);
+
+            if (entries.get(iPositionNewEntry).size() == 1) {
+                entries.get(iPositionOldEntry).add(0, null);
+                notifyItemInserted(toPosition);
+            }
         }
     }
 
@@ -202,6 +319,7 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         public boolean onMenuItemClick(MenuItem menuItem) {
                             switch (menuItem.getItemId()) {
                                 case R.id.editEntryMenuItem:
+                                    dialogs.editEntryDialog(context, get(getAdapterPosition()), onEntriesChangeInterface);
                                     return true;
                                 case R.id.removeEntryMenuItem:
                                     entry itemToRemove = get(getAdapterPosition());
@@ -217,22 +335,6 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     popup.show();
                 }
             });
-        }
-    }
-
-    private void deleteItemAt(int position) {
-        if (position >= 0 && position < getItemCount()) {
-            int i = 0, j = position;
-            while (j >= entries.get(i).size()) {
-                j -= entries.get(i).size();
-                i++;
-            }
-            entries.get(i).remove(j);
-            notifyItemRemoved(position);
-            if (entries.get(i).size() == 1) {
-                entries.remove(i);
-                notifyItemRemoved(position - 1);
-            }
         }
     }
 
