@@ -37,6 +37,9 @@ public class frontSurplusMoneyFragment extends Fragment {
 
     public void setData(surplusMoneyByCategory surplusMoneyByCategory) {
         this.surplusMoneyByCategory = surplusMoneyByCategory;
+        if (getView() != null) {
+            bind();
+        }
     }
 
     private void bind() {

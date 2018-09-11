@@ -39,6 +39,9 @@ public class backSurplusMoneyFragment extends Fragment {
 
     public void setData(surplusMoneyByCategory surplusMoneyByCategory) {
         this.surplusMoneyByCategory = surplusMoneyByCategory;
+        if (getView() != null) {
+            bind();
+        }
     }
 
     private void bind() {
@@ -49,7 +52,7 @@ public class backSurplusMoneyFragment extends Fragment {
             double maximumPerDay = surplusMoneyByCategory.category.getMaximum() / now.getActualMaximum(Calendar.DAY_OF_MONTH);
             double spentMoney = surplusMoneyByCategory.category.getMaximum() - surplusMoneyByCategory.surplusMoney;
             double surplusMoneyPerDay = maximumPerDay * now.get(Calendar.DAY_OF_MONTH) - spentMoney;
-            long daysForRecovery = surplusMoneyPerDay > 0 ? 0 : - Math.round(surplusMoneyPerDay / maximumPerDay);
+            long daysForRecovery = surplusMoneyPerDay > 0 ? 0 : -Math.round(surplusMoneyPerDay / maximumPerDay);
 
             String stringMoneyAvailablePerDay = String.format(new Locale("es", "ES"), "%.2f", maximumPerDay) + " €";
             textViewMoneyAvailablePerDay.setText(stringMoneyAvailablePerDay);

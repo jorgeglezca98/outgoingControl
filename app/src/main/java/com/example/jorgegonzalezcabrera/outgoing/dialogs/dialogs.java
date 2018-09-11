@@ -215,6 +215,7 @@ public class dialogs {
 
                         Toast.makeText(context, "Periodic entry added", Toast.LENGTH_LONG).show();
                     }
+                    dialog.dismiss();
                 }
             }
         });
