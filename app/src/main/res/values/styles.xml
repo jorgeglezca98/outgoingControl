@@ -2,7 +2,6 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/primary0</item>
         <item name="colorPrimaryDark">@color/primary4</item>
         <item name="colorAccent">@color/primary3</item>
@@ -19,6 +18,11 @@
 
     <style name="SplashStyle" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/ic_menu_gallery</item>
+    </style>
+
+    <style name="DialogAnimation" parent="AppTheme">
+        <item name="android:windowEnterAnimation">@anim/enter_animation</item>
+        <item name="android:windowExitAnimation">@anim/exit_animation</item>
     </style>
 
 </resources>

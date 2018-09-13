@@ -42,6 +42,15 @@ public class entry extends RealmObject {
         this.description = description == null ? "Not described" : description;
     }
 
+    public entry(double valor, @Nonnull type type, @Nonnull String category, String description, Date creationDate) {
+        this.id = myApplication.entryId.incrementAndGet();
+        this.valor = valor;
+        this.type = type.ordinal();
+        this.category = category;
+        this.creationDate = creationDate;
+        this.description = description == null ? "Not described" : description;
+    }
+
     public long getId() {
         return id;
     }

@@ -32,10 +32,14 @@ import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.get
 public class dialogs {
 
     public static void newEntryDialog(Context context, final localUtils.OnEntriesChangeInterface onEntriesChange) {
-        final Dialog dialog = new Dialog(context);
+        final Dialog dialog = new Dialog(context, R.style.AppTheme);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
         dialog.setContentView(R.layout.new_entry_dialog);
+        Window dialogWindow = dialog.getWindow();
+        if (dialogWindow != null) {
+            dialogWindow.setWindowAnimations(R.style.DialogAnimation);
+        }
 
         final EditText valueEditText = dialog.findViewById(R.id.editTextValueNewEntry);
         final Spinner categorySpinner = dialog.findViewById(R.id.spinnerCategorySelection);
@@ -46,6 +50,9 @@ public class dialogs {
         final categoriesSpinnerAdapter categoriesSpinnerAdapter = new categoriesSpinnerAdapter(context);
         categorySpinner.setAdapter(categoriesSpinnerAdapter);
         categorySpinner.setSelection(1);
+
+        final DatePicker datePicker = dialog.findViewById(R.id.datePicker);
+        datePicker.setMaxDate((new Date()).getTime());
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +75,10 @@ public class dialogs {
                     String description = descriptionEditText.getText().toString();
                     double value = Double.valueOf(valueEditText.getText().toString());
 
-                    onEntriesChange.addEntry(new entry(value, getTypeFromOrdinal(typeOfCategory), subcategory, description));
+                    GregorianCalendar creationDate = new GregorianCalendar();
+                    creationDate.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+
+                    onEntriesChange.addEntry(new entry(value, getTypeFromOrdinal(typeOfCategory), subcategory, description, creationDate.getTime()));
                     dialog.dismiss();
                 }
             }
@@ -78,10 +88,14 @@ public class dialogs {
     }
 
     public static void editEntryDialog(Context context, @NonNull final entry lastVersion, final localUtils.OnEntriesChangeInterface onEntriesChange) {
-        final Dialog dialog = new Dialog(context);
+        final Dialog dialog = new Dialog(context, R.style.DialogAnimation);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
         dialog.setContentView(R.layout.new_entry_dialog);
+        Window dialogWindow = dialog.getWindow();
+        if (dialogWindow != null) {
+            dialogWindow.setWindowAnimations(R.style.DialogAnimation);
+        }
 
         final EditText valueEditText = dialog.findViewById(R.id.editTextValueNewEntry);
         valueEditText.setText(String.valueOf(lastVersion.getValor()));
@@ -94,6 +108,12 @@ public class dialogs {
         categorySpinner.setAdapter(categoriesSpinnerAdapter);
         categorySpinner.setSelection(categoriesSpinnerAdapter.getPosition(lastVersion.getCategory()));
 
+        final DatePicker datePicker = dialog.findViewById(R.id.datePicker);
+        datePicker.setMaxDate((new Date()).getTime());
+        GregorianCalendar lastVersionDate = new GregorianCalendar();
+        lastVersionDate.setTime(lastVersion.getCreationDate());
+        datePicker.updateDate(lastVersionDate.get(Calendar.YEAR), lastVersionDate.get(Calendar.MONTH), lastVersionDate.get(Calendar.DAY_OF_MONTH));
+
         Button cancelButton = dialog.findViewById(R.id.buttonCancel);
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,10 +137,12 @@ public class dialogs {
                     String description = descriptionEditText.getText().toString();
                     double value = Double.valueOf(valueEditText.getText().toString());
 
-                    entry nextVersion = new entry(value, getTypeFromOrdinal(typeOfCategory), subcategory, description);
+                    GregorianCalendar creationDate = new GregorianCalendar();
+                    creationDate.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+
+                    entry nextVersion = new entry(value, getTypeFromOrdinal(typeOfCategory), subcategory, description, creationDate.getTime());
                     //TODO: look for another option that avoids using this method
                     nextVersion.setId(lastVersion.getId());
-                    nextVersion.setCreationDate(lastVersion.getCreationDate());
                     onEntriesChange.editEntry(nextVersion);
                     dialog.dismiss();
                 }

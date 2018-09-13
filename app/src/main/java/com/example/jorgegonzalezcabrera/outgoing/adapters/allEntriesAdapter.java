@@ -102,8 +102,8 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 break;
             }
 
-            i++;
             itemPosition += entries.get(i).size();
+            i++;
         }
 
         if (i != entries.size() && dateOfLastEntry.get(Calendar.MONTH) == dateOfNewEntry.get(Calendar.MONTH) &&
@@ -183,12 +183,15 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 entries.get(iPositionOldEntry).remove(0);
                 fromPosition--;
                 notifyItemRemoved(fromPosition);
+                entries.remove(iPositionOldEntry);
+            } else {
+                entries.get(iPositionOldEntry).remove(jPositionOldEntry);
             }
 
             int iPositionNewEntry = 0;
             int jPositionNewEntry = 1;
             while (iPositionNewEntry < entries.size()) {
-                dateOfLastEntry.setTime(entries.get(iPositionNewEntry).get(1).getCreationDate());
+                dateOfLastEntry.setTime(entries.get(iPositionNewEntry).last().getCreationDate());
                 if (dateOfLastEntry.get(Calendar.MONTH) == dateOfNewEntry.get(Calendar.MONTH) &&
                         dateOfLastEntry.get(Calendar.YEAR) == dateOfNewEntry.get(Calendar.YEAR)) {
                     break;
@@ -196,8 +199,8 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     break;
                 }
 
-                iPositionNewEntry++;
                 toPosition += entries.get(iPositionNewEntry).size();
+                iPositionNewEntry++;
             }
 
             if (dateOfLastEntry.get(Calendar.MONTH) == dateOfNewEntry.get(Calendar.MONTH) &&
@@ -217,14 +220,14 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
             } else {
                 entries.add(iPositionNewEntry, new RealmList<entry>());
-                entries.get(iPositionNewEntry).add(1, newEntry);
-                toPosition++;
+                entries.get(iPositionNewEntry).add(0, newEntry);
             }
 
             notifyItemMoved(fromPosition, toPosition);
+            notifyItemChanged(toPosition);
 
             if (entries.get(iPositionNewEntry).size() == 1) {
-                entries.get(iPositionOldEntry).add(0, null);
+                entries.get(iPositionNewEntry).add(0, null);
                 notifyItemInserted(toPosition);
             }
         }

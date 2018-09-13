@@ -36,6 +36,7 @@ import java.util.Locale;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
+import io.realm.Sort;
 
 import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newDatePickerDialog;
 
@@ -87,7 +88,7 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
         super.onCreate(savedInstanceState);
 
         allTheActions = new RealmList<>();
-        allTheActions.addAll(Realm.getDefaultInstance().where(entry.class).findAll());
+        allTheActions.addAll(Realm.getDefaultInstance().where(entry.class).findAll().sort("creationDate", Sort.ASCENDING));
         adapter = new allEntriesAdapter(context, allTheActions, onEntriesChangeInterface);
     }
 
