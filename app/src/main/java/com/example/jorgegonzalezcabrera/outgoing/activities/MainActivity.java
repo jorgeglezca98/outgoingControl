@@ -318,6 +318,8 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     }
 
     public void updateData() {
+        mainFragment.updateData();
+
         RealmResults<periodicEntry> periodicEntries = database.where(periodicEntry.class).findAll();
 
         GregorianCalendar lastChange = new GregorianCalendar();

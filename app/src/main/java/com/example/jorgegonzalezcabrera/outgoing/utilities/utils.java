@@ -18,8 +18,16 @@ public class utils {
     public static Date firstDateOfTheMonth(Date firstDayOfMonth) {
         GregorianCalendar c = new GregorianCalendar();
         c.setTime(firstDayOfMonth);
-        c.set(c.get(Calendar.YEAR),c.get(Calendar.MONTH),1,0,0,0);
+        c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), 1, 0, 0, 0);
         c.set(Calendar.MILLISECOND, 0);
         return c.getTime();
+    }
+
+    public static boolean areFromTheSameMonth(Date firstDate, Date secondDate) {
+        GregorianCalendar first = new GregorianCalendar();
+        first.setTime(firstDate);
+        GregorianCalendar second = new GregorianCalendar();
+        second.setTime(secondDate);
+        return (first.get(Calendar.MONTH) == second.get(Calendar.MONTH)) && (first.get(Calendar.YEAR) == second.get(Calendar.YEAR));
     }
 }

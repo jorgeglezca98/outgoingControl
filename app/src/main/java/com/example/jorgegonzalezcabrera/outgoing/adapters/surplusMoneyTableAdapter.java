@@ -14,7 +14,9 @@ import com.example.jorgegonzalezcabrera.outgoing.fragments.frontSurplusMoneyFrag
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
+import com.example.jorgegonzalezcabrera.outgoing.utilities.utils;
 
+import java.util.Date;
 import java.util.Vector;
 
 import javax.annotation.Nonnull;
@@ -63,33 +65,25 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
         }
     }
 
-    // This method does not manage the creation date, so it must be managed somewhere else
-    public void modifyData(entry currentEntry, entry nextEntry) {
-        if (!currentEntry.getCategory().equals(nextEntry.getCategory())) {
-            boolean included = false, deleted = false;
-            for (int i = 0; i < items.size() && !(included && deleted); i++) {
-                RealmList<subcategory> subcategories = items.get(i).category.getSubcategories();
-                if (subcategories.where().equalTo("name", currentEntry.getCategory()).findFirst() != null) {
+    public void modifyData(entry currentEntry, entry nextEntry, Date dateOfLastUpdate) {
+        boolean included = !utils.areFromTheSameMonth(dateOfLastUpdate, nextEntry.getCreationDate());
+        boolean deleted = !utils.areFromTheSameMonth(dateOfLastUpdate, currentEntry.getCreationDate());
+
+        for (int i = 0; i < items.size() && !(included && deleted); i++) {
+            RealmList<subcategory> subcategories = items.get(i).category.getSubcategories();
+            if (subcategories.where().equalTo("name", currentEntry.getCategory()).findFirst() != null) {
+                if (utils.areFromTheSameMonth(dateOfLastUpdate, currentEntry.getCreationDate())) {
                     items.get(i).surplusMoney += currentEntry.getValor();
                     notifyItemChanged(i);
-                    deleted = true;
                 }
-                if (subcategories.where().equalTo("name", nextEntry.getCategory()).findFirst() != null) {
-                    items.get(i).surplusMoney -= nextEntry.getValor();
-                    notifyItemChanged(i);
-                    included = true;
-                }
+                deleted = true;
             }
-        } else if (currentEntry.getValor() != nextEntry.getValor()) {
-            boolean changed = false;
-            for (int i = 0; i < items.size() && !changed; i++) {
-                RealmList<subcategory> subcategories = items.get(i).category.getSubcategories();
-                if (subcategories.where().equalTo("name", currentEntry.getCategory()).findFirst() != null) {
-                    items.get(i).surplusMoney += currentEntry.getValor();
+            if (subcategories.where().equalTo("name", nextEntry.getCategory()).findFirst() != null) {
+                if (utils.areFromTheSameMonth(dateOfLastUpdate, nextEntry.getCreationDate())) {
                     items.get(i).surplusMoney -= nextEntry.getValor();
                     notifyItemChanged(i);
-                    changed = true;
                 }
+                included = true;
             }
         }
     }
@@ -170,4 +164,15 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
             });
         }
     }
+
+    public void refresh(@NonNull Vector<surplusMoneyByCategory> items) {
+        this.items = new Vector<>();
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i) != null) {
+                this.items.add(items.get(i));
+            }
+        }
+        notifyDataSetChanged();
+    }
+
 }
