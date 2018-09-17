@@ -5,17 +5,25 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.adapters.editableOutgoingCategoriesAdapter;
 
 public class settingFragment extends Fragment {
+
+    private Context context;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
+        this.context = context;
     }
 
     @Nullable
@@ -23,6 +31,10 @@ public class settingFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.setting_fragment, container, false);
 
+        RecyclerView recyclerViewEditableOutgoingCategories = view.findViewById(R.id.recyclerViewEditableOutgoingCategories);
+        recyclerViewEditableOutgoingCategories.setAdapter(new editableOutgoingCategoriesAdapter());
+        recyclerViewEditableOutgoingCategories.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerViewEditableOutgoingCategories.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         return view;
     }
 }

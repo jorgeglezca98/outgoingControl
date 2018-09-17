@@ -18,13 +18,17 @@
         <android.support.design.widget.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
             android:layout_weight="3">
 
             <EditText
                 android:id="@+id/editTextCategoryName"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="false"
                 android:ems="10"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:hint="@string/category_name"
                 android:inputType="text"
                 android:textSize="16sp" />
@@ -39,7 +43,10 @@
                 android:id="@+id/editTextMaxValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:clickable="false"
                 android:ems="10"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:hint="@string/maximum_hint"
                 android:inputType="numberDecimal"
                 android:textSize="16sp" />
@@ -54,23 +61,23 @@
         android:layout_marginEnd="4dp"
         android:background="#00000000"
         android:contentDescription="@string/remove"
-        android:rotation="180"
-        android:scaleX="0.5"
-        android:scaleY="0.5"
-        android:src="@drawable/up_pointing_arrow"
+        android:scaleX="0.75"
+        android:scaleY="0.75"
+        android:src="@drawable/grey_down_pointing_arrow"
         app:layout_constraintBottom_toBottomOf="@+id/linearLayoutMainData"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/linearLayoutMainData" />
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/editTextSubcategories"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="10dp"
+        android:background="#00000000"
         android:clickable="false"
         android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:padding="8dp"
         android:textSize="14sp"
         app:layout_constraintEnd_toStartOf="@+id/imageButtonEditCategory"
         app:layout_constraintStart_toStartOf="@+id/linearLayoutMainData"
@@ -84,9 +91,10 @@
         android:background="#00000000"
         android:contentDescription="@string/remove"
         android:src="@android:drawable/ic_menu_delete"
-        app:layout_constraintBottom_toBottomOf="@+id/editText"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/editTextSubcategories"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextSubcategories" />
 
     <ImageButton
         android:id="@+id/imageButtonEditCategory"
@@ -96,6 +104,7 @@
         android:background="#00000000"
         android:contentDescription="@string/remove"
         android:src="@android:drawable/ic_menu_edit"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/imageButtonRemoveCategory"
         app:layout_constraintEnd_toStartOf="@+id/imageButtonRemoveCategory"
         app:layout_constraintTop_toTopOf="@+id/imageButtonRemoveCategory" />
