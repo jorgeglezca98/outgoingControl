@@ -96,19 +96,55 @@ public class mainFragment extends Fragment {
         String incomesOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalIncomes) + "€";
         textViewIncomesOfTheMonth.setText(incomesOfTheMonth);
 
-        if (surplusMoneyAdapter == null) {
-            surplusMoneyAdapter = new surplusMoneyTableAdapter(getFragmentManager(), surplusMoneyByCategoryVector);
-            recyclerViewSurplusMoney.setAdapter(surplusMoneyAdapter);
-            recyclerViewSurplusMoney.setLayoutManager(new GridLayoutManager(context, 2));
-            recyclerViewSurplusMoney.addItemDecoration(new ItemOffsetDecoration(context, 5));
-        } else {
-            surplusMoneyAdapter.refresh(surplusMoneyByCategoryVector);
-        }
+        surplusMoneyAdapter = new surplusMoneyTableAdapter(getFragmentManager(), surplusMoneyByCategoryVector);
+        recyclerViewSurplusMoney.setAdapter(surplusMoneyAdapter);
+        recyclerViewSurplusMoney.setLayoutManager(new GridLayoutManager(context, 2));
+        recyclerViewSurplusMoney.addItemDecoration(new ItemOffsetDecoration(context, 5));
     }
+
+    private void updateUI() {
+        dateOfLastUpdate = new Date();
+        Realm database = Realm.getDefaultInstance();
+        appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
+
+        String currentMoney = String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€";
+        textViewCurrentMoney.setText(currentMoney);
+
+        Date date = utils.firstDateOfTheMonth(new Date());
+        RealmResults<entry> entriesOfTheMonth = database.where(entry.class).greaterThanOrEqualTo("creationDate", date).findAll();
+
+        Vector<surplusMoneyTableAdapter.surplusMoneyByCategory> surplusMoneyByCategoryVector = new Vector<>();
+        totalOutgoings = 0;
+        for (int i = 0; i < currentConfiguration.getOutgoingCategories().size(); i++) {
+            double outgoingsByCategory = 0;
+            for (int j = 0; j < currentConfiguration.getOutgoingCategories().get(i).getSubcategories().size(); j++) {
+                String subcategoryName = currentConfiguration.getOutgoingCategories().get(i).getSubcategories().get(j).getName();
+                outgoingsByCategory += entriesOfTheMonth.where().equalTo("category", subcategoryName).sum("valor").doubleValue();
+            }
+            totalOutgoings += outgoingsByCategory;
+            double surplusMoneyByCategory = currentConfiguration.getOutgoingCategories().get(i).getMaximum() - outgoingsByCategory;
+            outgoingCategory outgoingCategory = currentConfiguration.getOutgoingCategories().get(i);
+            surplusMoneyByCategoryVector.add(new surplusMoneyTableAdapter.surplusMoneyByCategory(outgoingCategory, surplusMoneyByCategory));
+        }
+
+        String outgoingsOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€";
+        textViewOutgoingsOfTheMonth.setText(outgoingsOfTheMonth);
+
+        totalIncomes = 0;
+        for (int i = 0; i < currentConfiguration.getIncomeCategories().size(); i++) {
+            String subcategoryName = currentConfiguration.getIncomeCategories().get(i).getName();
+            totalIncomes += entriesOfTheMonth.where().equalTo("category", subcategoryName).sum("valor").doubleValue();
+        }
+        String incomesOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalIncomes) + "€";
+        textViewIncomesOfTheMonth.setText(incomesOfTheMonth);
+
+        surplusMoneyAdapter.refresh(surplusMoneyByCategoryVector);
+    }
+
 
     public void updateData() {
         if (getView() != null) {
-            bindUI();
+            updateUI();
         }
     }
 
