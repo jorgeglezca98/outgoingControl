@@ -61,6 +61,11 @@ public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesS
         notifyItemRangeInserted(positionFirstInserted, newOutgoingCategory.getSubcategories().size());
     }
 
+    public void addCategory(incomeCategory newIncomeCategory) {
+        categories.add(newIncomeCategory.getName());
+        notifyItemInserted(categories.size() - 1);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public CheckBox checkboxCategory;

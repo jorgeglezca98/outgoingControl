@@ -406,8 +406,17 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     }
 
     @Override
-    public void addedCategory(@NonNull incomeCategory newIncomeCategory) {
-
+    public void addedCategory(@NonNull final incomeCategory newIncomeCategory) {
+        final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
+        database.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                currentConfiguration.getIncomeCategories().add(newIncomeCategory);
+                database.copyToRealmOrUpdate(currentConfiguration);
+            }
+        });
+        incomeCategory storedOutgoingCategory = database.where(incomeCategory.class).equalTo("id", newIncomeCategory.getId()).findFirst();
+        actionsFragment.addCategoryInFilters(storedOutgoingCategory);
     }
 
     public void updateData() {

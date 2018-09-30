@@ -287,4 +287,8 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
     public void addCategoryInFilters(outgoingCategory newOutgoingCategory) {
         categoriesSelectionAdapter.addCategory(newOutgoingCategory);
     }
+
+    public void addCategoryInFilters(incomeCategory newIncomeCategory) {
+        categoriesSelectionAdapter.addCategory(newIncomeCategory);
+    }
 }
