@@ -47,6 +47,16 @@ public class settingFragment extends Fragment {
                 public void removeCategory(@NonNull incomeCategory removedOutgoingCategory) {
 
                 }
+
+                @Override
+                public void addedCategory(@NonNull outgoingCategory newOutgoingCategory) {
+
+                }
+
+                @Override
+                public void addedCategory(@NonNull incomeCategory newIncomeCategory) {
+
+                }
             };
         }
     }

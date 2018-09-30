@@ -278,4 +278,8 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
     public void removeCategoryInFilters(outgoingCategory removedCategory) {
         categoriesSelectionAdapter.removeCategory(removedCategory);
     }
+
+    public void addCategoryInFilters(outgoingCategory newOutgoingCategory) {
+        categoriesSelectionAdapter.addCategory(newOutgoingCategory);
+    }
 }

@@ -30,6 +30,10 @@ public class localUtils {
         void removeAndKeepCategory(@NonNull outgoingCategory removedOutgoingCategory);
 
         void removeCategory(@NonNull incomeCategory removedOutgoingCategory);
+
+        void addedCategory(@NonNull outgoingCategory newOutgoingCategory);
+
+        void addedCategory(@NonNull incomeCategory newIncomeCategory);
     }
 
     public static type getTypeFromOrdinal(int ordinal) {

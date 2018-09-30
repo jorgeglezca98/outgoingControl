@@ -48,6 +48,14 @@ public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesS
         }
     }
 
+    public void addCategory(outgoingCategory newOutgoingCategory) {
+        int positionFirstInserted = categories.size();
+        for (int i = 0; i < newOutgoingCategory.getSubcategories().size(); i++) {
+            categories.add(newOutgoingCategory.getSubcategories().get(i).getName());
+        }
+        notifyItemRangeInserted(positionFirstInserted, newOutgoingCategory.getSubcategories().size());
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public CheckBox checkboxCategory;

@@ -233,4 +233,8 @@ public class mainFragment extends Fragment {
     public void updateCategoryRemoved(@NonNull outgoingCategory category) {
         surplusMoneyAdapter.removeCategory(category);
     }
+
+    public void updateCategoryAdded(@NonNull outgoingCategory newOutgoingCategory) {
+        surplusMoneyAdapter.addCategory(newOutgoingCategory);
+    }
 }
