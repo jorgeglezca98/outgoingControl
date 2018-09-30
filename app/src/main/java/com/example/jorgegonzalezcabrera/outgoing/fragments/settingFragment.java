@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.adapters.editableIncomeCategoriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.editableOutgoingCategoriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
@@ -44,7 +45,12 @@ public class settingFragment extends Fragment {
                 }
 
                 @Override
-                public void removeCategory(@NonNull incomeCategory removedOutgoingCategory) {
+                public void removeAndReplaceCategory(@NonNull incomeCategory removedIncomeCategory, @NonNull String newCategory) {
+
+                }
+
+                @Override
+                public void removeAndKeepCategory(@NonNull incomeCategory removedIncomeCategory) {
 
                 }
 
@@ -70,6 +76,12 @@ public class settingFragment extends Fragment {
         recyclerViewEditableOutgoingCategories.setAdapter(new editableOutgoingCategoriesAdapter(getContext(), onCategoriesChangeInterface));
         recyclerViewEditableOutgoingCategories.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewEditableOutgoingCategories.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
+
+        RecyclerView recyclerViewEditableIncomeCategories = view.findViewById(R.id.recyclerViewEditableIncomeCategories);
+        recyclerViewEditableIncomeCategories.setAdapter(new editableIncomeCategoriesAdapter(getContext(), onCategoriesChangeInterface));
+        recyclerViewEditableIncomeCategories.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerViewEditableIncomeCategories.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
+
         return view;
     }
 }

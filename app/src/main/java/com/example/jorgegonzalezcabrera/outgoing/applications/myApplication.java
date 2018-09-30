@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
+import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 
@@ -18,6 +19,7 @@ public class myApplication extends Application {
     public static AtomicInteger appConfigurationId;
     public static AtomicInteger entryId;
     public static AtomicInteger outgoingCategoryId;
+    public static AtomicInteger incomeCategoryId;
 
     @Override
     public void onCreate() {
@@ -37,6 +39,9 @@ public class myApplication extends Application {
 
         Number higherOutgoingCategoryId = Realm.getDefaultInstance().where(outgoingCategory.class).max("id");
         outgoingCategoryId = new AtomicInteger((higherOutgoingCategoryId == null) ? 0 : higherOutgoingCategoryId.intValue());
+
+        Number higherIncomeCategoryId = Realm.getDefaultInstance().where(incomeCategory.class).max("id");
+        incomeCategoryId = new AtomicInteger((higherIncomeCategoryId == null) ? 0 : higherIncomeCategoryId.intValue());
     }
 }
 //TODO: explore configuration possibilities

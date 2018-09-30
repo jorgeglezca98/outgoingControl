@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
@@ -46,6 +47,10 @@ public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesS
             categories.remove(position);
             notifyItemRemoved(position);
         }
+    }
+
+    public void removeCategory(incomeCategory removedCategory) {
+        categories.remove(removedCategory.getName());
     }
 
     public void addCategory(outgoingCategory newOutgoingCategory) {

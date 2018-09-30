@@ -29,7 +29,9 @@ public class localUtils {
 
         void removeAndKeepCategory(@NonNull outgoingCategory removedOutgoingCategory);
 
-        void removeCategory(@NonNull incomeCategory removedOutgoingCategory);
+        void removeAndReplaceCategory(@NonNull incomeCategory removedIncomeCategory, @NonNull String newCategory);
+
+        void removeAndKeepCategory(@NonNull incomeCategory removedIncomeCategory);
 
         void addedCategory(@NonNull outgoingCategory newOutgoingCategory);
 

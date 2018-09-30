@@ -22,6 +22,7 @@ import com.example.jorgegonzalezcabrera.outgoing.adapters.allEntriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSelectionAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
+import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.others.HeaderItemDecoration;
 import com.example.jorgegonzalezcabrera.outgoing.others.HeaderItemDecoration.StickyHeaderInterface;
@@ -276,6 +277,10 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
     }
 
     public void removeCategoryInFilters(outgoingCategory removedCategory) {
+        categoriesSelectionAdapter.removeCategory(removedCategory);
+    }
+
+    public void removeCategoryInFilters(incomeCategory removedCategory) {
         categoriesSelectionAdapter.removeCategory(removedCategory);
     }
 

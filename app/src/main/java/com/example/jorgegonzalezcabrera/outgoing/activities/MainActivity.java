@@ -359,8 +359,35 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     }
 
     @Override
-    public void removeCategory(@NonNull incomeCategory removedOutgoingCategory) {
+    public void removeAndReplaceCategory(@NonNull final incomeCategory removedIncomeCategory, @NonNull String newCategory) {
+        actionsFragment.removeCategoryInFilters(removedIncomeCategory);
+        RealmList<entry> entries = new RealmList<>();
+        entries.addAll(database.where(entry.class).equalTo("category", removedIncomeCategory.getName()).findAll());
+        for (int i = 0; i < entries.size(); i++) {
+            entry entry = entries.get(i);
+            entry nextVersion = new entry(entry.getValor(), entry.getType(), newCategory, entry.getDescription(), entry.getCreationDate());
+            nextVersion.setId(entry.getId());
+            onEntriesChangeInterface.editEntry(nextVersion);
+        }
+        database.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                removedIncomeCategory.deleteFromRealm();
+            }
+        });
+    }
 
+    @Override
+    public void removeAndKeepCategory(@NonNull final incomeCategory removedIncomeCategory) {
+        final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
+        database.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                currentConfiguration.getIncomeCategories().remove(removedIncomeCategory);
+                currentConfiguration.getRemovedIncomeCategories().add(removedIncomeCategory);
+                database.copyToRealmOrUpdate(currentConfiguration);
+            }
+        });
     }
 
     @Override
