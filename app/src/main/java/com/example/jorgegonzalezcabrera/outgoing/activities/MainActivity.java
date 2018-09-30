@@ -23,6 +23,8 @@ import com.example.jorgegonzalezcabrera.outgoing.fragments.mainFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.settingFragment;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
+import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
+import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry.periodicType;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
@@ -33,13 +35,14 @@ import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newEntryDialog;
 import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newPeriodicEntryDialog;
 import static com.example.jorgegonzalezcabrera.outgoing.utilities.utils.dpToPixels;
 
-public class MainActivity extends AppCompatActivity implements localUtils.OnEntriesChangeInterface {
+public class MainActivity extends AppCompatActivity implements localUtils.OnEntriesChangeInterface, localUtils.OnCategoriesChangeInterface {
 
     private ViewPager viewPager;
     private FragmentStatePagerAdapter viewPagerAdapter;
@@ -233,11 +236,13 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     public void addEntry(@NonNull final entry newEntry) {
         final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
         if (currentConfiguration != null) {
+            database.beginTransaction();
             if (newEntry.getType() == entry.type.OUTGOING) {
                 currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - newEntry.getValor());
             } else {
                 currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + newEntry.getValor());
             }
+            database.commitTransaction();
         }
 
         database.executeTransaction(new Realm.Transaction() {
@@ -286,35 +291,76 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
 
     @Override
     public void editEntry(@NonNull final entry nextVersion) {
-        entry currentVersion = database.where(entry.class).equalTo("id", nextVersion.getId()).findFirst();
-
-        final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
-        if (currentConfiguration != null) {
-            if (currentVersion.getType() == entry.type.OUTGOING) {
-                currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + currentVersion.getValor());
-            } else {
-                currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - currentVersion.getValor());
-            }
-
-            if (nextVersion.getType() == entry.type.OUTGOING) {
-                currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - nextVersion.getValor());
-            } else {
-                currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + nextVersion.getValor());
-            }
-        }
-
-        actionsFragment.updateDataModified(nextVersion);
-        mainFragment.updateDataModified(currentVersion, nextVersion);
-
         database.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(@NonNull Realm realm) {
+                entry currentVersion = database.where(entry.class).equalTo("id", nextVersion.getId()).findFirst();
+
+                final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
+                if (currentConfiguration != null) {
+                    if (currentVersion.getType() == entry.type.OUTGOING) {
+                        currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + currentVersion.getValor());
+                    } else {
+                        currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - currentVersion.getValor());
+                    }
+
+                    if (nextVersion.getType() == entry.type.OUTGOING) {
+                        currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - nextVersion.getValor());
+                    } else {
+                        currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + nextVersion.getValor());
+                    }
+                }
+
+                actionsFragment.updateDataModified(nextVersion);
+                mainFragment.updateDataModified(currentVersion, nextVersion);
+
                 if (currentConfiguration != null) {
                     database.copyToRealmOrUpdate(currentConfiguration);
                 }
                 database.copyToRealmOrUpdate(nextVersion);
             }
         });
+    }
+
+    @Override
+    public void removeAndReplaceCategory(@NonNull final outgoingCategory removedOutgoingCategory, @NonNull final String newCategory) {
+        mainFragment.updateCategoryRemoved(removedOutgoingCategory);
+        actionsFragment.removeCategoryInFilters(removedOutgoingCategory);
+        RealmList<entry> entries = new RealmList<>();
+        for (int i = 0; i < removedOutgoingCategory.getSubcategories().size(); i++) {
+            entries.addAll(database.where(entry.class).equalTo("category", removedOutgoingCategory.getSubcategories().get(i).getName()).findAll());
+        }
+        for (int i = 0; i < entries.size(); i++) {
+            entry entry = entries.get(i);
+            entry nextVersion = new entry(entry.getValor(), entry.getType(), newCategory, entry.getDescription(), entry.getCreationDate());
+            nextVersion.setId(entry.getId());
+            onEntriesChangeInterface.editEntry(nextVersion);
+        }
+        database.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                removedOutgoingCategory.deleteFromRealm();
+            }
+        });
+    }
+
+    @Override
+    public void removeAndKeepCategory(@NonNull final outgoingCategory removedOutgoingCategory) {
+        mainFragment.updateCategoryRemoved(removedOutgoingCategory);
+        final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
+        database.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                currentConfiguration.getOutgoingCategories().remove(removedOutgoingCategory);
+                currentConfiguration.getRemovedOutgoingCategories().add(removedOutgoingCategory);
+                database.copyToRealmOrUpdate(currentConfiguration);
+            }
+        });
+    }
+
+    @Override
+    public void removeCategory(@NonNull incomeCategory removedOutgoingCategory) {
+
     }
 
     public void updateData() {

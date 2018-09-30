@@ -2,7 +2,9 @@ package com.example.jorgegonzalezcabrera.outgoing.dialogs;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -281,6 +283,14 @@ public class dialogs {
 
         dialog.show();
 
+    }
+
+    public static void chooseOptionDialog(Context context, String title, Vector<String> options, DialogInterface.OnClickListener onClickListener) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+        String[] formattedOptions = new String[options.size()];
+        formattedOptions = options.toArray(formattedOptions);
+        dialogBuilder.setTitle(title).setItems(formattedOptions, onClickListener);
+        dialogBuilder.create().show();
     }
 
     public static void newDatePickerDialog(Context context,

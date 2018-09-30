@@ -11,16 +11,11 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
-import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
-import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
-import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
+import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import io.realm.Realm;
-import io.realm.RealmResults;
+import java.util.Vector;
 
 public class categoriesSpinnerAdapter extends ArrayAdapter<String> {
 
@@ -84,30 +79,11 @@ public class categoriesSpinnerAdapter extends ArrayAdapter<String> {
     }
 
     private static List<String> getCategories() {
-        Realm database = Realm.getDefaultInstance();
-        RealmResults<outgoingCategory> outgoingCategories = database.where(outgoingCategory.class).findAll();
-        RealmResults<incomeCategory> incomeCategories = database.where(incomeCategory.class).findAll();
-
-        List<String> categories = new ArrayList<>();
+        Vector<String> categories = new Vector<>();
         categories.add("Outgoing categories");
-        for (int i = 0; i < outgoingCategories.size(); i++) {
-            outgoingCategory outgoingCategory = outgoingCategories.get(i);
-            if (outgoingCategory != null) {
-                for (int j = 0; j < outgoingCategory.getSubcategories().size(); j++) {
-                    subcategory subcategory = outgoingCategory.getSubcategories().get(j);
-                    if (subcategory != null) {
-                        categories.add(subcategory.getName());
-                    }
-                }
-            }
-        }
+        categories.addAll(localUtils.getFunctioningOutgoingCategories());
         categories.add("Income categories");
-        for (int i = 0; i < incomeCategories.size(); i++) {
-            incomeCategory incomeCategory = incomeCategories.get(i);
-            if (incomeCategory != null) {
-                categories.add(incomeCategory.getName());
-            }
-        }
+        categories.addAll(localUtils.getFunctioningIncomeCategories());
 
         return categories;
     }

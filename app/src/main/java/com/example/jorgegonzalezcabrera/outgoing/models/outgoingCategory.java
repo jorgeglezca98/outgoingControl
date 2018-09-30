@@ -1,23 +1,30 @@
 package com.example.jorgegonzalezcabrera.outgoing.models;
 
+import com.example.jorgegonzalezcabrera.outgoing.applications.myApplication;
+
 import javax.annotation.Nonnull;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class outgoingCategory extends RealmObject {
 
+    @PrimaryKey
+    private long id;
     private RealmList<subcategory> subcategories;
     private double maximum;
     private String name;
 
     public outgoingCategory() {
+        this.id = -1;
         this.subcategories = new RealmList<>();
         this.maximum = 0;
         this.name = "";
     }
 
     public outgoingCategory(@Nonnull RealmList<subcategory> subcategories, double maximum, @Nonnull String name) {
+        this.id = myApplication.outgoingCategoryId.incrementAndGet();
         this.subcategories = new RealmList<>();
         for (int i = 0; i < subcategories.size(); i++) {
             if (subcategories.get(i) != null) {
@@ -29,6 +36,14 @@ public class outgoingCategory extends RealmObject {
         }
         this.maximum = maximum;
         this.name = name;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setAvailableId() {
+        this.id = myApplication.outgoingCategoryId.incrementAndGet();
     }
 
     public RealmList<subcategory> getSubcategories() {

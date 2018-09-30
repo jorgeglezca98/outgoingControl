@@ -16,6 +16,8 @@ public class appConfiguration extends RealmObject {
     private double currentMoney;
     private RealmList<outgoingCategory> outgoingCategories;
     private RealmList<incomeCategory> incomeCategories;
+    private RealmList<outgoingCategory> removedOutgoingCategories;
+    private RealmList<incomeCategory> removedIncomeCategories;
 
     public appConfiguration(double currentMoney, @Nonnull RealmList<outgoingCategory> outgoingCategories, @Nonnull RealmList<incomeCategory> incomeCategories) {
         this.id = myApplication.appConfigurationId.incrementAndGet();
@@ -30,6 +32,8 @@ public class appConfiguration extends RealmObject {
             if (incomeCategories.get(i) != null)
                 this.incomeCategories.add(incomeCategories.get(i));
         }
+        this.removedIncomeCategories = new RealmList<>();
+        this.removedOutgoingCategories = new RealmList<>();
     }
 
     public appConfiguration() {
@@ -37,6 +41,8 @@ public class appConfiguration extends RealmObject {
         this.currentMoney = -1;
         this.outgoingCategories = new RealmList<>();
         this.incomeCategories = new RealmList<>();
+        this.removedIncomeCategories = new RealmList<>();
+        this.removedOutgoingCategories = new RealmList<>();
     }
 
     public double getCurrentMoney() {
@@ -44,9 +50,7 @@ public class appConfiguration extends RealmObject {
     }
 
     public void setCurrentMoney(double currentMoney) {
-        Realm.getDefaultInstance().beginTransaction();
         this.currentMoney = currentMoney;
-        Realm.getDefaultInstance().commitTransaction();
     }
 
     public RealmList<outgoingCategory> getOutgoingCategories() {
@@ -79,5 +83,13 @@ public class appConfiguration extends RealmObject {
 
     public long getId() {
         return id;
+    }
+
+    public RealmList<outgoingCategory> getRemovedOutgoingCategories() {
+        return removedOutgoingCategories;
+    }
+
+    public RealmList<incomeCategory> getRemovedIncomeCategories() {
+        return removedIncomeCategories;
     }
 }

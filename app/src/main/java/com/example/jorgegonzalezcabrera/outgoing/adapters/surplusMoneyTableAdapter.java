@@ -175,4 +175,23 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
         notifyDataSetChanged();
     }
 
+    public void removeCategory(@NonNull outgoingCategory category) {
+        int position = find(category.getName());
+        if (position >= 0) {
+            items.remove(position);
+            notifyItemRemoved(position);
+        }
+    }
+
+    private int find(@NonNull String category) {
+        int i = 0;
+        while (i < items.size()) {
+            outgoingCategory categoryToCompare = items.get(i).category;
+            if (categoryToCompare.getName().equals(category)) {
+                return i;
+            }
+            i++;
+        }
+        return -1;
+    }
 }

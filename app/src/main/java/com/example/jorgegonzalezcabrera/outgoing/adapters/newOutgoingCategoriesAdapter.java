@@ -52,6 +52,7 @@ public class newOutgoingCategoriesAdapter extends RecyclerView.Adapter<newOutgoi
 
     public void addOne() {
         categories.add(new outgoingCategory());
+        categories.last().setAvailableId();
         notifyItemInserted(getItemCount() - 1);
     }
 

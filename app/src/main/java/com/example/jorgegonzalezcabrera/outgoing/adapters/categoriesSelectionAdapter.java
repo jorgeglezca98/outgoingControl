@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesS
 
     public categoriesSelectionAdapter() {
         layout = R.layout.category_selection_item;
-        categories = localUtils.getCategories();
+        categories = localUtils.getAllCategories();
     }
 
     @NonNull
@@ -37,6 +38,14 @@ public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesS
     @Override
     public int getItemCount() {
         return categories.size();
+    }
+
+    public void removeCategory(outgoingCategory category) {
+        for (int i = 0; i < category.getSubcategories().size(); i++) {
+            int position = categories.indexOf(category.getSubcategories().get(i).getName());
+            categories.remove(position);
+            notifyItemRemoved(position);
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

@@ -18,6 +18,7 @@ import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.others.ItemOffsetDecoration;
+import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.utils;
 
 import java.util.Date;
@@ -84,14 +85,17 @@ public class mainFragment extends Fragment {
             outgoingCategory outgoingCategory = currentConfiguration.getOutgoingCategories().get(i);
             surplusMoneyByCategoryVector.add(new surplusMoneyTableAdapter.surplusMoneyByCategory(outgoingCategory, surplusMoneyByCategory));
         }
-
+        Vector<String> removedOutgoingCategories = localUtils.getNonFunctioningOutgoingCategories();
+        for (int i = 0; i < removedOutgoingCategories.size(); i++) {
+            totalOutgoings += entriesOfTheMonth.where().equalTo("category", removedOutgoingCategories.get(i)).sum("valor").doubleValue();
+        }
         String outgoingsOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€";
         textViewOutgoingsOfTheMonth.setText(outgoingsOfTheMonth);
 
         totalIncomes = 0;
-        for (int i = 0; i < currentConfiguration.getIncomeCategories().size(); i++) {
-            String subcategoryName = currentConfiguration.getIncomeCategories().get(i).getName();
-            totalIncomes += entriesOfTheMonth.where().equalTo("category", subcategoryName).sum("valor").doubleValue();
+        Vector<String> incomeCategories = localUtils.getAllIncomeCategories();
+        for (int i = 0; i < incomeCategories.size(); i++) {
+            totalIncomes += entriesOfTheMonth.where().equalTo("category", incomeCategories.get(i)).sum("valor").doubleValue();
         }
         String incomesOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalIncomes) + "€";
         textViewIncomesOfTheMonth.setText(incomesOfTheMonth);
@@ -126,14 +130,17 @@ public class mainFragment extends Fragment {
             outgoingCategory outgoingCategory = currentConfiguration.getOutgoingCategories().get(i);
             surplusMoneyByCategoryVector.add(new surplusMoneyTableAdapter.surplusMoneyByCategory(outgoingCategory, surplusMoneyByCategory));
         }
-
+        Vector<String> removedOutgoingCategories = localUtils.getNonFunctioningOutgoingCategories();
+        for (int i = 0; i < removedOutgoingCategories.size(); i++) {
+            totalOutgoings += entriesOfTheMonth.where().equalTo("category", removedOutgoingCategories.get(i)).sum("valor").doubleValue();
+        }
         String outgoingsOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€";
         textViewOutgoingsOfTheMonth.setText(outgoingsOfTheMonth);
 
         totalIncomes = 0;
-        for (int i = 0; i < currentConfiguration.getIncomeCategories().size(); i++) {
-            String subcategoryName = currentConfiguration.getIncomeCategories().get(i).getName();
-            totalIncomes += entriesOfTheMonth.where().equalTo("category", subcategoryName).sum("valor").doubleValue();
+        Vector<String> incomeCategories = localUtils.getAllIncomeCategories();
+        for (int i = 0; i < incomeCategories.size(); i++) {
+            totalIncomes += entriesOfTheMonth.where().equalTo("category", incomeCategories.get(i)).sum("valor").doubleValue();
         }
         String incomesOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalIncomes) + "€";
         textViewIncomesOfTheMonth.setText(incomesOfTheMonth);
@@ -221,5 +228,9 @@ public class mainFragment extends Fragment {
                 surplusMoneyAdapter.modifyData(currentVersion, nextVersion, dateOfLastUpdate);
             }
         }
+    }
+
+    public void updateCategoryRemoved(@NonNull outgoingCategory category) {
+        surplusMoneyAdapter.removeCategory(category);
     }
 }
