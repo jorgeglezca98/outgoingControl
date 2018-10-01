@@ -47,6 +47,7 @@
     <string name="edit">Edit</string>
     <string name="popup_menu">Popup menu</string>
     <string name="subcategories">Subcategories</string>
+    <string name="expand">expand</string>
 
     <string-array name="periodic_types">
         <item>Annual</item>

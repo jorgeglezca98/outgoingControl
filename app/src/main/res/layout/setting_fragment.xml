@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scrollViewSettingFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
     android:clipToPadding="false"
     android:paddingBottom="91dp"
     android:scrollbars="none">
@@ -10,19 +11,96 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
         android:orientation="vertical">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/outgoingCategoriesHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
+            android:background="#dddddd"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center_vertical|start"
+                android:padding="8dp"
+                android:text="@string/outgoing_categories_title"
+                android:textColor="@color/primary4"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/imageViewExpandOutgoingCategories"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imageViewExpandOutgoingCategories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/expand"
+                android:rotation="180"
+                android:scaleX="0.35"
+                android:scaleY="0.35"
+                android:src="@drawable/up_pointing_arrow"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewEditableOutgoingCategories"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clipToPadding="false" />
+            android:clipToPadding="false"
+            android:visibility="gone" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/incomeCategoriesHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#dddddd"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center_vertical|start"
+                android:padding="8dp"
+                android:text="@string/income_categories_title"
+                android:textColor="@color/primary4"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/imageViewExpandIncomeCategories"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imageViewExpandIncomeCategories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/expand"
+                android:rotation="180"
+                android:scaleX="0.35"
+                android:scaleY="0.35"
+                android:src="@drawable/up_pointing_arrow"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewEditableIncomeCategories"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clipToPadding="false" />
+            android:clipToPadding="false"
+            android:visibility="gone" />
     </LinearLayout>
 
 </ScrollView>
