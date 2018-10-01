@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#E2F0F0">
+    android:paddingBottom="8dp">
 
     <LinearLayout
         android:id="@+id/linearLayoutMainData"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="10dp"
         android:baselineAligned="false"
         android:weightSum="4"
         app:layout_constraintEnd_toStartOf="@+id/imageButtonExpandCategory"
@@ -17,12 +17,13 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <android.support.design.widget.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
-            android:layout_weight="3">
+            android:layout_weight="2.5">
 
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/editTextCategoryName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -30,17 +31,21 @@
                 android:ems="10"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
+                android:gravity="bottom|start"
                 android:hint="@string/category_name"
                 android:inputType="text"
+                android:maxLines="1"
+                android:paddingTop="5dp"
                 android:textSize="16sp" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_weight="1.5">
 
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/editTextMaxValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -48,8 +53,11 @@
                 android:ems="10"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
+                android:gravity="bottom|start"
                 android:hint="@string/maximum_hint"
                 android:inputType="numberDecimal"
+                android:maxLines="1"
+                android:paddingTop="5dp"
                 android:textSize="16sp" />
         </android.support.design.widget.TextInputLayout>
 
@@ -69,20 +77,36 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/linearLayoutMainData" />
 
-    <EditText
-        android:id="@+id/editTextSubcategories"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/subcategoriesContainer"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
         android:layout_marginStart="10dp"
-        android:background="#00000000"
-        android:clickable="false"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:padding="8dp"
-        android:textSize="14sp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toStartOf="@+id/imageButtonEditCategory"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/linearLayoutMainData"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayoutMainData" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutMainData">
+
+        <EditText
+            android:id="@+id/editTextSubcategories"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="bottom|start"
+            android:hint="@string/subcategories"
+            android:inputType="text"
+            android:maxLines="1"
+            android:padding="8dp"
+            android:textSize="14sp" />
+
+    </android.support.design.widget.TextInputLayout>
 
     <ImageButton
         android:id="@+id/imageButtonRemoveCategory"
@@ -91,20 +115,21 @@
         android:layout_marginEnd="5dp"
         android:background="#00000000"
         android:contentDescription="@string/remove"
-        android:src="@android:drawable/ic_menu_delete"
+        android:scaleX="0.5"
+        android:scaleY="0.5"
+        android:src="@drawable/remove"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/editTextSubcategories"
+        app:layout_constraintBottom_toBottomOf="@+id/subcategoriesContainer"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextSubcategories" />
+        app:layout_constraintTop_toBottomOf="@+id/subcategoriesContainer" />
 
     <ImageButton
         android:id="@+id/imageButtonEditCategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:background="#00000000"
         android:contentDescription="@string/remove"
-        android:src="@android:drawable/ic_menu_edit"
+        android:src="@drawable/edit"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/imageButtonRemoveCategory"
         app:layout_constraintEnd_toStartOf="@+id/imageButtonRemoveCategory"

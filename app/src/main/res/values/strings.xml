@@ -46,6 +46,7 @@
     <string name="refresh_title">Refresh</string>
     <string name="edit">Edit</string>
     <string name="popup_menu">Popup menu</string>
+    <string name="subcategories">Subcategories</string>
 
     <string-array name="periodic_types">
         <item>Annual</item>
