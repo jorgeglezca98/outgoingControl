@@ -1,6 +1,7 @@
 package com.example.jorgegonzalezcabrera.outgoing.adapters;
 
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -106,12 +107,14 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
+        public TextInputLayout container;
         public EditText name;
         ImageButton deleteItemButton;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             deleteItemButton = itemView.findViewById(R.id.imageButtonRemoveItem);
+            container = itemView.findViewById(R.id.editTextContainer);
             name = itemView.findViewById(R.id.editTextErasableItem);
             name.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -136,7 +139,7 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
         void bind() {
             name.setText(items.get(getAdapterPosition()));
             onItemsChange.onItemModified(getAdapterPosition(), items.get(getAdapterPosition()));
-            name.setHint(hint);
+            container.setHint(hint);
             deleteItemButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

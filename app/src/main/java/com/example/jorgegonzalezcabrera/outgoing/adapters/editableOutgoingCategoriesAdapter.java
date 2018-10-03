@@ -3,6 +3,7 @@ package com.example.jorgegonzalezcabrera.outgoing.adapters;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,14 +28,22 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
     private int layout;
     private RealmList<outgoingCategory> categories;
     private localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface;
+    private editOutgoingCategoryInterface editOutgoingCategoryInterface;
 
-    public editableOutgoingCategoriesAdapter(Context context, @NonNull localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface) {
+    public interface editOutgoingCategoryInterface {
+        void edit(outgoingCategory outgoingCategory, ConstraintLayout container, EditText categoryName, EditText categoryMaximum);
+    }
+
+    public editableOutgoingCategoriesAdapter(Context context,
+                                             @NonNull localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface,
+                                             editOutgoingCategoryInterface editOutgoingCategoryInterface) {
         this.context = context;
         this.categories = new RealmList<>();
         appConfiguration currentConfiguration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
         this.categories.addAll(currentConfiguration.getOutgoingCategories());
         this.layout = R.layout.editable_outgoing_category;
         this.onCategoriesChangeInterface = onCategoriesChangeInterface;
+        this.editOutgoingCategoryInterface = editOutgoingCategoryInterface;
     }
 
     @NonNull
@@ -56,6 +65,7 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
+        private ConstraintLayout layoutEditableOutgoingCategory;
         private EditText name;
         private EditText max;
         private EditText subcategories;
@@ -68,6 +78,7 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
         ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            layoutEditableOutgoingCategory = itemView.findViewById(R.id.layoutEditableOutgoingCategory);
             name = itemView.findViewById(R.id.editTextCategoryName);
             max = itemView.findViewById(R.id.editTextMaxValue);
             subcategories = itemView.findViewById(R.id.editTextSubcategories);
@@ -96,6 +107,7 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
                         for (int i = 0; i < category.getSubcategories().size(); i++) {
                             listOfSubcategories += category.getSubcategories().get(i).getName() + "\n";
                         }
+                        subcategories.setMaxLines(category.getSubcategories().size());
                         subcategories.setText(listOfSubcategories);
                         editButton.setVisibility(View.VISIBLE);
                         removeButton.setVisibility(View.VISIBLE);
@@ -105,6 +117,7 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
                         for (int i = 0; i < category.getSubcategories().size(); i++) {
                             listOfSubcategories += category.getSubcategories().get(i).getName() + ",";
                         }
+                        subcategories.setMaxLines(1);
                         subcategories.setText(listOfSubcategories);
                         editButton.setVisibility(View.GONE);
                         removeButton.setVisibility(View.GONE);
@@ -154,6 +167,13 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
                             }
                         }
                     });
+                }
+            });
+
+            editButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    editOutgoingCategoryInterface.edit(category, layoutEditableOutgoingCategory, name, max);
                 }
             });
         }

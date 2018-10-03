@@ -14,4 +14,5 @@
     <color name="complement2">#FF9849</color>
     <color name="complement3">#D45D02</color>
     <color name="complement4">#A74800</color>
+    <color name="transparent">#00000000</color>
 </resources>

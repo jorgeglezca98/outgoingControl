@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 
@@ -26,6 +27,7 @@ public class settingFragment extends Fragment {
 
     private Context context;
     private localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface;
+    private editableOutgoingCategoriesAdapter.editOutgoingCategoryInterface editOutgoingCategoryInterface;
 
     @Override
     public void onAttach(Context context) {
@@ -68,6 +70,17 @@ public class settingFragment extends Fragment {
                 }
             };
         }
+
+        try {
+            editOutgoingCategoryInterface = (editableOutgoingCategoriesAdapter.editOutgoingCategoryInterface) context;
+        } catch (Exception e) {
+            editOutgoingCategoryInterface = new editableOutgoingCategoriesAdapter.editOutgoingCategoryInterface() {
+                @Override
+                public void edit(outgoingCategory outgoingCategory, ConstraintLayout container, EditText categoryName, EditText categoryMaximum) {
+
+                }
+            };
+        }
     }
 
     @Nullable
@@ -76,7 +89,8 @@ public class settingFragment extends Fragment {
         final View view = inflater.inflate(R.layout.setting_fragment, container, false);
 
         final RecyclerView recyclerViewEditableOutgoingCategories = view.findViewById(R.id.recyclerViewEditableOutgoingCategories);
-        recyclerViewEditableOutgoingCategories.setAdapter(new editableOutgoingCategoriesAdapter(getContext(), onCategoriesChangeInterface));
+        editableOutgoingCategoriesAdapter adapter = new editableOutgoingCategoriesAdapter(getContext(), onCategoriesChangeInterface, editOutgoingCategoryInterface);
+        recyclerViewEditableOutgoingCategories.setAdapter(adapter);
         recyclerViewEditableOutgoingCategories.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewEditableOutgoingCategories.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
 

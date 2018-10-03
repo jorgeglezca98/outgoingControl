@@ -5,17 +5,29 @@
     android:layout_height="wrap_content"
     android:padding="5dp">
 
-    <EditText
-        android:id="@+id/editTextErasableItem"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/editTextContainer"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:ems="10"
         android:hint="@string/default_erasable_hint"
-        android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imageButtonRemoveItem"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/editTextErasableItem"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elegantTextHeight="true"
+            android:ems="10"
+            android:inputType="text|textNoSuggestions"
+            android:maxLines="1"
+            android:padding="8dp"
+            android:textSize="14sp" />
+
+    </android.support.design.widget.TextInputLayout>
 
     <ImageButton
         android:id="@+id/imageButtonRemoveItem"
@@ -26,8 +38,8 @@
         android:scaleX="0.5"
         android:scaleY="0.5"
         android:src="@drawable/remove"
-        app:layout_constraintBottom_toBottomOf="@+id/editTextErasableItem"
+        app:layout_constraintBottom_toBottomOf="@+id/editTextContainer"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/editTextErasableItem" />
+        app:layout_constraintTop_toTopOf="@+id/editTextContainer" />
 
 </android.support.constraint.ConstraintLayout>

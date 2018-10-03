@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutEditableOutgoingCategory"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="8dp">
@@ -33,7 +34,7 @@
                 android:focusableInTouchMode="false"
                 android:gravity="bottom|start"
                 android:hint="@string/category_name"
-                android:inputType="text"
+                android:inputType="text|textNoSuggestions"
                 android:maxLines="1"
                 android:paddingTop="5dp"
                 android:textSize="16sp" />
@@ -55,7 +56,7 @@
                 android:focusableInTouchMode="false"
                 android:gravity="bottom|start"
                 android:hint="@string/maximum_hint"
-                android:inputType="numberDecimal"
+                android:inputType="numberDecimal|textNoSuggestions"
                 android:maxLines="1"
                 android:paddingTop="5dp"
                 android:textSize="16sp" />
@@ -86,13 +87,11 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toStartOf="@+id/imageButtonEditCategory"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/linearLayoutMainData"
         app:layout_constraintTop_toBottomOf="@+id/linearLayoutMainData">
 
         <EditText
             android:id="@+id/editTextSubcategories"
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#00000000"
@@ -101,7 +100,7 @@
             android:focusableInTouchMode="false"
             android:gravity="bottom|start"
             android:hint="@string/subcategories"
-            android:inputType="text"
+            android:inputType="textMultiLine|textNoSuggestions"
             android:maxLines="1"
             android:padding="8dp"
             android:textSize="14sp" />

@@ -1,11 +1,15 @@
 package com.example.jorgegonzalezcabrera.outgoing.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -14,10 +18,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.adapters.editableOutgoingCategoriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.actionsFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.mainFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.settingFragment;
@@ -29,9 +35,11 @@ import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry.periodicType;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Vector;
 
 import io.realm.Realm;
@@ -42,7 +50,9 @@ import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newEntry
 import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newPeriodicEntryDialog;
 import static com.example.jorgegonzalezcabrera.outgoing.utilities.utils.dpToPixels;
 
-public class MainActivity extends AppCompatActivity implements localUtils.OnEntriesChangeInterface, localUtils.OnCategoriesChangeInterface {
+public class MainActivity extends AppCompatActivity implements localUtils.OnEntriesChangeInterface
+        , localUtils.OnCategoriesChangeInterface
+        , editableOutgoingCategoriesAdapter.editOutgoingCategoryInterface {
 
     private ViewPager viewPager;
     private FragmentStatePagerAdapter viewPagerAdapter;
@@ -417,6 +427,48 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         });
         incomeCategory storedOutgoingCategory = database.where(incomeCategory.class).equalTo("id", newIncomeCategory.getId()).findFirst();
         actionsFragment.addCategoryInFilters(storedOutgoingCategory);
+    }
+
+    public final static String CATEGORY_NAME_KEY = "categoryName";
+    public final static String CATEGORY_MAXIMUM_KEY = "categoryMax";
+    public final static String CATEGORY_SUBCATEGORIES_KEY = "categorySubcategories";
+    public final static String CONTAINER_TRANSITION_NAME_KEY = "containerTransitionName";
+    public final static String CATEGORY_NAME_TRANSITION_NAME_KEY = "categoryNameTransitionName";
+    public final static String CATEGORY_MAXIMUM_TRANSITION_NAME_KEY = "categoryMaximumTransitionName";
+    public final static String CONTAINER_TRANSITION_NAME = "container";
+    public final static String CATEGORY_NAME_TRANSITION_NAME = "categoryNameEditText";
+    public final static String CATEGORY_MAXIMUM_TRANSITION_NAME = "categoryMaximumEditText";
+
+    @Override
+    public void edit(outgoingCategory outgoingCategory, ConstraintLayout container, EditText categoryName, EditText categoryMaximum) {
+        Intent intent = new Intent(this, editOutgoingCategoryActivity.class);
+
+        List<String> subcategories = new ArrayList<>();
+        for (int i = 0; i < outgoingCategory.getSubcategories().size(); i++) {
+            subcategories.add(outgoingCategory.getSubcategories().get(i).getName());
+        }
+
+        categoryName.setTransitionName(CATEGORY_NAME_TRANSITION_NAME);
+        categoryMaximum.setTransitionName(CATEGORY_MAXIMUM_TRANSITION_NAME);
+        container.setTransitionName(CONTAINER_TRANSITION_NAME);
+
+        intent.putExtra(CONTAINER_TRANSITION_NAME_KEY, container.getTransitionName());
+        intent.putExtra(CATEGORY_NAME_TRANSITION_NAME_KEY, categoryName.getTransitionName());
+        intent.putExtra(CATEGORY_MAXIMUM_TRANSITION_NAME_KEY, categoryMaximum.getTransitionName());
+        intent.putExtra(CATEGORY_NAME_KEY, outgoingCategory.getName());
+        intent.putExtra(CATEGORY_MAXIMUM_KEY, outgoingCategory.getMaximum());
+        intent.putStringArrayListExtra(CATEGORY_SUBCATEGORIES_KEY, (ArrayList<String>) subcategories);
+
+        Pair<View, String> p1 = Pair.create((View) categoryName, CATEGORY_NAME_TRANSITION_NAME);
+        Pair<View, String> p2 = Pair.create((View) categoryMaximum, CATEGORY_MAXIMUM_TRANSITION_NAME);
+        Pair<View, String> p3 = Pair.create((View) container, CONTAINER_TRANSITION_NAME);
+
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2, p3);
+
+        startActivity(intent, options.toBundle());
+        container.setTransitionName(null);
+        categoryName.setTransitionName(null);
+        categoryMaximum.setTransitionName(null);
     }
 
     public void updateData() {
