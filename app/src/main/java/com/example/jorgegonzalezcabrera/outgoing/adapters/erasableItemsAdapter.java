@@ -19,13 +19,18 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
 
     private int layout;
     private Vector<String> items;
+    private Vector<String> errorByItem;
     private String hint;
     private onItemsChange onItemsChange;
+
+    private static final String ERROR_MESSAGE = "Mandatory field";
 
     public erasableItemsAdapter(@NonNull String hint) {
         this.layout = R.layout.erasable_item;
         this.items = new Vector<>();
         this.items.add("");
+        this.errorByItem = new Vector<>();
+        this.errorByItem.add(null);
         this.hint = hint;
         this.onItemsChange = new onItemsChange() {
             @Override
@@ -50,12 +55,15 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
         this.layout = R.layout.erasable_item;
         this.items = new Vector<>();
         this.items.add("");
+        this.errorByItem = new Vector<>();
+        this.errorByItem.add(null);
         this.hint = hint;
         this.onItemsChange = onItemsChange;
     }
 
     public void addOne() {
         items.add("");
+        errorByItem.add(null);
         notifyItemInserted(getItemCount() - 1);
         onItemsChange.onItemAdded(getItemCount() - 1);
     }
@@ -63,13 +71,47 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
     private void deleteItemAt(int position) {
         if (getItemCount() > 0 && position < getItemCount()) {
             items.remove(position);
+            errorByItem.remove(position);
             notifyItemRemoved(position);
             onItemsChange.onItemRemoved(position);
         }
     }
 
+    public boolean checkData() {
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public Vector<String> getItems() {
         return items;
+    }
+
+    public void showErrorMessage() {
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).isEmpty() && errorByItem.get(i) == null) {
+                errorByItem.remove(i);
+                errorByItem.add(i, ERROR_MESSAGE);
+                notifyItemChanged(i);
+            } else if (!items.get(i).isEmpty() && errorByItem.get(i) != null) {
+                errorByItem.remove(i);
+                errorByItem.add(i, null);
+                notifyItemChanged(i);
+            }
+        }
+    }
+
+    public void removeErrorMessage() {
+        for (int i = 0; i < items.size(); i++) {
+            if (errorByItem.get(i) != null) {
+                errorByItem.remove(i);
+                errorByItem.add(i, null);
+                notifyItemChanged(i);
+            }
+        }
     }
 
     public interface onItemsChange {
@@ -101,6 +143,10 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
 
     public void updateItems(Vector<String> newItems) {
         items = newItems;
+        errorByItem = new Vector<>();
+        for (int i = 0; i < items.size(); i++) {
+            errorByItem.add(null);
+        }
         notifyDataSetChanged();
         onItemsChange.onItemsChanged(newItems);
     }
@@ -137,6 +183,7 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
         }
 
         void bind() {
+            container.setError(errorByItem.get(getAdapterPosition()));
             name.setText(items.get(getAdapterPosition()));
             onItemsChange.onItemModified(getAdapterPosition(), items.get(getAdapterPosition()));
             container.setHint(hint);

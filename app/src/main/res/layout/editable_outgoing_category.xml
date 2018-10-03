@@ -22,7 +22,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
-            android:layout_weight="2.5">
+            android:layout_weight="2.5"
+            android:hint="@string/category_name">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/editTextCategoryName"
@@ -33,7 +34,6 @@
                 android:focusable="false"
                 android:focusableInTouchMode="false"
                 android:gravity="bottom|start"
-                android:hint="@string/category_name"
                 android:inputType="text|textNoSuggestions"
                 android:maxLines="1"
                 android:paddingTop="5dp"
@@ -44,7 +44,8 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1.5">
+            android:layout_weight="1.5"
+            android:hint="@string/maximum_hint">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/editTextMaxValue"
@@ -55,7 +56,6 @@
                 android:focusable="false"
                 android:focusableInTouchMode="false"
                 android:gravity="bottom|start"
-                android:hint="@string/maximum_hint"
                 android:inputType="numberDecimal|textNoSuggestions"
                 android:maxLines="1"
                 android:paddingTop="5dp"
@@ -86,6 +86,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="8dp"
+        android:hint="@string/subcategories"
         app:layout_constraintEnd_toStartOf="@+id/imageButtonEditCategory"
         app:layout_constraintStart_toStartOf="@+id/linearLayoutMainData"
         app:layout_constraintTop_toBottomOf="@+id/linearLayoutMainData">
@@ -99,7 +100,6 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:gravity="bottom|start"
-            android:hint="@string/subcategories"
             android:inputType="textMultiLine|textNoSuggestions"
             android:maxLines="1"
             android:padding="8dp"

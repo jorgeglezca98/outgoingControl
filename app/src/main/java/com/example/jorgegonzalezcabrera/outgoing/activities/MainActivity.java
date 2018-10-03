@@ -3,6 +3,7 @@ package com.example.jorgegonzalezcabrera.outgoing.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -435,9 +436,9 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     public final static String CONTAINER_TRANSITION_NAME_KEY = "containerTransitionName";
     public final static String CATEGORY_NAME_TRANSITION_NAME_KEY = "categoryNameTransitionName";
     public final static String CATEGORY_MAXIMUM_TRANSITION_NAME_KEY = "categoryMaximumTransitionName";
-    public final static String CONTAINER_TRANSITION_NAME = "container";
-    public final static String CATEGORY_NAME_TRANSITION_NAME = "categoryNameEditText";
-    public final static String CATEGORY_MAXIMUM_TRANSITION_NAME = "categoryMaximumEditText";
+
+    public final static int REQUEST_EDIT = 1;
+    public final static int REQUEST_ADD = 2;
 
     @Override
     public void edit(outgoingCategory outgoingCategory, ConstraintLayout container, EditText categoryName, EditText categoryMaximum) {
@@ -448,10 +449,6 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
             subcategories.add(outgoingCategory.getSubcategories().get(i).getName());
         }
 
-        categoryName.setTransitionName(CATEGORY_NAME_TRANSITION_NAME);
-        categoryMaximum.setTransitionName(CATEGORY_MAXIMUM_TRANSITION_NAME);
-        container.setTransitionName(CONTAINER_TRANSITION_NAME);
-
         intent.putExtra(CONTAINER_TRANSITION_NAME_KEY, container.getTransitionName());
         intent.putExtra(CATEGORY_NAME_TRANSITION_NAME_KEY, categoryName.getTransitionName());
         intent.putExtra(CATEGORY_MAXIMUM_TRANSITION_NAME_KEY, categoryMaximum.getTransitionName());
@@ -459,16 +456,28 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         intent.putExtra(CATEGORY_MAXIMUM_KEY, outgoingCategory.getMaximum());
         intent.putStringArrayListExtra(CATEGORY_SUBCATEGORIES_KEY, (ArrayList<String>) subcategories);
 
-        Pair<View, String> p1 = Pair.create((View) categoryName, CATEGORY_NAME_TRANSITION_NAME);
-        Pair<View, String> p2 = Pair.create((View) categoryMaximum, CATEGORY_MAXIMUM_TRANSITION_NAME);
-        Pair<View, String> p3 = Pair.create((View) container, CONTAINER_TRANSITION_NAME);
+        Pair<View, String> p1 = Pair.create((View) categoryName, categoryName.getTransitionName());
+        Pair<View, String> p2 = Pair.create((View) categoryMaximum, categoryMaximum.getTransitionName());
+        Pair<View, String> p3 = Pair.create((View) container, container.getTransitionName());
 
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2, p3);
 
-        startActivity(intent, options.toBundle());
-        container.setTransitionName(null);
-        categoryName.setTransitionName(null);
-        categoryMaximum.setTransitionName(null);
+        startActivityForResult(intent, REQUEST_EDIT, options.toBundle());
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == REQUEST_EDIT) {
+            if (resultCode == RESULT_OK) {
+
+            }
+        } else if (requestCode == REQUEST_ADD) {
+            if (resultCode == RESULT_OK) {
+
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     public void updateData() {

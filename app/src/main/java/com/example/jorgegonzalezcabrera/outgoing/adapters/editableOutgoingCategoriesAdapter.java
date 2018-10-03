@@ -75,6 +75,10 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
 
         private boolean expanded;
 
+        private final static String CONTAINER_TRANSITION_NAME = "container";
+        private final static String CATEGORY_NAME_TRANSITION_NAME = "categoryNameEditText";
+        private final static String CATEGORY_MAXIMUM_TRANSITION_NAME = "categoryMaximumEditText";
+
         ViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -89,7 +93,10 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
         }
 
         void bind(@NonNull final outgoingCategory category) {
+            layoutEditableOutgoingCategory.setTransitionName(CONTAINER_TRANSITION_NAME + getAdapterPosition());
+            name.setTransitionName(CATEGORY_NAME_TRANSITION_NAME + getAdapterPosition());
             name.setText(category.getName());
+            max.setTransitionName(CATEGORY_MAXIMUM_TRANSITION_NAME + getAdapterPosition());
             max.setText(String.valueOf(category.getMaximum()));
 
             String listOfSubcategories = "";
