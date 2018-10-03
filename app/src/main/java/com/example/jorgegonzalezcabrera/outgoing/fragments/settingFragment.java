@@ -116,7 +116,7 @@ public class settingFragment extends Fragment {
                     incomeCategoriesExpandImage.animate().rotation(0.0f).setDuration(500);
                     if (recyclerViewEditableOutgoingCategories.getVisibility() == View.VISIBLE) {
                         recyclerViewEditableOutgoingCategories.setVisibility(View.GONE);
-                        outgoingCategoriesExpandImage.setRotation(180.0f);
+                        outgoingCategoriesExpandImage.animate().rotation(180.0f).setDuration(500);
                     }
                     scrollViewSettingFragment.scrollTo(0, recyclerViewEditableIncomeCategories.getScrollY());
                 }
@@ -134,7 +134,7 @@ public class settingFragment extends Fragment {
                     outgoingCategoriesExpandImage.animate().rotation(0.0f).setDuration(500);
                     if (recyclerViewEditableIncomeCategories.getVisibility() == View.VISIBLE) {
                         recyclerViewEditableIncomeCategories.setVisibility(View.GONE);
-                        incomeCategoriesExpandImage.setRotation(180.0f);
+                        incomeCategoriesExpandImage.animate().rotation(180.0f).setDuration(500);
                     }
                     scrollViewSettingFragment.scrollTo(0, recyclerViewEditableOutgoingCategories.getScrollY());
                 }
