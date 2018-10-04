@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     private FragmentStatePagerAdapter viewPagerAdapter;
     private actionsFragment actionsFragment;
     private mainFragment mainFragment;
+    private settingFragment settingFragment;
     private Realm database;
     private localUtils.OnEntriesChangeInterface onEntriesChangeInterface;
     private boolean floatingMenuOpen;
@@ -66,6 +67,10 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     private FloatingActionButton fabAddEntry;
     private FloatingActionButton fabAddPeriodicEntry;
     private FloatingActionButton fabFilterActions;
+    private FloatingActionButton fabAddOutgoingCategory;
+    private FloatingActionButton fabAddIncomeCategory;
+    private TextView labelAddIncomeCategory;
+    private TextView labelAddOutgoingCategory;
     private TextView labelFilterActions;
     private TextView labelAddEntry;
     private TextView labelAddPeriodicEntry;
@@ -92,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         fragments.add(mainFragment);
         actionsFragment = new actionsFragment();
         fragments.add(actionsFragment);
-        settingFragment settingFragment = new settingFragment();
+        settingFragment = new settingFragment();
         fragments.add(settingFragment);
         viewPagerAdapter = new FragmentStatePagerAdapter(getSupportFragmentManager()) {
             @Override
@@ -112,19 +117,39 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
-                if (fragments.get(tab.getPosition()) == actionsFragment && floatingMenuOpen) {
-                    fabFilterActions.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
-                    labelFilterActions.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
-                    labelFilterActions.animate().alpha(1.0f).setDuration(450);
+                if (floatingMenuOpen) {
+                    if (fragments.get(tab.getPosition()) == actionsFragment) {
+                        fabFilterActions.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
+                        labelFilterActions.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
+                        labelFilterActions.animate().alpha(1.0f).setDuration(450);
+                    } else if (fragments.get(tab.getPosition()) == settingFragment) {
+                        fabAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
+                        labelAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
+                        labelAddOutgoingCategory.animate().alpha(1.0f).setDuration(450);
+
+                        fabAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, -191.0f));
+                        labelAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, -191.0f));
+                        labelAddIncomeCategory.animate().alpha(1.0f).setDuration(450);
+                    }
                 }
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                if (fragments.get(tab.getPosition()) == actionsFragment && floatingMenuOpen) {
-                    fabFilterActions.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
-                    labelFilterActions.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
-                    labelFilterActions.animate().alpha(0.0f).setDuration(300);
+                if (floatingMenuOpen) {
+                    if (fragments.get(tab.getPosition()) == actionsFragment) {
+                        fabFilterActions.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
+                        labelFilterActions.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
+                        labelFilterActions.animate().alpha(0.0f).setDuration(300);
+                    } else if (fragments.get(tab.getPosition()) == settingFragment) {
+                        fabAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
+                        labelAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
+                        labelAddOutgoingCategory.animate().alpha(0.0f).setDuration(300);
+
+                        fabAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
+                        labelAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
+                        labelAddIncomeCategory.animate().alpha(0.0f).setDuration(300);
+                    }
                 }
             }
 
@@ -144,6 +169,10 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         labelAddPeriodicEntry = findViewById(R.id.labelAddPeriodicEntry);
         fabFilterActions = findViewById(R.id.fabFilterActions);
         labelFilterActions = findViewById(R.id.labelFilterActions);
+        fabAddOutgoingCategory = findViewById(R.id.fabAddOutgoingCategory);
+        labelAddOutgoingCategory = findViewById(R.id.labelAddOutgoingCategory);
+        fabAddIncomeCategory = findViewById(R.id.fabAddIncomeCategory);
+        labelAddIncomeCategory = findViewById(R.id.labelAddIncomeCategory);
 
         fabMenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -176,6 +205,20 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
             @Override
             public void onClick(View view) {
                 actionsFragment.expandFilters();
+                closeFloatingMenu();
+            }
+        });
+
+        fabAddOutgoingCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                closeFloatingMenu();
+            }
+        });
+
+        fabAddIncomeCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 closeFloatingMenu();
             }
         });
@@ -221,6 +264,14 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         fabFilterActions.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
         labelFilterActions.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
         labelFilterActions.animate().alpha(0.0f).setDuration(300);
+
+        fabAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
+        labelAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
+        labelAddOutgoingCategory.animate().alpha(0.0f).setDuration(300);
+
+        fabAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
+        labelAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
+        labelAddIncomeCategory.animate().alpha(0.0f).setDuration(300);
         floatingMenuOpen = !floatingMenuOpen;
     }
 
@@ -239,6 +290,14 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
             fabFilterActions.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
             labelFilterActions.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
             labelFilterActions.animate().alpha(1.0f).setDuration(450);
+        } else if (settingFragment == viewPagerAdapter.getItem(viewPager.getCurrentItem())) {
+            fabAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
+            labelAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
+            labelAddOutgoingCategory.animate().alpha(1.0f).setDuration(450);
+
+            fabAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, -191.0f));
+            labelAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, -191.0f));
+            labelAddIncomeCategory.animate().alpha(1.0f).setDuration(300);
         }
         floatingMenuOpen = !floatingMenuOpen;
     }

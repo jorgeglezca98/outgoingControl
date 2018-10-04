@@ -31,6 +31,10 @@
             android:name=".activities.editOutgoingCategoryActivity"
             android:excludeFromRecents="true"
             android:theme="@style/AppTheme.TransparentActivity" />
+        <activity
+            android:name=".activities.editFieldActivity"
+            android:excludeFromRecents="true"
+            android:theme="@style/AppTheme.TransparentActivity" />
     </application>
 
 </manifest>
