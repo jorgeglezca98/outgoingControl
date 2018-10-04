@@ -23,6 +23,7 @@ import java.util.Vector;
 import io.realm.Realm;
 import io.realm.RealmList;
 
+import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_ADD_INCOME_CATEGORY;
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_INCOME_CATEGORY;
 
 public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editableIncomeCategoriesAdapter.ViewHolder> {
@@ -32,10 +33,11 @@ public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editab
     private RealmList<incomeCategory> categories;
     private localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface;
     private editIncomeCategoryInterface editIncomeCategoryInterface;
+    private boolean lastIsEmpty;
 
     public editableIncomeCategoriesAdapter(Context context,
                                            localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface,
-                                           editIncomeCategoryInterface editIncomeCategoryInterface) {
+                                           final editIncomeCategoryInterface editIncomeCategoryInterface) {
         this.context = context;
         this.categories = new RealmList<>();
         appConfiguration currentConfiguration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
@@ -43,6 +45,7 @@ public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editab
         this.layout = R.layout.erasable_item;
         this.onCategoriesChangeInterface = onCategoriesChangeInterface;
         this.editIncomeCategoryInterface = editIncomeCategoryInterface;
+        this.lastIsEmpty = false;
     }
 
     @NonNull
@@ -62,6 +65,12 @@ public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editab
         return categories.size();
     }
 
+    public void addOne() {
+        categories.add(new incomeCategory());
+        notifyItemInserted(getItemCount() - 1);
+        lastIsEmpty = true;
+    }
+
     public void modify(incomeCategory modifiedIncomeCategory) {
         for (int i = 0; i < categories.size(); i++) {
             if (modifiedIncomeCategory.getId() == categories.get(i).getId()) {
@@ -73,11 +82,33 @@ public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editab
         }
     }
 
+    public void confirmLast(incomeCategory storedOutgoingCategory) {
+        categories.remove(getItemCount() - 1);
+        categories.add(storedOutgoingCategory);
+        notifyItemChanged(getItemCount() - 1);
+        lastIsEmpty = false;
+    }
+
+    public void cancelNewCategory() {
+        categories.remove(getItemCount() - 1);
+        notifyItemRemoved(getItemCount());
+        lastIsEmpty = false;
+    }
+
+    @Override
+    public void onViewAttachedToWindow(@NonNull ViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+        if ((holder.getAdapterPosition() == (getItemCount() - 1)) && lastIsEmpty) {
+            editIncomeCategoryInterface.editCategoryField("",
+                    holder.container, holder.categoryName, "Income category name", REQUEST_ADD_INCOME_CATEGORY, -1);
+        }
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        private ConstraintLayout container;
-        private EditText categoryName;
-        private ImageButton removeButton;
+        ConstraintLayout container;
+        EditText categoryName;
+        ImageButton removeButton;
 
         private final static String CONTAINER_TRANSITION_NAME = "container";
         private final static String CATEGORY_NAME_TRANSITION_NAME = "categoryNameEditText";

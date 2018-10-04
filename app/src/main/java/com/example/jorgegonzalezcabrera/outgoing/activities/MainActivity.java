@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
 
                         fabAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, -191.0f));
                         labelAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, -191.0f));
-                        labelAddIncomeCategory.animate().alpha(1.0f).setDuration(450);
+                        labelAddIncomeCategory.animate().alpha(1.0f).setDuration(600);
                     }
                 }
             }
@@ -221,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         fabAddIncomeCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                settingFragment.addIncomeCategory();
                 closeFloatingMenu();
             }
         });
@@ -299,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
 
             fabAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, -191.0f));
             labelAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, -191.0f));
-            labelAddIncomeCategory.animate().alpha(1.0f).setDuration(300);
+            labelAddIncomeCategory.animate().alpha(1.0f).setDuration(600);
         }
         floatingMenuOpen = !floatingMenuOpen;
     }
@@ -587,7 +588,6 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
             }
         } else if (requestCode == REQUEST_ADD_INCOME_CATEGORY) {
             if (resultCode == RESULT_OK) {
-                /*
                 Bundle extras = data.getExtras();
                 String name = extras.getString(FINAL_VALUE_KEY);
                 final incomeCategory newIncomeCategory = new incomeCategory(name);
@@ -603,7 +603,9 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
 
                 incomeCategory storedOutgoingCategory = database.where(incomeCategory.class).equalTo("id", newIncomeCategory.getId()).findFirst();
                 actionsFragment.addCategoryInFilters(storedOutgoingCategory);
-                */
+                settingFragment.confirmAddedCategory(storedOutgoingCategory);
+            } else {
+                settingFragment.newCategoryCanceled();
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
