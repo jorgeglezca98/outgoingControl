@@ -3,6 +3,7 @@ package com.example.jorgegonzalezcabrera.outgoing.adapters;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.activities.editFieldActivity.editIncomeCategoryInterface;
 import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
@@ -27,14 +29,18 @@ public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editab
     private int layout;
     private RealmList<incomeCategory> categories;
     private localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface;
+    private editIncomeCategoryInterface editIncomeCategoryInterface;
 
-    public editableIncomeCategoriesAdapter(Context context, localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface) {
+    public editableIncomeCategoriesAdapter(Context context,
+                                           localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface,
+                                           editIncomeCategoryInterface editIncomeCategoryInterface) {
         this.context = context;
         this.categories = new RealmList<>();
         appConfiguration currentConfiguration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
         this.categories.addAll(currentConfiguration.getIncomeCategories());
-        this.layout = R.layout.editable_income_category;
+        this.layout = R.layout.erasable_item;
         this.onCategoriesChangeInterface = onCategoriesChangeInterface;
+        this.editIncomeCategoryInterface = editIncomeCategoryInterface;
     }
 
     @NonNull
@@ -56,25 +62,32 @@ public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editab
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
+        private ConstraintLayout container;
         private EditText categoryName;
-        private ImageButton editButton;
         private ImageButton removeButton;
+
+        private final static String CONTAINER_TRANSITION_NAME = "container";
+        private final static String CATEGORY_NAME_TRANSITION_NAME = "categoryNameEditText";
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            container = itemView.findViewById(R.id.constraintLayout);
             categoryName = itemView.findViewById(R.id.editTextErasableItem);
-            editButton = itemView.findViewById(R.id.imageButtonEditItem);
             removeButton = itemView.findViewById(R.id.imageButtonRemoveItem);
         }
 
-        void bind(incomeCategory incomeCategory) {
-            categoryName.setText(incomeCategory.getName());
+        void bind(final incomeCategory incomeCategory) {
+            container.setTransitionName(CONTAINER_TRANSITION_NAME + getAdapterPosition());
+            categoryName.setTransitionName(CATEGORY_NAME_TRANSITION_NAME + getAdapterPosition());
 
-            editButton.setOnClickListener(new View.OnClickListener() {
+            categoryName.setText(incomeCategory.getName());
+            categoryName.setFocusable(false);
+            categoryName.setFocusableInTouchMode(false);
+            categoryName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    editIncomeCategoryInterface.edit(incomeCategory.getName(), container, categoryName, "Income category name");
                 }
             });
 

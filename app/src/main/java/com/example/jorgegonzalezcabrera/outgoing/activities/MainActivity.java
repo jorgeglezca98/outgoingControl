@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.activities.editFieldActivity.editIncomeCategoryInterface;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.editableOutgoingCategoriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.actionsFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.mainFragment;
@@ -53,7 +54,8 @@ import static com.example.jorgegonzalezcabrera.outgoing.utilities.utils.dpToPixe
 
 public class MainActivity extends AppCompatActivity implements localUtils.OnEntriesChangeInterface
         , localUtils.OnCategoriesChangeInterface
-        , editableOutgoingCategoriesAdapter.editOutgoingCategoryInterface {
+        , editableOutgoingCategoriesAdapter.editOutgoingCategoryInterface
+        , editIncomeCategoryInterface {
 
     private ViewPager viewPager;
     private FragmentStatePagerAdapter viewPagerAdapter;
@@ -520,6 +522,28 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         Pair<View, String> p3 = Pair.create((View) container, container.getTransitionName());
 
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2, p3);
+
+        startActivityForResult(intent, REQUEST_EDIT, options.toBundle());
+    }
+
+    public static final String FIELD_TRANSITION_NAME_KEY = "fieldTransitionName";
+    public static final String INITIAL_VALUE_KEY = "initialValueT";
+    public static final String FINAL_VALUE_KEY = "finalValue";
+    public static final String HINT_KEY = "hint";
+
+    @Override
+    public void edit(String initialValue, ConstraintLayout container, EditText field, String hint) {
+        Intent intent = new Intent(this, editFieldActivity.class);
+
+        intent.putExtra(CONTAINER_TRANSITION_NAME_KEY, container.getTransitionName());
+        intent.putExtra(FIELD_TRANSITION_NAME_KEY, field.getTransitionName());
+        intent.putExtra(INITIAL_VALUE_KEY, initialValue);
+        intent.putExtra(HINT_KEY, hint);
+
+        Pair<View, String> p1 = Pair.create((View) field, field.getTransitionName());
+        Pair<View, String> p2 = Pair.create((View) container, container.getTransitionName());
+
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2);
 
         startActivityForResult(intent, REQUEST_EDIT, options.toBundle());
     }

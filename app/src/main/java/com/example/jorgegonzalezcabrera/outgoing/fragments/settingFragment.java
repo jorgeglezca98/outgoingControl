@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.activities.editFieldActivity.editIncomeCategoryInterface;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.editableIncomeCategoriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.editableOutgoingCategoriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
@@ -29,6 +30,7 @@ public class settingFragment extends Fragment {
     private Context context;
     private localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface;
     private editableOutgoingCategoriesAdapter.editOutgoingCategoryInterface editOutgoingCategoryInterface;
+    private editIncomeCategoryInterface editIncomeCategoryInterface;
 
     @Override
     public void onAttach(Context context) {
@@ -82,6 +84,17 @@ public class settingFragment extends Fragment {
                 }
             };
         }
+
+        try {
+            editIncomeCategoryInterface = (editIncomeCategoryInterface) context;
+        } catch (Exception e) {
+            editIncomeCategoryInterface = new editIncomeCategoryInterface() {
+                @Override
+                public void edit(String initialValue, ConstraintLayout container, EditText field, String hint) {
+
+                }
+            };
+        }
     }
 
     @Nullable
@@ -96,7 +109,7 @@ public class settingFragment extends Fragment {
         recyclerViewEditableOutgoingCategories.addItemDecoration(new ItemOffsetDecoration(context, 5));
 
         final RecyclerView recyclerViewEditableIncomeCategories = view.findViewById(R.id.recyclerViewEditableIncomeCategories);
-        recyclerViewEditableIncomeCategories.setAdapter(new editableIncomeCategoriesAdapter(getContext(), onCategoriesChangeInterface));
+        recyclerViewEditableIncomeCategories.setAdapter(new editableIncomeCategoriesAdapter(getContext(), onCategoriesChangeInterface, editIncomeCategoryInterface));
         recyclerViewEditableIncomeCategories.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewEditableIncomeCategories.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
 
