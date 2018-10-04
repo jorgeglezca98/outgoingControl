@@ -66,6 +66,17 @@ public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesS
         notifyItemInserted(categories.size() - 1);
     }
 
+    public void editCategory(String newName, String oldName) {
+        for (int i = 0; i < categories.size(); i++) {
+            if (categories.get(i).equals(oldName)) {
+                categories.remove(i);
+                categories.add(newName);
+                notifyItemChanged(i);
+                return;
+            }
+        }
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public CheckBox checkboxCategory;

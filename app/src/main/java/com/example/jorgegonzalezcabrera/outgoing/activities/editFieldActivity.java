@@ -17,12 +17,13 @@ import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.FIELD_TRANSITION_NAME_KEY;
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.FINAL_VALUE_KEY;
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.HINT_KEY;
+import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.ID_KEY;
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.INITIAL_VALUE_KEY;
 
 public class editFieldActivity extends AppCompatActivity {
 
     public interface editIncomeCategoryInterface {
-        void edit(String initialValue, ConstraintLayout container, EditText field, String hint);
+        void editCategoryField(String initialValue, ConstraintLayout container, EditText field, String hint, int requestCode, long id);
     }
 
     private final static String ERROR_MESSAGE = "Mandatory field";
@@ -39,6 +40,7 @@ public class editFieldActivity extends AppCompatActivity {
         String fieldTransitionName = extras.getString(FIELD_TRANSITION_NAME_KEY);
         String initialValue = extras.getString(INITIAL_VALUE_KEY);
         String fieldHint = extras.getString(HINT_KEY);
+        final long id = extras.getLong(ID_KEY);
 
         ConstraintLayout container = findViewById(R.id.container);
         container.setTransitionName(containerTransitionName);
@@ -67,6 +69,7 @@ public class editFieldActivity extends AppCompatActivity {
                 if (!fieldEditText.getText().toString().isEmpty()) {
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra(FINAL_VALUE_KEY, fieldEditText.getText().toString());
+                    returnIntent.putExtra(ID_KEY, id);
                     setResult(Activity.RESULT_OK, returnIntent);
                     finish();
                 } else {

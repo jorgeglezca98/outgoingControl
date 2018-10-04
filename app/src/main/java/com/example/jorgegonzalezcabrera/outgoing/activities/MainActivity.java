@@ -530,26 +530,31 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     public static final String INITIAL_VALUE_KEY = "initialValueT";
     public static final String FINAL_VALUE_KEY = "finalValue";
     public static final String HINT_KEY = "hint";
+    public static final String ID_KEY = "id";
+
+    public static final int REQUEST_EDIT_INCOME_CATEGORY = 3;
+    public static final int REQUEST_ADD_INCOME_CATEGORY = 4;
 
     @Override
-    public void edit(String initialValue, ConstraintLayout container, EditText field, String hint) {
+    public void editCategoryField(String initialValue, ConstraintLayout container, EditText field, String hint, int requestCode, long id) {
         Intent intent = new Intent(this, editFieldActivity.class);
 
         intent.putExtra(CONTAINER_TRANSITION_NAME_KEY, container.getTransitionName());
         intent.putExtra(FIELD_TRANSITION_NAME_KEY, field.getTransitionName());
         intent.putExtra(INITIAL_VALUE_KEY, initialValue);
         intent.putExtra(HINT_KEY, hint);
+        intent.putExtra(ID_KEY, id);
 
         Pair<View, String> p1 = Pair.create((View) field, field.getTransitionName());
         Pair<View, String> p2 = Pair.create((View) container, container.getTransitionName());
 
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2);
 
-        startActivityForResult(intent, REQUEST_EDIT, options.toBundle());
+        startActivityForResult(intent, requestCode, options.toBundle());
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable final Intent data) {
         if (requestCode == REQUEST_EDIT) {
             if (resultCode == RESULT_OK) {
 
@@ -557,6 +562,48 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         } else if (requestCode == REQUEST_ADD) {
             if (resultCode == RESULT_OK) {
 
+            }
+        } else if (requestCode == REQUEST_EDIT_INCOME_CATEGORY) {
+            if (resultCode == RESULT_OK) {
+                Bundle extras = data.getExtras();
+                final String newName = extras.getString(FINAL_VALUE_KEY);
+                long id = extras.getLong(ID_KEY);
+
+                final incomeCategory modifiedIncomeCategory = database.where(incomeCategory.class).equalTo("id", id).findFirst();
+                final String oldName = modifiedIncomeCategory.getName();
+
+                if (!newName.equals(modifiedIncomeCategory.getName())) {
+                    database.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            modifiedIncomeCategory.setName(newName);
+                            database.copyToRealmOrUpdate(modifiedIncomeCategory);
+                        }
+                    });
+
+                    actionsFragment.editCategoryInFilters(newName, oldName);
+                    settingFragment.modifyIncomeCategory(modifiedIncomeCategory);
+                }
+            }
+        } else if (requestCode == REQUEST_ADD_INCOME_CATEGORY) {
+            if (resultCode == RESULT_OK) {
+                /*
+                Bundle extras = data.getExtras();
+                String name = extras.getString(FINAL_VALUE_KEY);
+                final incomeCategory newIncomeCategory = new incomeCategory(name);
+
+                database.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(@NonNull Realm realm) {
+                        appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
+                        currentConfiguration.getIncomeCategories().add(newIncomeCategory);
+                        database.copyToRealmOrUpdate(currentConfiguration);
+                    }
+                });
+
+                incomeCategory storedOutgoingCategory = database.where(incomeCategory.class).equalTo("id", newIncomeCategory.getId()).findFirst();
+                actionsFragment.addCategoryInFilters(storedOutgoingCategory);
+                */
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);

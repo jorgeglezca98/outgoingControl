@@ -23,6 +23,8 @@ import java.util.Vector;
 import io.realm.Realm;
 import io.realm.RealmList;
 
+import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_INCOME_CATEGORY;
+
 public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editableIncomeCategoriesAdapter.ViewHolder> {
 
     private Context context;
@@ -60,6 +62,17 @@ public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editab
         return categories.size();
     }
 
+    public void modify(incomeCategory modifiedIncomeCategory) {
+        for (int i = 0; i < categories.size(); i++) {
+            if (modifiedIncomeCategory.getId() == categories.get(i).getId()) {
+                categories.remove(i);
+                categories.add(i, modifiedIncomeCategory);
+                notifyItemChanged(i);
+                return;
+            }
+        }
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private ConstraintLayout container;
@@ -87,7 +100,8 @@ public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editab
             categoryName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    editIncomeCategoryInterface.edit(incomeCategory.getName(), container, categoryName, "Income category name");
+                    editIncomeCategoryInterface.editCategoryField(incomeCategory.getName(),
+                            container, categoryName, "Income category name", REQUEST_EDIT_INCOME_CATEGORY, incomeCategory.getId());
                 }
             });
 
