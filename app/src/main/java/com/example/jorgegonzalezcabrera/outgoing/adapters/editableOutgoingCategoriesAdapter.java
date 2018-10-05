@@ -29,6 +29,8 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
     private RealmList<outgoingCategory> categories;
     private localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface;
     private editOutgoingCategoryInterface editOutgoingCategoryInterface;
+    private boolean lastIsEmpty;
+    private boolean showingLast;
 
     public interface editOutgoingCategoryInterface {
         void edit(outgoingCategory outgoingCategory, ConstraintLayout container, EditText categoryName, EditText categoryMaximum);
@@ -44,6 +46,8 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
         this.layout = R.layout.editable_outgoing_category;
         this.onCategoriesChangeInterface = onCategoriesChangeInterface;
         this.editOutgoingCategoryInterface = editOutgoingCategoryInterface;
+        this.lastIsEmpty = false;
+        this.showingLast = false;
     }
 
     @NonNull
@@ -61,6 +65,43 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
     @Override
     public int getItemCount() {
         return categories.size();
+    }
+
+    public void addOne() {
+        if (!lastIsEmpty) {
+            categories.add(new outgoingCategory());
+            notifyItemInserted(getItemCount() - 1);
+            lastIsEmpty = true;
+        }
+    }
+
+    public void confirmLast(outgoingCategory storedOutgoingCategory) {
+        if (lastIsEmpty) {
+            categories.remove(getItemCount() - 1);
+            categories.add(storedOutgoingCategory);
+            notifyItemChanged(getItemCount() - 1);
+            lastIsEmpty = false;
+            showingLast = false;
+        }
+    }
+
+    public void cancelNewCategory() {
+        if (lastIsEmpty) {
+            categories.remove(getItemCount() - 1);
+            notifyItemRemoved(getItemCount());
+            lastIsEmpty = false;
+            showingLast = false;
+        }
+    }
+
+    @Override
+    public void onViewAttachedToWindow(@NonNull ViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+        if ((holder.getAdapterPosition() == (getItemCount() - 1)) && lastIsEmpty && !showingLast) {
+            editOutgoingCategoryInterface.edit(categories.get(holder.getAdapterPosition()),
+                    holder.layoutEditableOutgoingCategory, holder.name, holder.max);
+            showingLast = true;
+        }
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

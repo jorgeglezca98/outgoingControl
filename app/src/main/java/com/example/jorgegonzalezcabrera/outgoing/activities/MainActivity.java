@@ -35,6 +35,7 @@ import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry.periodicType;
+import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 import java.util.ArrayList;
@@ -214,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         fabAddOutgoingCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                settingFragment.addOutgoingCategory();
                 closeFloatingMenu();
             }
         });
@@ -500,7 +502,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     public final static String CATEGORY_MAXIMUM_TRANSITION_NAME_KEY = "categoryMaximumTransitionName";
 
     public final static int REQUEST_EDIT = 1;
-    public final static int REQUEST_ADD = 2;
+    public final static int REQUEST_ADD_OUTGOING_CATEGORY = 2;
 
     @Override
     public void edit(outgoingCategory outgoingCategory, ConstraintLayout container, EditText categoryName, EditText categoryMaximum) {
@@ -524,7 +526,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
 
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2, p3);
 
-        startActivityForResult(intent, REQUEST_EDIT, options.toBundle());
+        startActivityForResult(intent, REQUEST_ADD_OUTGOING_CATEGORY, options.toBundle());
     }
 
     public static final String FIELD_TRANSITION_NAME_KEY = "fieldTransitionName";
@@ -560,9 +562,33 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
             if (resultCode == RESULT_OK) {
 
             }
-        } else if (requestCode == REQUEST_ADD) {
+        } else if (requestCode == REQUEST_ADD_OUTGOING_CATEGORY) {
             if (resultCode == RESULT_OK) {
+                Bundle extras = data.getExtras();
+                String name = extras.getString(CATEGORY_NAME_KEY);
+                Double max = extras.getDouble(CATEGORY_MAXIMUM_KEY);
+                ArrayList<String> subcategories = extras.getStringArrayList(CATEGORY_SUBCATEGORIES_KEY);
+                RealmList<subcategory> formattedSubcategories = new RealmList<>();
+                for (int i = 0; i < subcategories.size(); i++) {
+                    formattedSubcategories.add(new subcategory(subcategories.get(i)));
+                }
+                final outgoingCategory newOutgoingCategory = new outgoingCategory(formattedSubcategories, max, name);
 
+                database.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(@NonNull Realm realm) {
+                        appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
+                        currentConfiguration.getOutgoingCategories().add(newOutgoingCategory);
+                        database.copyToRealmOrUpdate(currentConfiguration);
+                    }
+                });
+
+                outgoingCategory storedOutgoingCategory = database.where(outgoingCategory.class).equalTo("id", newOutgoingCategory.getId()).findFirst();
+                mainFragment.updateCategoryAdded(storedOutgoingCategory);
+                actionsFragment.addCategoryInFilters(storedOutgoingCategory);
+                settingFragment.confirmAddedCategory(storedOutgoingCategory);
+            } else {
+                settingFragment.newOutgoingCategoryCanceled();
             }
         } else if (requestCode == REQUEST_EDIT_INCOME_CATEGORY) {
             if (resultCode == RESULT_OK) {
@@ -601,11 +627,11 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
                     }
                 });
 
-                incomeCategory storedOutgoingCategory = database.where(incomeCategory.class).equalTo("id", newIncomeCategory.getId()).findFirst();
-                actionsFragment.addCategoryInFilters(storedOutgoingCategory);
-                settingFragment.confirmAddedCategory(storedOutgoingCategory);
+                incomeCategory storedIncomeCategory = database.where(incomeCategory.class).equalTo("id", newIncomeCategory.getId()).findFirst();
+                actionsFragment.addCategoryInFilters(storedIncomeCategory);
+                settingFragment.confirmAddedCategory(storedIncomeCategory);
             } else {
-                settingFragment.newCategoryCanceled();
+                settingFragment.newIncomeCategoryCanceled();
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);

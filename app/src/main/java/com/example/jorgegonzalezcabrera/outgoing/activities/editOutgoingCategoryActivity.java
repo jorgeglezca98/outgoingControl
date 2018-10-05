@@ -101,7 +101,7 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
                 if (checkDataAndShowErrors()) {
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra(CATEGORY_NAME_KEY, editTextCategoryName.getText().toString());
-                    returnIntent.putExtra(CATEGORY_MAXIMUM_KEY, editTextMaxValue.getText().toString());
+                    returnIntent.putExtra(CATEGORY_MAXIMUM_KEY, Double.valueOf(editTextMaxValue.getText().toString()));
                     returnIntent.putStringArrayListExtra(CATEGORY_SUBCATEGORIES_KEY, new ArrayList<>(subcategoriesAdapter.getItems()));
                     setResult(Activity.RESULT_OK, returnIntent);
                     finish();

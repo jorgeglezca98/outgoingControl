@@ -188,18 +188,53 @@ public class settingFragment extends Fragment {
                 recyclerViewEditableOutgoingCategories.setVisibility(View.GONE);
                 outgoingCategoriesExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
             }
+            recyclerViewEditableIncomeCategories.scrollToPosition(incomeCategoriesAdapter.getItemCount() - 1);
             scrollViewSettingFragment.fullScroll(View.FOCUS_DOWN);
         } else {
+            recyclerViewEditableIncomeCategories.scrollToPosition(incomeCategoriesAdapter.getItemCount() - 1);
             scrollViewSettingFragment.fullScroll(View.FOCUS_DOWN);
             incomeCategoriesAdapter.addOne();
         }
     }
 
-    public void confirmAddedCategory(incomeCategory storedOutgoingCategory) {
-        incomeCategoriesAdapter.confirmLast(storedOutgoingCategory);
+    public void addOutgoingCategory() {
+        AnimatorListenerAdapter animatorListenerAdapter = new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                outgoingCategoriesAdapter.addOne();
+            }
+        };
+
+        if (recyclerViewEditableOutgoingCategories.getVisibility() == View.GONE) {
+            recyclerViewEditableOutgoingCategories.setVisibility(View.VISIBLE);
+            outgoingCategoriesExpandImage.animate().rotation(0.0f).setDuration(500).setListener(animatorListenerAdapter);
+            if (recyclerViewEditableIncomeCategories.getVisibility() == View.VISIBLE) {
+                recyclerViewEditableIncomeCategories.setVisibility(View.GONE);
+                incomeCategoriesExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
+            }
+            recyclerViewEditableOutgoingCategories.scrollToPosition(outgoingCategoriesAdapter.getItemCount() - 1);
+            scrollViewSettingFragment.fullScroll(View.FOCUS_DOWN);
+        } else {
+            recyclerViewEditableOutgoingCategories.scrollToPosition(outgoingCategoriesAdapter.getItemCount() - 1);
+            scrollViewSettingFragment.fullScroll(View.FOCUS_DOWN);
+            outgoingCategoriesAdapter.addOne();
+        }
     }
 
-    public void newCategoryCanceled() {
+    public void confirmAddedCategory(incomeCategory storedIncomeCategory) {
+        incomeCategoriesAdapter.confirmLast(storedIncomeCategory);
+    }
+
+    public void newIncomeCategoryCanceled() {
         incomeCategoriesAdapter.cancelNewCategory();
+    }
+
+    public void newOutgoingCategoryCanceled() {
+        outgoingCategoriesAdapter.cancelNewCategory();
+    }
+
+    public void confirmAddedCategory(outgoingCategory storedOutgoingCategory) {
+        outgoingCategoriesAdapter.confirmLast(storedOutgoingCategory);
     }
 }

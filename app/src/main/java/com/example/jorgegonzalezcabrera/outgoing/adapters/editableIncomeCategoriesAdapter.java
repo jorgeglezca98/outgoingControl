@@ -34,6 +34,7 @@ public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editab
     private localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface;
     private editIncomeCategoryInterface editIncomeCategoryInterface;
     private boolean lastIsEmpty;
+    private boolean showingLast;
 
     public editableIncomeCategoriesAdapter(Context context,
                                            localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface,
@@ -46,6 +47,7 @@ public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editab
         this.onCategoriesChangeInterface = onCategoriesChangeInterface;
         this.editIncomeCategoryInterface = editIncomeCategoryInterface;
         this.lastIsEmpty = false;
+        this.showingLast = false;
     }
 
     @NonNull
@@ -66,9 +68,11 @@ public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editab
     }
 
     public void addOne() {
-        categories.add(new incomeCategory());
-        notifyItemInserted(getItemCount() - 1);
-        lastIsEmpty = true;
+        if (!lastIsEmpty) {
+            categories.add(new incomeCategory());
+            notifyItemInserted(getItemCount() - 1);
+            lastIsEmpty = true;
+        }
     }
 
     public void modify(incomeCategory modifiedIncomeCategory) {
@@ -82,25 +86,32 @@ public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editab
         }
     }
 
-    public void confirmLast(incomeCategory storedOutgoingCategory) {
-        categories.remove(getItemCount() - 1);
-        categories.add(storedOutgoingCategory);
-        notifyItemChanged(getItemCount() - 1);
-        lastIsEmpty = false;
+    public void confirmLast(incomeCategory storedIncomeCategory) {
+        if (lastIsEmpty) {
+            categories.remove(getItemCount() - 1);
+            categories.add(storedIncomeCategory);
+            notifyItemChanged(getItemCount() - 1);
+            lastIsEmpty = false;
+            showingLast = false;
+        }
     }
 
     public void cancelNewCategory() {
-        categories.remove(getItemCount() - 1);
-        notifyItemRemoved(getItemCount());
-        lastIsEmpty = false;
+        if (lastIsEmpty) {
+            categories.remove(getItemCount() - 1);
+            notifyItemRemoved(getItemCount());
+            lastIsEmpty = false;
+            showingLast = false;
+        }
     }
 
     @Override
     public void onViewAttachedToWindow(@NonNull ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
-        if ((holder.getAdapterPosition() == (getItemCount() - 1)) && lastIsEmpty) {
+        if ((holder.getAdapterPosition() == (getItemCount() - 1)) && lastIsEmpty && !showingLast) {
             editIncomeCategoryInterface.editCategoryField("",
                     holder.container, holder.categoryName, "Income category name", REQUEST_ADD_INCOME_CATEGORY, -1);
+            showingLast = true;
         }
     }
 
