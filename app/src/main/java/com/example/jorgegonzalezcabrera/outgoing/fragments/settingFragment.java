@@ -24,7 +24,6 @@ import com.example.jorgegonzalezcabrera.outgoing.adapters.editableIncomeCategori
 import com.example.jorgegonzalezcabrera.outgoing.adapters.editableOutgoingCategoriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
-import com.example.jorgegonzalezcabrera.outgoing.others.ItemOffsetDecoration;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 public class settingFragment extends Fragment {
@@ -115,7 +114,7 @@ public class settingFragment extends Fragment {
         outgoingCategoriesAdapter = new editableOutgoingCategoriesAdapter(getContext(), onCategoriesChangeInterface, editOutgoingCategoryInterface);
         recyclerViewEditableOutgoingCategories.setAdapter(outgoingCategoriesAdapter);
         recyclerViewEditableOutgoingCategories.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerViewEditableOutgoingCategories.addItemDecoration(new ItemOffsetDecoration(context, 5));
+        recyclerViewEditableOutgoingCategories.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
 
         recyclerViewEditableIncomeCategories = view.findViewById(R.id.recyclerViewEditableIncomeCategories);
         incomeCategoriesAdapter = new editableIncomeCategoriesAdapter(getContext(), onCategoriesChangeInterface, editIncomeCategoryInterface);

@@ -100,7 +100,6 @@
             android:id="@+id/recyclerViewEditableIncomeCategories"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#eeeeee"
             android:clipToPadding="false"
             android:visibility="gone" />
     </LinearLayout>

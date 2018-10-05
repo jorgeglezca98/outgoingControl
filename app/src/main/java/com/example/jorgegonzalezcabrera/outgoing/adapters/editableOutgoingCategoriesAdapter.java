@@ -159,7 +159,7 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
                         subcategories.setText(listOfSubcategories);
                         editButton.setVisibility(View.VISIBLE);
                         removeButton.setVisibility(View.VISIBLE);
-                        layoutEditableOutgoingCategory.setElevation(10.0f);
+                        layoutEditableOutgoingCategory.animate().translationZ(30.0f);
                     } else {
                         expandButton.animate().rotation(0);
                         String listOfSubcategories = "";
@@ -170,7 +170,7 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
                         subcategories.setText(listOfSubcategories);
                         editButton.setVisibility(View.GONE);
                         removeButton.setVisibility(View.GONE);
-                        layoutEditableOutgoingCategory.setElevation(0.0f);
+                        layoutEditableOutgoingCategory.animate().translationZ(0.0f);
                     }
 
                     expanded = !expanded;
