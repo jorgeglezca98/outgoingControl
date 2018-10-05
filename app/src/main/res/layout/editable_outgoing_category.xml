@@ -36,6 +36,7 @@
                 android:focusableInTouchMode="false"
                 android:gravity="bottom|start"
                 android:inputType="text|textNoSuggestions"
+                android:longClickable="false"
                 android:maxLines="1"
                 android:paddingTop="5dp"
                 android:textSize="16sp" />
@@ -58,6 +59,7 @@
                 android:focusableInTouchMode="false"
                 android:gravity="bottom|start"
                 android:inputType="numberDecimal|textNoSuggestions"
+                android:longClickable="false"
                 android:maxLines="1"
                 android:paddingTop="5dp"
                 android:textSize="16sp" />
@@ -102,6 +104,7 @@
             android:focusableInTouchMode="false"
             android:gravity="bottom|start"
             android:inputType="textMultiLine|textNoSuggestions"
+            android:longClickable="false"
             android:maxLines="1"
             android:padding="8dp"
             android:textSize="14sp" />

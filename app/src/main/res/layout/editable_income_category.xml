@@ -29,6 +29,7 @@
             android:focusableInTouchMode="false"
             android:hint="@string/default_erasable_hint"
             android:inputType="text"
+            android:longClickable="false"
             android:paddingTop="5dp"
             android:textSize="16sp" />
     </android.support.design.widget.TextInputLayout>
