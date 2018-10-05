@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.activities.editFieldActivity.editIncomeCategoryInterface;
@@ -37,7 +37,7 @@ public class settingFragment extends Fragment {
     private editableIncomeCategoriesAdapter incomeCategoriesAdapter;
     private RecyclerView recyclerViewEditableOutgoingCategories;
     private RecyclerView recyclerViewEditableIncomeCategories;
-    private ScrollView scrollViewSettingFragment;
+    private NestedScrollView scrollViewSettingFragment;
     private ImageView incomeCategoriesExpandImage;
     private ImageView outgoingCategoriesExpandImage;
 
@@ -177,6 +177,7 @@ public class settingFragment extends Fragment {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
+                scrollViewSettingFragment.fullScroll(NestedScrollView.FOCUS_DOWN);
                 incomeCategoriesAdapter.addOne();
             }
         };
@@ -188,11 +189,8 @@ public class settingFragment extends Fragment {
                 recyclerViewEditableOutgoingCategories.setVisibility(View.GONE);
                 outgoingCategoriesExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
             }
-            recyclerViewEditableIncomeCategories.scrollToPosition(incomeCategoriesAdapter.getItemCount() - 1);
-            scrollViewSettingFragment.fullScroll(View.FOCUS_DOWN);
         } else {
-            recyclerViewEditableIncomeCategories.scrollToPosition(incomeCategoriesAdapter.getItemCount() - 1);
-            scrollViewSettingFragment.fullScroll(View.FOCUS_DOWN);
+            scrollViewSettingFragment.fullScroll(NestedScrollView.FOCUS_DOWN);
             incomeCategoriesAdapter.addOne();
         }
     }
@@ -202,6 +200,7 @@ public class settingFragment extends Fragment {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
+                scrollViewSettingFragment.fullScroll(NestedScrollView.FOCUS_DOWN);
                 outgoingCategoriesAdapter.addOne();
             }
         };
@@ -213,11 +212,8 @@ public class settingFragment extends Fragment {
                 recyclerViewEditableIncomeCategories.setVisibility(View.GONE);
                 incomeCategoriesExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
             }
-            recyclerViewEditableOutgoingCategories.scrollToPosition(outgoingCategoriesAdapter.getItemCount() - 1);
-            scrollViewSettingFragment.fullScroll(View.FOCUS_DOWN);
         } else {
-            recyclerViewEditableOutgoingCategories.scrollToPosition(outgoingCategoriesAdapter.getItemCount() - 1);
-            scrollViewSettingFragment.fullScroll(View.FOCUS_DOWN);
+            scrollViewSettingFragment.fullScroll(NestedScrollView.FOCUS_DOWN);
             outgoingCategoriesAdapter.addOne();
         }
     }

@@ -90,7 +90,7 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent returnIntent = new Intent();
                 setResult(Activity.RESULT_CANCELED, returnIntent);
-                finish();
+                supportFinishAfterTransition();
             }
         });
 
@@ -104,7 +104,7 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
                     returnIntent.putExtra(CATEGORY_MAXIMUM_KEY, Double.valueOf(editTextMaxValue.getText().toString()));
                     returnIntent.putStringArrayListExtra(CATEGORY_SUBCATEGORIES_KEY, new ArrayList<>(subcategoriesAdapter.getItems()));
                     setResult(Activity.RESULT_OK, returnIntent);
-                    finish();
+                    supportFinishAfterTransition();
                 }
             }
         });
@@ -137,5 +137,12 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
         }
 
         return result;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_CANCELED, returnIntent);
+        supportFinishAfterTransition();
     }
 }

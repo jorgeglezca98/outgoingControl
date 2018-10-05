@@ -58,7 +58,7 @@ public class editFieldActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent returnIntent = new Intent();
                 setResult(Activity.RESULT_CANCELED, returnIntent);
-                finishAfterTransition();
+                supportFinishAfterTransition();
             }
         });
 
@@ -71,7 +71,7 @@ public class editFieldActivity extends AppCompatActivity {
                     returnIntent.putExtra(FINAL_VALUE_KEY, fieldEditText.getText().toString());
                     returnIntent.putExtra(ID_KEY, id);
                     setResult(Activity.RESULT_OK, returnIntent);
-                    finishAfterTransition();
+                    supportFinishAfterTransition();
                 } else {
                     textInputLayoutField.setError(ERROR_MESSAGE);
                 }
@@ -85,6 +85,6 @@ public class editFieldActivity extends AppCompatActivity {
     public void onBackPressed() {
         Intent returnIntent = new Intent();
         setResult(Activity.RESULT_CANCELED, returnIntent);
-        finishAfterTransition();
+        supportFinishAfterTransition();
     }
 }
