@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
@@ -107,6 +109,9 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private ConstraintLayout layoutEditableOutgoingCategory;
+        private TextInputLayout subcategoriesContainer;
+        private TextInputLayout textInputLayoutMaxValue;
+        private LinearLayout linearLayoutMainData;
         private EditText name;
         private EditText max;
         private EditText subcategories;
@@ -124,6 +129,9 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
             super(itemView);
 
             layoutEditableOutgoingCategory = itemView.findViewById(R.id.layoutEditableOutgoingCategory);
+            linearLayoutMainData = itemView.findViewById(R.id.linearLayoutMainData);
+            subcategoriesContainer = itemView.findViewById(R.id.subcategoriesContainer);
+            textInputLayoutMaxValue = itemView.findViewById(R.id.textInputLayoutMaxValue);
             name = itemView.findViewById(R.id.editTextCategoryName);
             max = itemView.findViewById(R.id.editTextMaxValue);
             subcategories = itemView.findViewById(R.id.editTextSubcategories);
@@ -133,44 +141,40 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
             expanded = false;
         }
 
-        void bind(@NonNull final outgoingCategory category) {
+        void bind(final outgoingCategory category) {
             layoutEditableOutgoingCategory.setTransitionName(CONTAINER_TRANSITION_NAME + getAdapterPosition());
             name.setTransitionName(CATEGORY_NAME_TRANSITION_NAME + getAdapterPosition());
             name.setText(category.getName());
             max.setTransitionName(CATEGORY_MAXIMUM_TRANSITION_NAME + getAdapterPosition());
             max.setText(String.valueOf(category.getMaximum()));
 
-            String listOfSubcategories = "";
+            StringBuilder listOfSubcategories = new StringBuilder();
             for (int i = 0; i < category.getSubcategories().size(); i++) {
-                listOfSubcategories += category.getSubcategories().get(i).getName() + ",";
+                listOfSubcategories.append(category.getSubcategories().get(i).getName()).append("\n");
             }
-            subcategories.setText(listOfSubcategories);
+            subcategories.setText(listOfSubcategories.toString());
 
             expandButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (!expanded) {
                         expandButton.animate().rotation(180);
-                        String listOfSubcategories = "";
-                        for (int i = 0; i < category.getSubcategories().size(); i++) {
-                            listOfSubcategories += category.getSubcategories().get(i).getName() + "\n";
-                        }
                         subcategories.setMaxLines(category.getSubcategories().size());
-                        subcategories.setText(listOfSubcategories);
                         editButton.setVisibility(View.VISIBLE);
                         removeButton.setVisibility(View.VISIBLE);
                         layoutEditableOutgoingCategory.animate().translationZ(30.0f);
+                        subcategoriesContainer.setVisibility(View.VISIBLE);
+                        textInputLayoutMaxValue.setVisibility(View.VISIBLE);
+                        linearLayoutMainData.setWeightSum(4.0f);
                     } else {
                         expandButton.animate().rotation(0);
-                        String listOfSubcategories = "";
-                        for (int i = 0; i < category.getSubcategories().size(); i++) {
-                            listOfSubcategories += category.getSubcategories().get(i).getName() + ",";
-                        }
                         subcategories.setMaxLines(1);
-                        subcategories.setText(listOfSubcategories);
                         editButton.setVisibility(View.GONE);
                         removeButton.setVisibility(View.GONE);
                         layoutEditableOutgoingCategory.animate().translationZ(0.0f);
+                        subcategoriesContainer.setVisibility(View.GONE);
+                        textInputLayoutMaxValue.setVisibility(View.GONE);
+                        linearLayoutMainData.setWeightSum(2.5f);
                     }
 
                     expanded = !expanded;

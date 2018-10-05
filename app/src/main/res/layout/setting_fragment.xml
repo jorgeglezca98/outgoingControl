@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="1dp"
-            android:background="#dddddd"
+            android:background="@color/primary1"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -29,7 +29,7 @@
                 android:gravity="center_vertical|start"
                 android:padding="8dp"
                 android:text="@string/outgoing_categories_title"
-                android:textColor="@color/primary4"
+                android:textColor="#ffffff"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -63,7 +63,7 @@
             android:id="@+id/incomeCategoriesHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#dddddd"
+            android:background="@color/primary1"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -73,7 +73,7 @@
                 android:gravity="center_vertical|start"
                 android:padding="8dp"
                 android:text="@string/income_categories_title"
-                android:textColor="@color/primary4"
+                android:textColor="#ffffff"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"

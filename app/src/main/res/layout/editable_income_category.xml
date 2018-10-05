@@ -4,7 +4,7 @@
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:padding="10dp">
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/erasableItemContainer"
@@ -28,7 +28,7 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:hint="@string/default_erasable_hint"
-            android:inputType="text"
+            android:inputType="text|textNoSuggestions"
             android:longClickable="false"
             android:paddingTop="5dp"
             android:textSize="16sp" />

@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
     android:background="#FFFFFF"
-    android:padding="16dp">
+    android:padding="10dp">
 
     <LinearLayout
         android:id="@+id/linearLayoutMainData"
@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
         android:baselineAligned="false"
-        android:weightSum="4"
+        android:weightSum="2.5"
         app:layout_constraintEnd_toStartOf="@+id/imageButtonExpandCategory"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -35,7 +35,7 @@
                 android:ems="10"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
-                android:gravity="bottom|start"
+                android:hint="@string/default_erasable_hint"
                 android:inputType="text|textNoSuggestions"
                 android:longClickable="false"
                 android:maxLines="1"
@@ -44,11 +44,13 @@
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
+            android:id="@+id/textInputLayoutMaxValue"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1.5"
-            android:hint="@string/maximum_hint">
+            android:hint="@string/maximum_hint"
+            android:visibility="gone">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/editTextMaxValue"
@@ -90,6 +92,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="8dp"
         android:hint="@string/subcategories"
+        android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@+id/imageButtonEditCategory"
         app:layout_constraintStart_toStartOf="@+id/linearLayoutMainData"
         app:layout_constraintTop_toBottomOf="@+id/linearLayoutMainData">
@@ -105,7 +108,6 @@
             android:gravity="bottom|start"
             android:inputType="textMultiLine|textNoSuggestions"
             android:longClickable="false"
-            android:maxLines="1"
             android:padding="8dp"
             android:textSize="14sp" />
 
