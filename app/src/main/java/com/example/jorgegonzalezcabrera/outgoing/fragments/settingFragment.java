@@ -186,7 +186,7 @@ public class settingFragment extends Fragment {
             incomeCategoriesExpandImage.animate().rotation(0.0f).setDuration(500).setListener(animatorListenerAdapter);
             if (recyclerViewEditableOutgoingCategories.getVisibility() == View.VISIBLE) {
                 recyclerViewEditableOutgoingCategories.setVisibility(View.GONE);
-                outgoingCategoriesExpandImage.animate().rotation(180.0f).setDuration(500).setListener(animatorListenerAdapter);
+                outgoingCategoriesExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
             }
             scrollViewSettingFragment.fullScroll(View.FOCUS_DOWN);
         } else {
