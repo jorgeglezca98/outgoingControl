@@ -112,6 +112,7 @@ public class settingFragment extends Fragment {
 
         recyclerViewEditableOutgoingCategories = view.findViewById(R.id.recyclerViewEditableOutgoingCategories);
         outgoingCategoriesAdapter = new editableOutgoingCategoriesAdapter(getContext(), onCategoriesChangeInterface, editOutgoingCategoryInterface);
+        outgoingCategoriesAdapter.addOnEditCategoryFieldInterface(editIncomeCategoryInterface);
         recyclerViewEditableOutgoingCategories.setAdapter(outgoingCategoriesAdapter);
         recyclerViewEditableOutgoingCategories.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewEditableOutgoingCategories.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
@@ -165,10 +166,6 @@ public class settingFragment extends Fragment {
         });
 
         return view;
-    }
-
-    public void modifyIncomeCategory(incomeCategory modifiedIncomeCategory) {
-        incomeCategoriesAdapter.modify(modifiedIncomeCategory);
     }
 
     public void addIncomeCategory() {
@@ -231,5 +228,13 @@ public class settingFragment extends Fragment {
 
     public void confirmAddedCategory(outgoingCategory storedOutgoingCategory) {
         outgoingCategoriesAdapter.confirmLast(storedOutgoingCategory);
+    }
+
+    public void modifyIncomeCategory(incomeCategory modifiedIncomeCategory) {
+        incomeCategoriesAdapter.modify(modifiedIncomeCategory);
+    }
+
+    public void modifyOutgoingCategory(outgoingCategory modifiedOutgoingCategory) {
+        outgoingCategoriesAdapter.modify(modifiedOutgoingCategory);
     }
 }

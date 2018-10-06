@@ -21,7 +21,9 @@ import java.util.Vector;
 
 import javax.annotation.Nonnull;
 
+import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 
 public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyTableAdapter.ViewHolder> {
 
@@ -84,6 +86,34 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
                     notifyItemChanged(i);
                 }
                 included = true;
+            }
+        }
+    }
+
+    public void updateCategoryName(outgoingCategory modifiedOutgoingCategory) {
+        for (int i = 0; i < items.size(); i++) {
+            if (modifiedOutgoingCategory.getId() == items.get(i).category.getId()) {
+                items.get(i).category = modifiedOutgoingCategory;
+                notifyItemChanged(i);
+                return;
+            }
+        }
+    }
+
+    public void updateCategoryMaximum(outgoingCategory modifiedOutgoingCategory) {
+        for (int i = 0; i < items.size(); i++) {
+            if (modifiedOutgoingCategory.getId() == items.get(i).category.getId()) {
+                items.get(i).category = modifiedOutgoingCategory;
+                Date date = utils.firstDateOfTheMonth(new Date());
+                RealmResults<entry> entries = Realm.getDefaultInstance().where(entry.class).greaterThanOrEqualTo("creationDate", date).findAll();
+                double outgoingsByCategory = 0;
+                for (int j = 0; j < modifiedOutgoingCategory.getSubcategories().size(); j++) {
+                    String subcategoryName = modifiedOutgoingCategory.getSubcategories().get(i).getName();
+                    outgoingsByCategory += entries.where().equalTo("category", subcategoryName).sum("valor").doubleValue();
+                }
+                items.get(i).surplusMoney = modifiedOutgoingCategory.getMaximum() - outgoingsByCategory;
+                notifyItemChanged(i);
+                return;
             }
         }
     }

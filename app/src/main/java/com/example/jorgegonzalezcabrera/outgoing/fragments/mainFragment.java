@@ -237,4 +237,12 @@ public class mainFragment extends Fragment {
     public void updateCategoryAdded(@NonNull outgoingCategory newOutgoingCategory) {
         surplusMoneyAdapter.addCategory(newOutgoingCategory);
     }
+
+    public void updateCategoryNameChanged(outgoingCategory modifiedOutgoingCategory) {
+        surplusMoneyAdapter.updateCategoryName(modifiedOutgoingCategory);
+    }
+
+    public void updateCategoryMaximumChanged(outgoingCategory modifiedOutgoingCategory) {
+        surplusMoneyAdapter.updateCategoryMaximum(modifiedOutgoingCategory);
+    }
 }

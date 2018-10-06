@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,6 +20,8 @@ import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.HINT_KEY;
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.ID_KEY;
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.INITIAL_VALUE_KEY;
+import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_CODE_KEY;
+import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_OUTGOING_CATEGORY_MAXIMUM;
 
 public class editFieldActivity extends AppCompatActivity {
 
@@ -40,6 +43,7 @@ public class editFieldActivity extends AppCompatActivity {
         String fieldTransitionName = extras.getString(FIELD_TRANSITION_NAME_KEY);
         String initialValue = extras.getString(INITIAL_VALUE_KEY);
         String fieldHint = extras.getString(HINT_KEY);
+        final int requestCode = extras.getInt(REQUEST_CODE_KEY);
         final long id = extras.getLong(ID_KEY);
 
         ConstraintLayout container = findViewById(R.id.container);
@@ -48,6 +52,9 @@ public class editFieldActivity extends AppCompatActivity {
         final EditText fieldEditText = findViewById(R.id.editTextField);
         fieldEditText.setTransitionName(fieldTransitionName);
         fieldEditText.setText(initialValue);
+        if (requestCode == REQUEST_EDIT_OUTGOING_CATEGORY_MAXIMUM) {
+            fieldEditText.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        }
 
         final TextInputLayout textInputLayoutField = findViewById(R.id.textInputLayoutField);
         textInputLayoutField.setHint(fieldHint);
@@ -68,7 +75,11 @@ public class editFieldActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (!fieldEditText.getText().toString().isEmpty()) {
                     Intent returnIntent = new Intent();
-                    returnIntent.putExtra(FINAL_VALUE_KEY, fieldEditText.getText().toString());
+                    if (requestCode == REQUEST_EDIT_OUTGOING_CATEGORY_MAXIMUM) {
+                        returnIntent.putExtra(FINAL_VALUE_KEY, Double.valueOf(fieldEditText.getText().toString()));
+                    } else {
+                        returnIntent.putExtra(FINAL_VALUE_KEY, fieldEditText.getText().toString());
+                    }
                     returnIntent.putExtra(ID_KEY, id);
                     setResult(Activity.RESULT_OK, returnIntent);
                     supportFinishAfterTransition();

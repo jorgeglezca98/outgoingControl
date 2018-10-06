@@ -534,9 +534,12 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     public static final String FINAL_VALUE_KEY = "finalValue";
     public static final String HINT_KEY = "hint";
     public static final String ID_KEY = "id";
+    public static final String REQUEST_CODE_KEY = "requestCode";
 
     public static final int REQUEST_EDIT_INCOME_CATEGORY = 3;
     public static final int REQUEST_ADD_INCOME_CATEGORY = 4;
+    public static final int REQUEST_EDIT_OUTGOING_CATEGORY_NAME = 5;
+    public static final int REQUEST_EDIT_OUTGOING_CATEGORY_MAXIMUM = 6;
 
     @Override
     public void editCategoryField(String initialValue, ConstraintLayout container, EditText field, String hint, int requestCode, long id) {
@@ -547,6 +550,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         intent.putExtra(INITIAL_VALUE_KEY, initialValue);
         intent.putExtra(HINT_KEY, hint);
         intent.putExtra(ID_KEY, id);
+        intent.putExtra(REQUEST_CODE_KEY, requestCode);
 
         Pair<View, String> p1 = Pair.create((View) field, field.getTransitionName());
         Pair<View, String> p2 = Pair.create((View) container, container.getTransitionName());
@@ -558,9 +562,45 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable final Intent data) {
-        if (requestCode == REQUEST_EDIT) {
+        if (requestCode == REQUEST_EDIT_OUTGOING_CATEGORY_NAME) {
             if (resultCode == RESULT_OK) {
+                Bundle extras = data.getExtras();
+                final String newName = extras.getString(FINAL_VALUE_KEY);
+                long id = extras.getLong(ID_KEY);
+                final outgoingCategory modifiedOutgoingCategory = database.where(outgoingCategory.class).equalTo("id", id).findFirst();
 
+                if (!newName.equals(modifiedOutgoingCategory.getName())) {
+                    database.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            modifiedOutgoingCategory.setName(newName);
+                            database.copyToRealmOrUpdate(modifiedOutgoingCategory);
+                        }
+                    });
+
+                    mainFragment.updateCategoryNameChanged(modifiedOutgoingCategory);
+                    settingFragment.modifyOutgoingCategory(modifiedOutgoingCategory);
+                }
+            }
+        } else if (requestCode == REQUEST_EDIT_OUTGOING_CATEGORY_MAXIMUM) {
+            if (resultCode == RESULT_OK) {
+                Bundle extras = data.getExtras();
+                final Double newMaximum = extras.getDouble(FINAL_VALUE_KEY);
+                long id = extras.getLong(ID_KEY);
+                final outgoingCategory modifiedOutgoingCategory = database.where(outgoingCategory.class).equalTo("id", id).findFirst();
+
+                if (newMaximum != modifiedOutgoingCategory.getMaximum()) {
+                    database.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            modifiedOutgoingCategory.setMaximum(newMaximum);
+                            database.copyToRealmOrUpdate(modifiedOutgoingCategory);
+                        }
+                    });
+
+                    mainFragment.updateCategoryMaximumChanged(modifiedOutgoingCategory);
+                    settingFragment.modifyOutgoingCategory(modifiedOutgoingCategory);
+                }
             }
         } else if (requestCode == REQUEST_ADD_OUTGOING_CATEGORY) {
             if (resultCode == RESULT_OK) {

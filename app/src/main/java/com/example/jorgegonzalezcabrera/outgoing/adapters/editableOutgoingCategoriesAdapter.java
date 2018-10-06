@@ -15,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.activities.editFieldActivity;
 import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
@@ -25,12 +26,16 @@ import java.util.Vector;
 import io.realm.Realm;
 import io.realm.RealmList;
 
+import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_OUTGOING_CATEGORY_MAXIMUM;
+import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_OUTGOING_CATEGORY_NAME;
+
 public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<editableOutgoingCategoriesAdapter.ViewHolder> {
 
     private final Context context;
     private int layout;
     private RealmList<outgoingCategory> categories;
     private localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface;
+    private editFieldActivity.editIncomeCategoryInterface onEditCategoryFieldInterface;
     private editOutgoingCategoryInterface editOutgoingCategoryInterface;
     private boolean lastIsEmpty;
     private boolean showingLast;
@@ -49,6 +54,12 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
         this.layout = R.layout.editable_outgoing_category;
         this.onCategoriesChangeInterface = onCategoriesChangeInterface;
         this.editOutgoingCategoryInterface = editOutgoingCategoryInterface;
+        this.onEditCategoryFieldInterface = new editFieldActivity.editIncomeCategoryInterface() {
+            @Override
+            public void editCategoryField(String initialValue, ConstraintLayout container, EditText field, String hint, int requestCode, long id) {
+
+            }
+        };
         this.lastIsEmpty = false;
         this.showingLast = false;
     }
@@ -97,6 +108,19 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
         }
     }
 
+    public void addOnEditCategoryFieldInterface(editFieldActivity.editIncomeCategoryInterface onEditCategoryFieldInterface) {
+        this.onEditCategoryFieldInterface = onEditCategoryFieldInterface;
+    }
+
+    public void modify(outgoingCategory modifiedOutgoingCategory) {
+        for (int i = 0; i < categories.size(); i++) {
+            if (modifiedOutgoingCategory.getId() == categories.get(i).getId()) {
+                notifyItemChanged(i);
+                return;
+            }
+        }
+    }
+
     @Override
     public void onViewAttachedToWindow(@NonNull ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
@@ -140,10 +164,26 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
 
         void bind(final outgoingCategory category) {
             layoutEditableOutgoingCategory.setTransitionName(CONTAINER_TRANSITION_NAME + getAdapterPosition());
+
             name.setTransitionName(CATEGORY_NAME_TRANSITION_NAME + getAdapterPosition());
             name.setText(category.getName());
+            name.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onEditCategoryFieldInterface.editCategoryField(
+                            name.getText().toString(), layoutEditableOutgoingCategory, name, "Category name", REQUEST_EDIT_OUTGOING_CATEGORY_NAME, category.getId());
+                }
+            });
+
             max.setTransitionName(CATEGORY_MAXIMUM_TRANSITION_NAME + getAdapterPosition());
             max.setText(String.valueOf(category.getMaximum()));
+            max.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onEditCategoryFieldInterface.editCategoryField(
+                            max.getText().toString(), layoutEditableOutgoingCategory, max, "Maximum", REQUEST_EDIT_OUTGOING_CATEGORY_MAXIMUM, category.getId());
+                }
+            });
 
             erasableItemsAdapter subcategoriesAdapter = new erasableItemsAdapter("Subcategory", new erasableItemsAdapter.onItemsChange() {
                 @Override
@@ -184,6 +224,8 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
                         subcategoriesRecyclerView.setVisibility(View.VISIBLE);
                         textInputLayoutMaxValue.setVisibility(View.VISIBLE);
                         linearLayoutMainData.setWeightSum(4.0f);
+                        max.setClickable(true);
+                        name.setClickable(true);
                     } else {
                         expandButton.animate().rotation(0);
                         removeButton.setVisibility(View.GONE);
@@ -191,6 +233,8 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
                         subcategoriesRecyclerView.setVisibility(View.GONE);
                         textInputLayoutMaxValue.setVisibility(View.GONE);
                         linearLayoutMainData.setWeightSum(2.5f);
+                        max.setClickable(false);
+                        name.setClickable(false);
                     }
 
                     expanded = !expanded;
