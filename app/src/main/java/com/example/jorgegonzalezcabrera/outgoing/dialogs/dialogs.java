@@ -3,8 +3,14 @@ package com.example.jorgegonzalezcabrera.outgoing.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.PopupMenu;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -25,36 +31,85 @@ import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Vector;
 
 import io.realm.Realm;
 
+import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getFunctioningIncomeCategories;
+import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getFunctioningOutgoingCategories;
 import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getTypeFromOrdinal;
 
 public class dialogs {
 
-    public static void newEntryDialog(Context context, final localUtils.OnEntriesChangeInterface onEntriesChange) {
-        final Dialog dialog = new Dialog(context, R.style.AppTheme);
+    public static void newEntryDialog(final Context context, final localUtils.OnEntriesChangeInterface onEntriesChange) {
+        final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
         dialog.setContentView(R.layout.new_entry_dialog);
         Window dialogWindow = dialog.getWindow();
         if (dialogWindow != null) {
+            dialogWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialogWindow.setWindowAnimations(R.style.DialogAnimation);
         }
 
+        final ConstraintLayout dialogContainer = dialog.findViewById(R.id.dialogContainer);
         final EditText valueEditText = dialog.findViewById(R.id.editTextValueNewEntry);
-        final Spinner categorySpinner = dialog.findViewById(R.id.spinnerCategorySelection);
+        final EditText categorySelectionEditText = dialog.findViewById(R.id.editTextCategorySelection);
         final EditText descriptionEditText = dialog.findViewById(R.id.editTextConceptNewEntry);
+        final EditText datePickerEditText = dialog.findViewById(R.id.editTextEntryDate);
         Button cancelButton = dialog.findViewById(R.id.buttonCancel);
         Button applyButton = dialog.findViewById(R.id.buttonApplyNewEntry);
 
-        final categoriesSpinnerAdapter categoriesSpinnerAdapter = new categoriesSpinnerAdapter(context);
-        categorySpinner.setAdapter(categoriesSpinnerAdapter);
-        categorySpinner.setSelection(1);
+        final PopupMenu popup = new PopupMenu(context, categorySelectionEditText);
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                categorySelectionEditText.setText(menuItem.getTitle());
+                return true;
+            }
+        });
+        final List<String> outgoingCategories = getFunctioningOutgoingCategories();
+        for (int i = 0; i < outgoingCategories.size(); i++) {
+            popup.getMenu().add(0, Menu.NONE, i, outgoingCategories.get(i));
+        }
+        int firstIncomeCategory = outgoingCategories.size();
+        List<String> incomeCategories = getFunctioningIncomeCategories();
+        for (int i = 0; i < incomeCategories.size(); i++) {
+            popup.getMenu().add(1, Menu.NONE, firstIncomeCategory + i, incomeCategories.get(i));
+        }
 
-        final DatePicker datePicker = dialog.findViewById(R.id.datePicker);
-        datePicker.setMaxDate((new Date()).getTime());
+        categorySelectionEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                popup.show();
+            }
+        });
+
+        final GregorianCalendar creationDate = new GregorianCalendar();
+        creationDate.setTime(new Date());
+        String initialDate = creationDate.get(Calendar.DAY_OF_MONTH) + "/" + creationDate.get(Calendar.MONTH) + "/" + creationDate.get(Calendar.YEAR);
+        datePickerEditText.setText(initialDate);
+        datePickerEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogContainer.setVisibility(View.INVISIBLE);
+                newDatePickerDialog(creationDate.getTime(), context, new OnDateRemovedListener() {
+                    @Override
+                    public void onDateRemoved() {
+                        dialogContainer.setVisibility(View.VISIBLE);
+                    }
+                }, new OnDateSetListener() {
+                    @Override
+                    public void onDateSet(int year, int month, int day) {
+                        dialogContainer.setVisibility(View.VISIBLE);
+                        creationDate.set(year, month, day);
+                        String updatedDate = day + "/" + month + "/" + year;
+                        datePickerEditText.setText(updatedDate);
+                    }
+                });
+            }
+        });
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,19 +121,16 @@ public class dialogs {
         applyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!valueEditText.getText().toString().isEmpty()) {
+                if (!valueEditText.getText().toString().isEmpty() && !categorySelectionEditText.getText().toString().isEmpty()) {
                     int typeOfCategory;
-                    if (categoriesSpinnerAdapter.isOutgoingCategory(categorySpinner.getSelectedItemPosition()))
+                    if (outgoingCategories.contains(categorySelectionEditText.getText().toString()))
                         typeOfCategory = type.OUTGOING.ordinal();
                     else
                         typeOfCategory = type.INCOME.ordinal();
 
-                    String subcategory = categoriesSpinnerAdapter.getItem(categorySpinner.getSelectedItemPosition());
+                    String subcategory = categorySelectionEditText.getText().toString();
                     String description = descriptionEditText.getText().toString();
                     double value = Double.valueOf(valueEditText.getText().toString());
-
-                    GregorianCalendar creationDate = new GregorianCalendar();
-                    creationDate.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
 
                     onEntriesChange.addEntry(new entry(value, getTypeFromOrdinal(typeOfCategory), subcategory, description, creationDate.getTime()));
                     dialog.dismiss();
