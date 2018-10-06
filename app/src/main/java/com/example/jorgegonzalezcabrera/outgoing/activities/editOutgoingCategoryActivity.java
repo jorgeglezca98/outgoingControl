@@ -66,7 +66,7 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
         editTextMaxValue.setTransitionName(categoryMaxTransitionName);
         editTextMaxValue.setText(categoryMax);
 
-        final RecyclerView recyclerViewSubcategories = findViewById(R.id.subcategoriesContainer);
+        final RecyclerView recyclerViewSubcategories = findViewById(R.id.recyclerViewSubcategories);
         subcategoriesAdapter = new erasableItemsAdapter("Subcategory");
         recyclerViewSubcategories.setAdapter(subcategoriesAdapter);
         recyclerViewSubcategories.setLayoutManager(new LinearLayoutManager(this));

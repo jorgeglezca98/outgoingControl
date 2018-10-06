@@ -83,35 +83,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/linearLayoutMainData" />
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/subcategoriesContainer"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewSubcategories"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="40dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="8dp"
-        android:hint="@string/subcategories"
         android:visibility="gone"
-        app:layout_constraintEnd_toStartOf="@+id/imageButtonEditCategory"
+        app:layout_constraintEnd_toStartOf="@+id/imageButtonRemoveCategory"
         app:layout_constraintStart_toStartOf="@+id/linearLayoutMainData"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayoutMainData">
-
-        <EditText
-            android:id="@+id/editTextSubcategories"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#00000000"
-            android:clickable="false"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:gravity="bottom|start"
-            android:inputType="textMultiLine|textNoSuggestions"
-            android:longClickable="false"
-            android:padding="8dp"
-            android:textSize="14sp" />
-
-    </android.support.design.widget.TextInputLayout>
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutMainData" />
 
     <ImageButton
         android:id="@+id/imageButtonRemoveCategory"
@@ -123,20 +105,8 @@
         android:scaleY="0.5"
         android:src="@drawable/remove"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/subcategoriesContainer"
+        app:layout_constraintBottom_toBottomOf="@+id/recyclerViewSubcategories"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/subcategoriesContainer" />
-
-    <ImageButton
-        android:id="@+id/imageButtonEditCategory"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#00000000"
-        android:contentDescription="@string/remove"
-        android:src="@drawable/edit"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/imageButtonRemoveCategory"
-        app:layout_constraintEnd_toStartOf="@+id/imageButtonRemoveCategory"
-        app:layout_constraintTop_toTopOf="@+id/imageButtonRemoveCategory" />
+        app:layout_constraintTop_toBottomOf="@+id/recyclerViewSubcategories" />
 
 </android.support.constraint.ConstraintLayout>

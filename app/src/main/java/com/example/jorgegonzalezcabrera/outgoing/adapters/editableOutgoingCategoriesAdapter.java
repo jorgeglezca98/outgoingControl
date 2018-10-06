@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -109,14 +110,12 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private ConstraintLayout layoutEditableOutgoingCategory;
-        private TextInputLayout subcategoriesContainer;
+        private RecyclerView subcategoriesRecyclerView;
         private TextInputLayout textInputLayoutMaxValue;
         private LinearLayout linearLayoutMainData;
         private EditText name;
         private EditText max;
-        private EditText subcategories;
         private ImageButton expandButton;
-        private ImageButton editButton;
         private ImageButton removeButton;
 
         private boolean expanded;
@@ -130,13 +129,11 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
 
             layoutEditableOutgoingCategory = itemView.findViewById(R.id.layoutEditableOutgoingCategory);
             linearLayoutMainData = itemView.findViewById(R.id.linearLayoutMainData);
-            subcategoriesContainer = itemView.findViewById(R.id.subcategoriesContainer);
+            subcategoriesRecyclerView = itemView.findViewById(R.id.recyclerViewSubcategories);
             textInputLayoutMaxValue = itemView.findViewById(R.id.textInputLayoutMaxValue);
             name = itemView.findViewById(R.id.editTextCategoryName);
             max = itemView.findViewById(R.id.editTextMaxValue);
-            subcategories = itemView.findViewById(R.id.editTextSubcategories);
             expandButton = itemView.findViewById(R.id.imageButtonExpandCategory);
-            editButton = itemView.findViewById(R.id.imageButtonEditCategory);
             removeButton = itemView.findViewById(R.id.imageButtonRemoveCategory);
             expanded = false;
         }
@@ -148,31 +145,50 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
             max.setTransitionName(CATEGORY_MAXIMUM_TRANSITION_NAME + getAdapterPosition());
             max.setText(String.valueOf(category.getMaximum()));
 
-            StringBuilder listOfSubcategories = new StringBuilder();
+            erasableItemsAdapter subcategoriesAdapter = new erasableItemsAdapter("Subcategory", new erasableItemsAdapter.onItemsChange() {
+                @Override
+                public void onItemModified(int position, @NonNull String item) {
+
+                }
+
+                @Override
+                public void onItemRemoved(int position) {
+
+                }
+
+                @Override
+                public void onItemAdded(int position) {
+
+                }
+
+                @Override
+                public void onItemsChanged(@NonNull Vector<String> newItems) {
+
+                }
+            });
+            Vector<String> subcategories = new Vector<>();
             for (int i = 0; i < category.getSubcategories().size(); i++) {
-                listOfSubcategories.append(category.getSubcategories().get(i).getName()).append("\n");
+                subcategories.add(category.getSubcategories().get(i).getName());
             }
-            subcategories.setText(listOfSubcategories.toString());
+            subcategoriesAdapter.updateItems(subcategories);
+            subcategoriesRecyclerView.setAdapter(subcategoriesAdapter);
+            subcategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
             expandButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if (!expanded) {
                         expandButton.animate().rotation(180);
-                        subcategories.setMaxLines(category.getSubcategories().size());
-                        editButton.setVisibility(View.VISIBLE);
                         removeButton.setVisibility(View.VISIBLE);
                         layoutEditableOutgoingCategory.animate().translationZ(30.0f);
-                        subcategoriesContainer.setVisibility(View.VISIBLE);
+                        subcategoriesRecyclerView.setVisibility(View.VISIBLE);
                         textInputLayoutMaxValue.setVisibility(View.VISIBLE);
                         linearLayoutMainData.setWeightSum(4.0f);
                     } else {
                         expandButton.animate().rotation(0);
-                        subcategories.setMaxLines(1);
-                        editButton.setVisibility(View.GONE);
                         removeButton.setVisibility(View.GONE);
                         layoutEditableOutgoingCategory.animate().translationZ(0.0f);
-                        subcategoriesContainer.setVisibility(View.GONE);
+                        subcategoriesRecyclerView.setVisibility(View.GONE);
                         textInputLayoutMaxValue.setVisibility(View.GONE);
                         linearLayoutMainData.setWeightSum(2.5f);
                     }
@@ -221,13 +237,6 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
                             }
                         }
                     });
-                }
-            });
-
-            editButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    editOutgoingCategoryInterface.edit(category, layoutEditableOutgoingCategory, name, max);
                 }
             });
         }
