@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,7 +21,6 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
@@ -72,11 +72,11 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     private FloatingActionButton fabFilterActions;
     private FloatingActionButton fabAddOutgoingCategory;
     private FloatingActionButton fabAddIncomeCategory;
-    private TextView labelAddIncomeCategory;
-    private TextView labelAddOutgoingCategory;
-    private TextView labelFilterActions;
-    private TextView labelAddEntry;
-    private TextView labelAddPeriodicEntry;
+    private CardView labelAddIncomeCategory;
+    private CardView labelAddOutgoingCategory;
+    private CardView labelFilterActions;
+    private CardView labelAddEntry;
+    private CardView labelAddPeriodicEntry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
