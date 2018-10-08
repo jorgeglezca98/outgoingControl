@@ -7,6 +7,7 @@ import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
+import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -20,6 +21,7 @@ public class myApplication extends Application {
     public static AtomicInteger entryId;
     public static AtomicInteger outgoingCategoryId;
     public static AtomicInteger incomeCategoryId;
+    public static AtomicInteger outgoingCategorySubcategoryId;
 
     @Override
     public void onCreate() {
@@ -42,6 +44,9 @@ public class myApplication extends Application {
 
         Number higherIncomeCategoryId = Realm.getDefaultInstance().where(incomeCategory.class).max("id");
         incomeCategoryId = new AtomicInteger((higherIncomeCategoryId == null) ? 0 : higherIncomeCategoryId.intValue());
+
+        Number higherOutgoingCategorySubcategoryId = Realm.getDefaultInstance().where(subcategory.class).max("id");
+        outgoingCategorySubcategoryId = new AtomicInteger((higherOutgoingCategorySubcategoryId == null) ? 0 : higherOutgoingCategorySubcategoryId.intValue());
     }
 }
 //TODO: explore configuration possibilities
