@@ -24,6 +24,7 @@ import com.example.jorgegonzalezcabrera.outgoing.adapters.editableIncomeCategori
 import com.example.jorgegonzalezcabrera.outgoing.adapters.editableOutgoingCategoriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
+import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 public class settingFragment extends Fragment {
@@ -67,6 +68,16 @@ public class settingFragment extends Fragment {
 
                 @Override
                 public void removeAndKeepCategory(@NonNull incomeCategory removedIncomeCategory) {
+
+                }
+
+                @Override
+                public void removeAndReplaceCategory(@NonNull subcategory removedSubcategory, @NonNull String newSubcategory) {
+
+                }
+
+                @Override
+                public void removeAndKeepCategory(@NonNull subcategory removedSubcategory, @NonNull outgoingCategory category) {
 
                 }
 

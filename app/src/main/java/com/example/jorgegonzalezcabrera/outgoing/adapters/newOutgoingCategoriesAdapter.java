@@ -31,6 +31,7 @@ public class newOutgoingCategoriesAdapter extends RecyclerView.Adapter<newOutgoi
         this.layout = R.layout.new_outgoing_category;
         this.categories = new RealmList<>();
         this.categories.add(new outgoingCategory());
+        this.categories.last().setAvailableId();
     }
 
     @NonNull
@@ -109,7 +110,7 @@ public class newOutgoingCategoriesAdapter extends RecyclerView.Adapter<newOutgoi
                     }
                     categories.get(getAdapterPosition()).setSubcategories(subcategories);
                 }
-            });
+            }, null);
 
             recyclerViewSubcategories.setAdapter(adapter);
             LinearLayoutManager layoutManager = new LinearLayoutManager(context);

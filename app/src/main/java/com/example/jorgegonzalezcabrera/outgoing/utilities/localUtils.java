@@ -33,6 +33,10 @@ public class localUtils {
 
         void removeAndKeepCategory(@NonNull incomeCategory removedIncomeCategory);
 
+        void removeAndReplaceCategory(@NonNull subcategory removedSubcategory, @NonNull String newSubcategory);
+
+        void removeAndKeepCategory(@NonNull subcategory removedSubcategory, @NonNull outgoingCategory category);
+
         void addedCategory(@NonNull outgoingCategory newOutgoingCategory);
 
         void addedCategory(@NonNull incomeCategory newIncomeCategory);
@@ -130,6 +134,20 @@ public class localUtils {
                 }
             }
         }
+
+        outgoingCategories = currentConfiguration.getOutgoingCategories();
+        for (int i = 0; i < outgoingCategories.size(); i++) {
+            outgoingCategory outgoingCategory = outgoingCategories.get(i);
+            if (outgoingCategory != null) {
+                for (int j = 0; j < outgoingCategory.getRemovedSubcategories().size(); j++) {
+                    subcategory subcategory = outgoingCategory.getRemovedSubcategories().get(j);
+                    if (subcategory != null) {
+                        categories.add(subcategory.getName());
+                    }
+                }
+            }
+        }
+
         return categories;
     }
 

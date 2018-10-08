@@ -13,6 +13,7 @@ public class outgoingCategory extends RealmObject {
     @PrimaryKey
     private long id;
     private RealmList<subcategory> subcategories;
+    private RealmList<subcategory> removedSubcategories;
     private double maximum;
     private String name;
 
@@ -57,6 +58,21 @@ public class outgoingCategory extends RealmObject {
                 this.subcategories.add(subcategories.get(i));
             }
         }
+    }
+
+    public RealmList<subcategory> getRemovedSubcategories() {
+        return removedSubcategories;
+    }
+
+    public void setRemovedSubcategories(RealmList<subcategory> removedSubcategories) {
+        this.removedSubcategories = removedSubcategories;
+    }
+
+    public RealmList<subcategory> getAllSubcategories() {
+        RealmList<subcategory> result = new RealmList<>();
+        result.addAll(getSubcategories());
+        result.addAll(getRemovedSubcategories());
+        return result;
     }
 
     public double getMaximum() {

@@ -22,6 +22,7 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
     private Vector<String> errorByItem;
     private String hint;
     private onItemsChange onItemsChange;
+    private customizeView customizeViewInterface;
 
     private static final String ERROR_MESSAGE = "Mandatory field";
 
@@ -32,26 +33,11 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
         this.errorByItem = new Vector<>();
         this.errorByItem.add(null);
         this.hint = hint;
-        this.onItemsChange = new onItemsChange() {
-            @Override
-            public void onItemModified(int position, @NonNull String item) {
-            }
-
-            @Override
-            public void onItemRemoved(int position) {
-            }
-
-            @Override
-            public void onItemAdded(int position) {
-            }
-
-            @Override
-            public void onItemsChanged(@NonNull Vector<String> newItems) {
-            }
-        };
+        this.onItemsChange = null;
+        this.customizeViewInterface = null;
     }
 
-    erasableItemsAdapter(String hint, erasableItemsAdapter.onItemsChange onItemsChange) {
+    erasableItemsAdapter(String hint, erasableItemsAdapter.onItemsChange onItemsChange, customizeView customizeViewInterface) {
         this.layout = R.layout.erasable_item;
         this.items = new Vector<>();
         this.items.add("");
@@ -59,21 +45,26 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
         this.errorByItem.add(null);
         this.hint = hint;
         this.onItemsChange = onItemsChange;
+        this.customizeViewInterface = customizeViewInterface;
     }
 
     public void addOne() {
         items.add("");
         errorByItem.add(null);
         notifyItemInserted(getItemCount() - 1);
-        onItemsChange.onItemAdded(getItemCount() - 1);
+        if (onItemsChange != null) {
+            onItemsChange.onItemAdded(getItemCount() - 1);
+        }
     }
 
-    private void deleteItemAt(int position) {
+    public void deleteItemAt(int position) {
         if (getItemCount() > 0 && position < getItemCount()) {
             items.remove(position);
             errorByItem.remove(position);
             notifyItemRemoved(position);
-            onItemsChange.onItemRemoved(position);
+            if (onItemsChange != null) {
+                onItemsChange.onItemRemoved(position);
+            }
         }
     }
 
@@ -124,6 +115,14 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
         void onItemsChanged(@NonNull Vector<String> newItems);
     }
 
+    public interface customizeView {
+        void custom(ViewHolder vh);
+    }
+
+    public void setCustomizeViewInterface(customizeView customizeViewInterface) {
+        this.customizeViewInterface = customizeViewInterface;
+    }
+
     @NonNull
     @Override
     public erasableItemsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -148,7 +147,9 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
             errorByItem.add(null);
         }
         notifyDataSetChanged();
-        onItemsChange.onItemsChanged(newItems);
+        if (onItemsChange != null) {
+            onItemsChange.onItemsChanged(newItems);
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -172,7 +173,9 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                     items.remove(getAdapterPosition());
                     items.add(getAdapterPosition(), charSequence.toString());
-                    onItemsChange.onItemModified(getAdapterPosition(), charSequence.toString());
+                    if (onItemsChange != null) {
+                        onItemsChange.onItemModified(getAdapterPosition(), charSequence.toString());
+                    }
                 }
 
                 @Override
@@ -185,7 +188,9 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
         void bind() {
             container.setError(errorByItem.get(getAdapterPosition()));
             name.setText(items.get(getAdapterPosition()));
-            onItemsChange.onItemModified(getAdapterPosition(), items.get(getAdapterPosition()));
+            if (onItemsChange != null) {
+                onItemsChange.onItemModified(getAdapterPosition(), items.get(getAdapterPosition()));
+            }
             container.setHint(hint);
             deleteItemButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -193,6 +198,9 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
                     deleteItemAt(getAdapterPosition());
                 }
             });
+            if (customizeViewInterface != null) {
+                customizeViewInterface.custom(this);
+            }
         }
     }
 }

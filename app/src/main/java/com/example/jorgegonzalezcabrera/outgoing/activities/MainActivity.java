@@ -435,7 +435,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
 
     @Override
     public void removeAndReplaceCategory(@NonNull final incomeCategory removedIncomeCategory, @NonNull String newCategory) {
-        actionsFragment.removeCategoryInFilters(removedIncomeCategory);
+        actionsFragment.removeCategoryInFilters(removedIncomeCategory.getName());
         RealmList<entry> entries = new RealmList<>();
         entries.addAll(database.where(entry.class).equalTo("category", removedIncomeCategory.getName()).findAll());
         for (int i = 0; i < entries.size(); i++) {
@@ -461,6 +461,37 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
                 currentConfiguration.getIncomeCategories().remove(removedIncomeCategory);
                 currentConfiguration.getRemovedIncomeCategories().add(removedIncomeCategory);
                 database.copyToRealmOrUpdate(currentConfiguration);
+            }
+        });
+    }
+
+    @Override
+    public void removeAndReplaceCategory(@NonNull final subcategory removedSubcategory, @NonNull String newSubcategory) {
+        actionsFragment.removeCategoryInFilters(removedSubcategory.getName());
+        RealmList<entry> entries = new RealmList<>();
+        entries.addAll(database.where(entry.class).equalTo("category", removedSubcategory.getName()).findAll());
+        for (int i = 0; i < entries.size(); i++) {
+            entry entry = entries.get(i);
+            entry nextVersion = new entry(entry.getValor(), entry.getType(), newSubcategory, entry.getDescription(), entry.getCreationDate());
+            nextVersion.setId(entry.getId());
+            onEntriesChangeInterface.editEntry(nextVersion);
+        }
+        database.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                removedSubcategory.deleteFromRealm();
+            }
+        });
+    }
+
+    @Override
+    public void removeAndKeepCategory(@NonNull final subcategory removedSubcategory, @NonNull final outgoingCategory category) {
+        database.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                category.getSubcategories().remove(removedSubcategory);
+                category.getRemovedSubcategories().add(removedSubcategory);
+                database.copyToRealmOrUpdate(category);
             }
         });
     }

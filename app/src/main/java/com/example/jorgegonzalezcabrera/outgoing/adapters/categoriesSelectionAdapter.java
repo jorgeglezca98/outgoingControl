@@ -49,8 +49,8 @@ public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesS
         }
     }
 
-    public void removeCategory(incomeCategory removedCategory) {
-        categories.remove(removedCategory.getName());
+    public void removeCategory(String removedCategory) {
+        categories.remove(removedCategory);
     }
 
     public void addCategory(outgoingCategory newOutgoingCategory) {

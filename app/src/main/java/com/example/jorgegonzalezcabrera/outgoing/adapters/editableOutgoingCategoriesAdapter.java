@@ -19,6 +19,7 @@ import com.example.jorgegonzalezcabrera.outgoing.activities.editFieldActivity;
 import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
+import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 import java.util.Vector;
@@ -185,25 +186,51 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
                 }
             });
 
-            erasableItemsAdapter subcategoriesAdapter = new erasableItemsAdapter("Subcategory", new erasableItemsAdapter.onItemsChange() {
+            final erasableItemsAdapter subcategoriesAdapter = new erasableItemsAdapter("Subcategory");
+            subcategoriesAdapter.setCustomizeViewInterface(new erasableItemsAdapter.customizeView() {
                 @Override
-                public void onItemModified(int position, @NonNull String item) {
-
-                }
-
-                @Override
-                public void onItemRemoved(int position) {
-
-                }
-
-                @Override
-                public void onItemAdded(int position) {
-
-                }
-
-                @Override
-                public void onItemsChanged(@NonNull Vector<String> newItems) {
-
+                public void custom(final erasableItemsAdapter.ViewHolder vh) {
+                    vh.name.setFocusable(false);
+                    vh.name.setFocusableInTouchMode(false);
+                    vh.name.setLongClickable(false);
+                    vh.name.setClickable(true);
+                    vh.deleteItemButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            String title = "Choose what to do with entries of this category";
+                            Vector<String> options = new Vector<>();
+                            options.add("Change the category to the entries");
+                            options.add("Keep entries as before");
+                            options.add("Cancel");
+                            dialogs.chooseOptionDialog(context, title, options, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    if (i == 0) {
+                                        final Vector<String> allCategories = localUtils.getFunctioningOutgoingCategories();
+                                        allCategories.remove(vh.name.getText().toString());
+                                        dialogs.chooseOptionDialog(context, "Pick a category", allCategories, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                String categoryName = vh.name.getText().toString();
+                                                subcategory subcategory = category.getSubcategories().where().equalTo("name", categoryName).findFirst();
+                                                onCategoriesChangeInterface.removeAndReplaceCategory(subcategory, allCategories.get(i));
+                                                subcategoriesAdapter.deleteItemAt(vh.getAdapterPosition());
+                                            }
+                                        });
+                                        dialogInterface.dismiss();
+                                    } else if (i == 1) {
+                                        String categoryName = vh.name.getText().toString();
+                                        subcategory subcategory = category.getSubcategories().where().equalTo("name", categoryName).findFirst();
+                                        onCategoriesChangeInterface.removeAndKeepCategory(subcategory, category);
+                                        subcategoriesAdapter.deleteItemAt(vh.getAdapterPosition());
+                                        dialogInterface.dismiss();
+                                    } else if (i == 2) {
+                                        dialogInterface.cancel();
+                                    }
+                                }
+                            });
+                        }
+                    });
                 }
             });
             Vector<String> subcategories = new Vector<>();
