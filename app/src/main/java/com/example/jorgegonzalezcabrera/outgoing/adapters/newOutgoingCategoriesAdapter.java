@@ -99,7 +99,7 @@ public class newOutgoingCategoriesAdapter extends RecyclerView.Adapter<newOutgoi
 
                 @Override
                 public void onItemAdded(int position) {
-                    categories.get(getAdapterPosition()).getSubcategories().add(position, new subcategory());
+                    categories.get(getAdapterPosition()).getSubcategories().add(position, new subcategory(""));
                 }
 
                 @Override
