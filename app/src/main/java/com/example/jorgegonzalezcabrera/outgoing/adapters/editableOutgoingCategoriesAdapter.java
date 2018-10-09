@@ -29,6 +29,7 @@ import io.realm.RealmList;
 
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_OUTGOING_CATEGORY_MAXIMUM;
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_OUTGOING_CATEGORY_NAME;
+import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_SUBCATEGORY;
 
 public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<editableOutgoingCategoriesAdapter.ViewHolder> {
 
@@ -122,6 +123,15 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
         }
     }
 
+    public void modifySubcategory(subcategory modifiedSubcategory) {
+        for (int i = 0; i < categories.size(); i++) {
+            if (categories.get(i).getSubcategories().where().equalTo("id", modifiedSubcategory.getId()).findFirst() != null) {
+                notifyItemChanged(i);
+                return;
+            }
+        }
+    }
+
     @Override
     public void onViewAttachedToWindow(@NonNull ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
@@ -194,6 +204,14 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
                     vh.name.setFocusableInTouchMode(false);
                     vh.name.setLongClickable(false);
                     vh.name.setClickable(true);
+                    vh.name.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            long subcategoryId = category.getSubcategories().get(vh.getAdapterPosition()).getId();
+                            onEditCategoryFieldInterface.editCategoryField(
+                                    vh.name.getText().toString(), layoutEditableOutgoingCategory, name, "Subcategory name", REQUEST_EDIT_SUBCATEGORY, subcategoryId);
+                        }
+                    });
                     vh.deleteItemButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {

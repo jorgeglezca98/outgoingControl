@@ -571,6 +571,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     public static final int REQUEST_ADD_INCOME_CATEGORY = 4;
     public static final int REQUEST_EDIT_OUTGOING_CATEGORY_NAME = 5;
     public static final int REQUEST_EDIT_OUTGOING_CATEGORY_MAXIMUM = 6;
+    public static final int REQUEST_EDIT_SUBCATEGORY = 7;
 
     @Override
     public void editCategoryField(String initialValue, ConstraintLayout container, EditText field, String hint, int requestCode, long id) {
@@ -611,6 +612,35 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
 
                     mainFragment.updateCategoryNameChanged(modifiedOutgoingCategory);
                     settingFragment.modifyOutgoingCategory(modifiedOutgoingCategory);
+                }
+            }
+        } else if (requestCode == REQUEST_EDIT_SUBCATEGORY) {
+            if (resultCode == RESULT_OK) {
+                Bundle extras = data.getExtras();
+                final String newName = extras.getString(FINAL_VALUE_KEY);
+                long id = extras.getLong(ID_KEY);
+                final subcategory modifiedSubcategory = database.where(subcategory.class).equalTo("id", id).findFirst();
+                String oldName = modifiedSubcategory.getName();
+
+                if (!newName.equals(modifiedSubcategory.getName())) {
+                    database.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            modifiedSubcategory.setName(newName);
+                            database.copyToRealmOrUpdate(modifiedSubcategory);
+                        }
+                    });
+                    RealmList<entry> entries = new RealmList<>();
+                    entries.addAll(database.where(entry.class).equalTo("category", oldName).findAll());
+                    for (int i = 0; i < entries.size(); i++) {
+                        entry entry = entries.get(i);
+                        entry nextVersion = new entry(entry.getValor(), entry.getType(), newName, entry.getDescription(), entry.getCreationDate());
+                        nextVersion.setId(entry.getId());
+                        onEntriesChangeInterface.editEntry(nextVersion);
+                    }
+
+                    actionsFragment.editCategoryInFilters(newName, oldName);
+                    settingFragment.modifyOutgoingCategory(modifiedSubcategory);
                 }
             }
         } else if (requestCode == REQUEST_EDIT_OUTGOING_CATEGORY_MAXIMUM) {

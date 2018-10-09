@@ -248,4 +248,8 @@ public class settingFragment extends Fragment {
     public void modifyOutgoingCategory(outgoingCategory modifiedOutgoingCategory) {
         outgoingCategoriesAdapter.modify(modifiedOutgoingCategory);
     }
+
+    public void modifyOutgoingCategory(subcategory modifiedSubcategory) {
+        outgoingCategoriesAdapter.modifySubcategory(modifiedSubcategory);
+    }
 }
