@@ -20,6 +20,7 @@ public class outgoingCategory extends RealmObject {
     public outgoingCategory() {
         this.id = -1;
         this.subcategories = new RealmList<>();
+        this.removedSubcategories = new RealmList<>();
         this.maximum = 0;
         this.name = "";
     }
@@ -35,6 +36,7 @@ public class outgoingCategory extends RealmObject {
         if (this.subcategories.isEmpty()) {
             this.subcategories.add(new subcategory(name));
         }
+        this.removedSubcategories = new RealmList<>();
         this.maximum = maximum;
         this.name = name;
     }
