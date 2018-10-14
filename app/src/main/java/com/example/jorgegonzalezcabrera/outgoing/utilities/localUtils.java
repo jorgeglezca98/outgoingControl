@@ -2,17 +2,14 @@ package com.example.jorgegonzalezcabrera.outgoing.utilities;
 
 import android.support.annotation.NonNull;
 
-import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
+import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
-import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
-import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
-import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
 
 import java.util.Vector;
 
 import io.realm.Realm;
-import io.realm.RealmList;
+import io.realm.RealmResults;
 
 public class localUtils {
 
@@ -25,21 +22,9 @@ public class localUtils {
     }
 
     public interface OnCategoriesChangeInterface {
-        void removeAndReplaceCategory(@NonNull outgoingCategory removedOutgoingCategory, @NonNull String newCategory);
+        void removeAndReplaceCategory(@NonNull category removedCategory, @NonNull String newSubcategory);
 
-        void removeAndKeepCategory(@NonNull outgoingCategory removedOutgoingCategory);
-
-        void removeAndReplaceCategory(@NonNull incomeCategory removedIncomeCategory, @NonNull String newCategory);
-
-        void removeAndKeepCategory(@NonNull incomeCategory removedIncomeCategory);
-
-        void removeAndReplaceCategory(@NonNull subcategory removedSubcategory, @NonNull String newSubcategory);
-
-        void removeAndKeepCategory(@NonNull subcategory removedSubcategory, @NonNull outgoingCategory category);
-
-        void addedCategory(@NonNull outgoingCategory newOutgoingCategory);
-
-        void addedCategory(@NonNull incomeCategory newIncomeCategory);
+        void removeAndKeepCategory(@NonNull category removedCategory);
     }
 
     public static type getTypeFromOrdinal(int ordinal) {
@@ -54,17 +39,31 @@ public class localUtils {
     }
 
     public static Vector<String> getAllOutgoingCategories() {
-        Vector<String> categories = new Vector<>();
-        categories.addAll(getFunctioningOutgoingCategories());
-        categories.addAll(getNonFunctioningOutgoingCategories());
-        return categories;
+        Realm database = Realm.getDefaultInstance();
+        RealmResults<category> outgoingCategories = database.where(category.class).equalTo("type", category.OUTGOING).findAll();
+
+        Vector<String> result = new Vector<>();
+        for (int i = 0; i < outgoingCategories.size(); i++) {
+            category outgoingCategory = outgoingCategories.get(i);
+            if (outgoingCategory != null) {
+                result.add(outgoingCategory.getName());
+            }
+        }
+        return result;
     }
 
     public static Vector<String> getAllIncomeCategories() {
-        Vector<String> categories = new Vector<>();
-        categories.addAll(getFunctioningIncomeCategories());
-        categories.addAll(getNonFunctioningIncomeCategories());
-        return categories;
+        Realm database = Realm.getDefaultInstance();
+        RealmResults<category> incomeCategories = database.where(category.class).equalTo("type", category.INCOME).findAll();
+
+        Vector<String> result = new Vector<>();
+        for (int i = 0; i < incomeCategories.size(); i++) {
+            category incomeCategory = incomeCategories.get(i);
+            if (incomeCategory != null) {
+                result.add(incomeCategory.getName());
+            }
+        }
+        return result;
     }
 
     public static Vector<String> getFunctioningCategories() {
@@ -83,87 +82,61 @@ public class localUtils {
 
     public static Vector<String> getFunctioningOutgoingCategories() {
         Realm database = Realm.getDefaultInstance();
-        appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
-        RealmList<outgoingCategory> outgoingCategories = currentConfiguration.getOutgoingCategories();
+        RealmResults<category> outgoingCategories;
+        outgoingCategories = database.where(category.class).equalTo("type", category.OUTGOING).equalTo("operative", true).findAll();
 
-        Vector<String> categories = new Vector<>();
+        Vector<String> result = new Vector<>();
         for (int i = 0; i < outgoingCategories.size(); i++) {
-            outgoingCategory outgoingCategory = outgoingCategories.get(i);
+            category outgoingCategory = outgoingCategories.get(i);
             if (outgoingCategory != null) {
-                for (int j = 0; j < outgoingCategory.getSubcategories().size(); j++) {
-                    subcategory subcategory = outgoingCategory.getSubcategories().get(j);
-                    if (subcategory != null) {
-                        categories.add(subcategory.getName());
-                    }
-                }
+                result.add(outgoingCategory.getName());
             }
         }
-        return categories;
+        return result;
     }
 
     public static Vector<String> getFunctioningIncomeCategories() {
         Realm database = Realm.getDefaultInstance();
-        appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
-        RealmList<incomeCategory> incomeCategories = currentConfiguration.getIncomeCategories();
+        RealmResults<category> incomeCategories;
+        incomeCategories = database.where(category.class).equalTo("type", category.INCOME).equalTo("operative", true).findAll();
 
-        Vector<String> categories = new Vector<>();
+        Vector<String> result = new Vector<>();
         for (int i = 0; i < incomeCategories.size(); i++) {
-            incomeCategory incomeCategory = incomeCategories.get(i);
+            category incomeCategory = incomeCategories.get(i);
             if (incomeCategory != null) {
-                categories.add(incomeCategory.getName());
+                result.add(incomeCategory.getName());
             }
         }
-
-        return categories;
+        return result;
     }
 
     public static Vector<String> getNonFunctioningOutgoingCategories() {
         Realm database = Realm.getDefaultInstance();
-        appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
-        RealmList<outgoingCategory> outgoingCategories = currentConfiguration.getRemovedOutgoingCategories();
+        RealmResults<category> outgoingCategories;
+        outgoingCategories = database.where(category.class).equalTo("type", category.OUTGOING).equalTo("operative", false).findAll();
 
-        Vector<String> categories = new Vector<>();
+        Vector<String> result = new Vector<>();
         for (int i = 0; i < outgoingCategories.size(); i++) {
-            outgoingCategory outgoingCategory = outgoingCategories.get(i);
+            category outgoingCategory = outgoingCategories.get(i);
             if (outgoingCategory != null) {
-                for (int j = 0; j < outgoingCategory.getSubcategories().size(); j++) {
-                    subcategory subcategory = outgoingCategory.getSubcategories().get(j);
-                    if (subcategory != null) {
-                        categories.add(subcategory.getName());
-                    }
-                }
+                result.add(outgoingCategory.getName());
             }
         }
-
-        outgoingCategories = currentConfiguration.getOutgoingCategories();
-        for (int i = 0; i < outgoingCategories.size(); i++) {
-            outgoingCategory outgoingCategory = outgoingCategories.get(i);
-            if (outgoingCategory != null) {
-                for (int j = 0; j < outgoingCategory.getRemovedSubcategories().size(); j++) {
-                    subcategory subcategory = outgoingCategory.getRemovedSubcategories().get(j);
-                    if (subcategory != null) {
-                        categories.add(subcategory.getName());
-                    }
-                }
-            }
-        }
-
-        return categories;
+        return result;
     }
 
     public static Vector<String> getNonFunctioningIncomeCategories() {
         Realm database = Realm.getDefaultInstance();
-        appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
-        RealmList<incomeCategory> incomeCategories = currentConfiguration.getRemovedIncomeCategories();
+        RealmResults<category> incomeCategories;
+        incomeCategories = database.where(category.class).equalTo("type", category.INCOME).equalTo("operative", false).findAll();
 
-        Vector<String> categories = new Vector<>();
+        Vector<String> result = new Vector<>();
         for (int i = 0; i < incomeCategories.size(); i++) {
-            incomeCategory incomeCategory = incomeCategories.get(i);
+            category incomeCategory = incomeCategories.get(i);
             if (incomeCategory != null) {
-                categories.add(incomeCategory.getName());
+                result.add(incomeCategory.getName());
             }
         }
-
-        return categories;
+        return result;
     }
 }

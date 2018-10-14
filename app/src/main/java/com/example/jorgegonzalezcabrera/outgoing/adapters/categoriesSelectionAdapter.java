@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
-import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
-import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 import java.util.List;
@@ -41,28 +39,12 @@ public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesS
         return categories.size();
     }
 
-    public void removeCategory(outgoingCategory category) {
-        for (int i = 0; i < category.getSubcategories().size(); i++) {
-            int position = categories.indexOf(category.getSubcategories().get(i).getName());
-            categories.remove(position);
-            notifyItemRemoved(position);
-        }
-    }
-
     public void removeCategory(String removedCategory) {
         categories.remove(removedCategory);
     }
 
-    public void addCategory(outgoingCategory newOutgoingCategory) {
-        int positionFirstInserted = categories.size();
-        for (int i = 0; i < newOutgoingCategory.getSubcategories().size(); i++) {
-            categories.add(newOutgoingCategory.getSubcategories().get(i).getName());
-        }
-        notifyItemRangeInserted(positionFirstInserted, newOutgoingCategory.getSubcategories().size());
-    }
-
-    public void addCategory(incomeCategory newIncomeCategory) {
-        categories.add(newIncomeCategory.getName());
+    public void addCategory(String newCategory) {
+        categories.add(newCategory);
         notifyItemInserted(categories.size() - 1);
     }
 

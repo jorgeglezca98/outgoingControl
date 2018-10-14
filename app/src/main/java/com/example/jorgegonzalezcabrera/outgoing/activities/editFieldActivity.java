@@ -21,7 +21,7 @@ import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.ID_KEY;
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.INITIAL_VALUE_KEY;
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_CODE_KEY;
-import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_OUTGOING_CATEGORY_MAXIMUM;
+import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_MONEY_CONTROLLER_MAXIMUM;
 
 public class editFieldActivity extends AppCompatActivity {
 
@@ -52,7 +52,7 @@ public class editFieldActivity extends AppCompatActivity {
         final EditText fieldEditText = findViewById(R.id.editTextField);
         fieldEditText.setTransitionName(fieldTransitionName);
         fieldEditText.setText(initialValue);
-        if (requestCode == REQUEST_EDIT_OUTGOING_CATEGORY_MAXIMUM) {
+        if (requestCode == REQUEST_EDIT_MONEY_CONTROLLER_MAXIMUM) {
             fieldEditText.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
         }
 
@@ -75,7 +75,7 @@ public class editFieldActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (!fieldEditText.getText().toString().isEmpty()) {
                     Intent returnIntent = new Intent();
-                    if (requestCode == REQUEST_EDIT_OUTGOING_CATEGORY_MAXIMUM) {
+                    if (requestCode == REQUEST_EDIT_MONEY_CONTROLLER_MAXIMUM) {
                         returnIntent.putExtra(FINAL_VALUE_KEY, Double.valueOf(fieldEditText.getText().toString()));
                     } else {
                         returnIntent.putExtra(FINAL_VALUE_KEY, fieldEditText.getText().toString());

@@ -18,7 +18,6 @@ import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.others.ItemOffsetDecoration;
-import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.utils;
 
 import java.util.Date;
@@ -73,32 +72,22 @@ public class mainFragment extends Fragment {
         RealmResults<entry> entriesOfTheMonth = database.where(entry.class).greaterThanOrEqualTo("creationDate", date).findAll();
 
         Vector<surplusMoneyTableAdapter.surplusMoneyByCategory> surplusMoneyByCategoryVector = new Vector<>();
-        totalOutgoings = 0;
-        for (int i = 0; i < currentConfiguration.getOutgoingCategories().size(); i++) {
+        RealmResults<outgoingCategory> outgoingCategories = database.where(outgoingCategory.class).findAll();
+        for (int i = 0; i < outgoingCategories.size(); i++) {
             double outgoingsByCategory = 0;
-            for (int j = 0; j < currentConfiguration.getOutgoingCategories().get(i).getAllSubcategories().size(); j++) {
-                String subcategoryName = currentConfiguration.getOutgoingCategories().get(i).getAllSubcategories().get(j).getName();
+            for (int j = 0; j < outgoingCategories.get(i).getSubcategories().size(); j++) {
+                String subcategoryName = outgoingCategories.get(i).getSubcategories().get(j).getName();
                 outgoingsByCategory += entriesOfTheMonth.where().equalTo("category", subcategoryName).sum("valor").doubleValue();
             }
-            totalOutgoings += outgoingsByCategory;
-            double surplusMoneyByCategory = currentConfiguration.getOutgoingCategories().get(i).getMaximum() - outgoingsByCategory;
-            outgoingCategory outgoingCategory = currentConfiguration.getOutgoingCategories().get(i);
+            double surplusMoneyByCategory = outgoingCategories.get(i).getMaximum() - outgoingsByCategory;
+            outgoingCategory outgoingCategory = outgoingCategories.get(i);
             surplusMoneyByCategoryVector.add(new surplusMoneyTableAdapter.surplusMoneyByCategory(outgoingCategory, surplusMoneyByCategory));
         }
-        for (int i = 0; i < currentConfiguration.getRemovedOutgoingCategories().size(); i++) {
-            for (int j = 0; j < currentConfiguration.getRemovedOutgoingCategories().get(i).getAllSubcategories().size(); j++) {
-                String subcategoryName = currentConfiguration.getRemovedOutgoingCategories().get(i).getAllSubcategories().get(j).getName();
-                totalOutgoings += entriesOfTheMonth.where().equalTo("category", subcategoryName).sum("valor").doubleValue();
-            }
-        }
+        totalOutgoings = entriesOfTheMonth.where().equalTo("type", entry.type.OUTGOING.ordinal()).sum("valor").longValue();
         String outgoingsOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€";
         textViewOutgoingsOfTheMonth.setText(outgoingsOfTheMonth);
 
-        totalIncomes = 0;
-        Vector<String> incomeCategories = localUtils.getAllIncomeCategories();
-        for (int i = 0; i < incomeCategories.size(); i++) {
-            totalIncomes += entriesOfTheMonth.where().equalTo("category", incomeCategories.get(i)).sum("valor").doubleValue();
-        }
+        totalIncomes = entriesOfTheMonth.where().equalTo("type", entry.type.INCOME.ordinal()).sum("valor").longValue();
         String incomesOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalIncomes) + "€";
         textViewIncomesOfTheMonth.setText(incomesOfTheMonth);
 
@@ -120,32 +109,22 @@ public class mainFragment extends Fragment {
         RealmResults<entry> entriesOfTheMonth = database.where(entry.class).greaterThanOrEqualTo("creationDate", date).findAll();
 
         Vector<surplusMoneyTableAdapter.surplusMoneyByCategory> surplusMoneyByCategoryVector = new Vector<>();
-        totalOutgoings = 0;
-        for (int i = 0; i < currentConfiguration.getOutgoingCategories().size(); i++) {
+        RealmResults<outgoingCategory> outgoingCategories = database.where(outgoingCategory.class).findAll();
+        for (int i = 0; i < outgoingCategories.size(); i++) {
             double outgoingsByCategory = 0;
-            for (int j = 0; j < currentConfiguration.getOutgoingCategories().get(i).getAllSubcategories().size(); j++) {
-                String subcategoryName = currentConfiguration.getOutgoingCategories().get(i).getAllSubcategories().get(j).getName();
+            for (int j = 0; j < outgoingCategories.get(i).getSubcategories().size(); j++) {
+                String subcategoryName = outgoingCategories.get(i).getSubcategories().get(j).getName();
                 outgoingsByCategory += entriesOfTheMonth.where().equalTo("category", subcategoryName).sum("valor").doubleValue();
             }
-            totalOutgoings += outgoingsByCategory;
-            double surplusMoneyByCategory = currentConfiguration.getOutgoingCategories().get(i).getMaximum() - outgoingsByCategory;
-            outgoingCategory outgoingCategory = currentConfiguration.getOutgoingCategories().get(i);
+            double surplusMoneyByCategory = outgoingCategories.get(i).getMaximum() - outgoingsByCategory;
+            outgoingCategory outgoingCategory = outgoingCategories.get(i);
             surplusMoneyByCategoryVector.add(new surplusMoneyTableAdapter.surplusMoneyByCategory(outgoingCategory, surplusMoneyByCategory));
         }
-        for (int i = 0; i < currentConfiguration.getRemovedOutgoingCategories().size(); i++) {
-            for (int j = 0; j < currentConfiguration.getRemovedOutgoingCategories().get(i).getAllSubcategories().size(); j++) {
-                String subcategoryName = currentConfiguration.getRemovedOutgoingCategories().get(i).getAllSubcategories().get(j).getName();
-                totalOutgoings += entriesOfTheMonth.where().equalTo("category", subcategoryName).sum("valor").doubleValue();
-            }
-        }
+        totalOutgoings = entriesOfTheMonth.where().equalTo("type", entry.type.OUTGOING.ordinal()).sum("valor").longValue();
         String outgoingsOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€";
         textViewOutgoingsOfTheMonth.setText(outgoingsOfTheMonth);
 
-        totalIncomes = 0;
-        Vector<String> incomeCategories = localUtils.getAllIncomeCategories();
-        for (int i = 0; i < incomeCategories.size(); i++) {
-            totalIncomes += entriesOfTheMonth.where().equalTo("category", incomeCategories.get(i)).sum("valor").doubleValue();
-        }
+        totalIncomes = entriesOfTheMonth.where().equalTo("type", entry.type.INCOME.ordinal()).sum("valor").longValue();
         String incomesOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalIncomes) + "€";
         textViewIncomesOfTheMonth.setText(incomesOfTheMonth);
 

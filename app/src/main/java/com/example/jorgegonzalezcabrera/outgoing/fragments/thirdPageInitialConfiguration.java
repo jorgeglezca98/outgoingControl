@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.erasableItemsAdapter;
-import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
+import com.example.jorgegonzalezcabrera.outgoing.models.category;
 
 import java.util.Vector;
 
@@ -23,7 +23,6 @@ import io.realm.RealmList;
 
 public class thirdPageInitialConfiguration extends Fragment {
 
-    private RecyclerView incomeCategoriesRecyclerView;
     private erasableItemsAdapter incomeCategoriesAdapter;
 
     @Nullable
@@ -40,7 +39,7 @@ public class thirdPageInitialConfiguration extends Fragment {
             }
         });
 
-        incomeCategoriesRecyclerView = view.findViewById(R.id.recyclerViewIncomeCategoriesRequest);
+        RecyclerView incomeCategoriesRecyclerView = view.findViewById(R.id.recyclerViewIncomeCategoriesRequest);
         incomeCategoriesAdapter = new erasableItemsAdapter("Income category");
         incomeCategoriesRecyclerView.setAdapter(incomeCategoriesAdapter);
         final LinearLayoutManager incomeCategoriesLayoutManager = new LinearLayoutManager(getContext());
@@ -70,11 +69,11 @@ public class thirdPageInitialConfiguration extends Fragment {
         return true;
     }
 
-    public RealmList<incomeCategory> getData() {
+    public RealmList<category> getData() {
         Vector<String> adapterItems = incomeCategoriesAdapter.getItems();
-        RealmList<incomeCategory> data = new RealmList<>();
+        RealmList<category> data = new RealmList<>();
         for (int i = 0; i < adapterItems.size(); i++) {
-            data.add(new incomeCategory(adapterItems.get(i)));
+            data.add(new category(adapterItems.get(i), category.INCOME));
         }
         return data;
     }

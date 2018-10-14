@@ -22,8 +22,6 @@ import com.example.jorgegonzalezcabrera.outgoing.adapters.allEntriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSelectionAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
-import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
-import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.others.HeaderItemDecoration;
 import com.example.jorgegonzalezcabrera.outgoing.others.HeaderItemDecoration.StickyHeaderInterface;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
@@ -276,20 +274,12 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
         return adapter.get(itemPosition) == null;
     }
 
-    public void removeCategoryInFilters(outgoingCategory removedCategory) {
-        categoriesSelectionAdapter.removeCategory(removedCategory);
-    }
-
     public void removeCategoryInFilters(String removedCategory) {
         categoriesSelectionAdapter.removeCategory(removedCategory);
     }
 
-    public void addCategoryInFilters(outgoingCategory newOutgoingCategory) {
-        categoriesSelectionAdapter.addCategory(newOutgoingCategory);
-    }
-
-    public void addCategoryInFilters(incomeCategory newIncomeCategory) {
-        categoriesSelectionAdapter.addCategory(newIncomeCategory);
+    public void addCategoryInFilters(String newCategory) {
+        categoriesSelectionAdapter.addCategory(newCategory);
     }
 
     public void editCategoryInFilters(String newName, String oldName) {

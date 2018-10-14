@@ -30,12 +30,11 @@ import com.example.jorgegonzalezcabrera.outgoing.fragments.actionsFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.mainFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.settingFragment;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
+import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
-import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry.periodicType;
-import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 import java.util.ArrayList;
@@ -339,9 +338,13 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
         if (currentConfiguration != null) {
             if (removedEntry.getType() == entry.type.OUTGOING) {
+                database.beginTransaction();
                 currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + removedEntry.getValor());
+                database.commitTransaction();
             } else {
+                database.beginTransaction();
                 currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - removedEntry.getValor());
+                database.commitTransaction();
             }
         }
 
@@ -398,78 +401,10 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     }
 
     @Override
-    public void removeAndReplaceCategory(@NonNull final outgoingCategory removedOutgoingCategory, @NonNull final String newCategory) {
-        mainFragment.updateCategoryRemoved(removedOutgoingCategory);
-        actionsFragment.removeCategoryInFilters(removedOutgoingCategory);
+    public void removeAndReplaceCategory(@NonNull final category removedCategory, @NonNull String newSubcategory) {
+        actionsFragment.removeCategoryInFilters(removedCategory.getName());
         RealmList<entry> entries = new RealmList<>();
-        for (int i = 0; i < removedOutgoingCategory.getSubcategories().size(); i++) {
-            entries.addAll(database.where(entry.class).equalTo("category", removedOutgoingCategory.getSubcategories().get(i).getName()).findAll());
-        }
-        for (int i = 0; i < entries.size(); i++) {
-            entry entry = entries.get(i);
-            entry nextVersion = new entry(entry.getValor(), entry.getType(), newCategory, entry.getDescription(), entry.getCreationDate());
-            nextVersion.setId(entry.getId());
-            onEntriesChangeInterface.editEntry(nextVersion);
-        }
-        database.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(@NonNull Realm realm) {
-                removedOutgoingCategory.deleteFromRealm();
-            }
-        });
-    }
-
-    @Override
-    public void removeAndKeepCategory(@NonNull final outgoingCategory removedOutgoingCategory) {
-        mainFragment.updateCategoryRemoved(removedOutgoingCategory);
-        final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
-        database.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(@NonNull Realm realm) {
-                currentConfiguration.getOutgoingCategories().remove(removedOutgoingCategory);
-                currentConfiguration.getRemovedOutgoingCategories().add(removedOutgoingCategory);
-                database.copyToRealmOrUpdate(currentConfiguration);
-            }
-        });
-    }
-
-    @Override
-    public void removeAndReplaceCategory(@NonNull final incomeCategory removedIncomeCategory, @NonNull String newCategory) {
-        actionsFragment.removeCategoryInFilters(removedIncomeCategory.getName());
-        RealmList<entry> entries = new RealmList<>();
-        entries.addAll(database.where(entry.class).equalTo("category", removedIncomeCategory.getName()).findAll());
-        for (int i = 0; i < entries.size(); i++) {
-            entry entry = entries.get(i);
-            entry nextVersion = new entry(entry.getValor(), entry.getType(), newCategory, entry.getDescription(), entry.getCreationDate());
-            nextVersion.setId(entry.getId());
-            onEntriesChangeInterface.editEntry(nextVersion);
-        }
-        database.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(@NonNull Realm realm) {
-                removedIncomeCategory.deleteFromRealm();
-            }
-        });
-    }
-
-    @Override
-    public void removeAndKeepCategory(@NonNull final incomeCategory removedIncomeCategory) {
-        final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
-        database.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(@NonNull Realm realm) {
-                currentConfiguration.getIncomeCategories().remove(removedIncomeCategory);
-                currentConfiguration.getRemovedIncomeCategories().add(removedIncomeCategory);
-                database.copyToRealmOrUpdate(currentConfiguration);
-            }
-        });
-    }
-
-    @Override
-    public void removeAndReplaceCategory(@NonNull final subcategory removedSubcategory, @NonNull String newSubcategory) {
-        actionsFragment.removeCategoryInFilters(removedSubcategory.getName());
-        RealmList<entry> entries = new RealmList<>();
-        entries.addAll(database.where(entry.class).equalTo("category", removedSubcategory.getName()).findAll());
+        entries.addAll(database.where(entry.class).equalTo("category", removedCategory.getName()).findAll());
         for (int i = 0; i < entries.size(); i++) {
             entry entry = entries.get(i);
             entry nextVersion = new entry(entry.getValor(), entry.getType(), newSubcategory, entry.getDescription(), entry.getCreationDate());
@@ -479,50 +414,20 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         database.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(@NonNull Realm realm) {
-                removedSubcategory.deleteFromRealm();
+                removedCategory.deleteFromRealm();
             }
         });
     }
 
     @Override
-    public void removeAndKeepCategory(@NonNull final subcategory removedSubcategory, @NonNull final outgoingCategory category) {
+    public void removeAndKeepCategory(@NonNull final category removedCategory) {
         database.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(@NonNull Realm realm) {
-                category.getSubcategories().remove(removedSubcategory);
-                category.getRemovedSubcategories().add(removedSubcategory);
-                database.copyToRealmOrUpdate(category);
+                removedCategory.setOperative(false);
+                database.copyToRealmOrUpdate(removedCategory);
             }
         });
-    }
-
-    @Override
-    public void addedCategory(@NonNull final outgoingCategory newOutgoingCategory) {
-        final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
-        database.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(@NonNull Realm realm) {
-                currentConfiguration.getOutgoingCategories().add(newOutgoingCategory);
-                database.copyToRealmOrUpdate(currentConfiguration);
-            }
-        });
-        outgoingCategory storedOutgoingCategory = database.where(outgoingCategory.class).equalTo("id", newOutgoingCategory.getId()).findFirst();
-        mainFragment.updateCategoryAdded(storedOutgoingCategory);
-        actionsFragment.addCategoryInFilters(storedOutgoingCategory);
-    }
-
-    @Override
-    public void addedCategory(@NonNull final incomeCategory newIncomeCategory) {
-        final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
-        database.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(@NonNull Realm realm) {
-                currentConfiguration.getIncomeCategories().add(newIncomeCategory);
-                database.copyToRealmOrUpdate(currentConfiguration);
-            }
-        });
-        incomeCategory storedOutgoingCategory = database.where(incomeCategory.class).equalTo("id", newIncomeCategory.getId()).findFirst();
-        actionsFragment.addCategoryInFilters(storedOutgoingCategory);
     }
 
     public final static String CATEGORY_NAME_KEY = "categoryName";
@@ -532,8 +437,10 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     public final static String CATEGORY_NAME_TRANSITION_NAME_KEY = "categoryNameTransitionName";
     public final static String CATEGORY_MAXIMUM_TRANSITION_NAME_KEY = "categoryMaximumTransitionName";
 
-    public final static int REQUEST_EDIT = 1;
-    public final static int REQUEST_ADD_OUTGOING_CATEGORY = 2;
+    public final static int REQUEST_ADD_OUTGOING_CATEGORY = 1;
+    public static final int REQUEST_ADD_INCOME_CATEGORY = 2;
+    public static final int REQUEST_EDIT_CATEGORY = 3;
+    public static final int REQUEST_EDIT_MONEY_CONTROLLER_MAXIMUM = 4;
 
     @Override
     public void edit(outgoingCategory outgoingCategory, ConstraintLayout container, EditText categoryName, EditText categoryMaximum) {
@@ -567,12 +474,6 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     public static final String ID_KEY = "id";
     public static final String REQUEST_CODE_KEY = "requestCode";
 
-    public static final int REQUEST_EDIT_INCOME_CATEGORY = 3;
-    public static final int REQUEST_ADD_INCOME_CATEGORY = 4;
-    public static final int REQUEST_EDIT_OUTGOING_CATEGORY_NAME = 5;
-    public static final int REQUEST_EDIT_OUTGOING_CATEGORY_MAXIMUM = 6;
-    public static final int REQUEST_EDIT_SUBCATEGORY = 7;
-
     @Override
     public void editCategoryField(String initialValue, ConstraintLayout container, EditText field, String hint, int requestCode, long id) {
         Intent intent = new Intent(this, editFieldActivity.class);
@@ -594,12 +495,14 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable final Intent data) {
-        if (requestCode == REQUEST_EDIT_OUTGOING_CATEGORY_NAME) {
+        if (requestCode == REQUEST_EDIT_CATEGORY) {
             if (resultCode == RESULT_OK) {
                 Bundle extras = data.getExtras();
                 final String newName = extras.getString(FINAL_VALUE_KEY);
                 long id = extras.getLong(ID_KEY);
-                final outgoingCategory modifiedOutgoingCategory = database.where(outgoingCategory.class).equalTo("id", id).findFirst();
+
+                final category modifiedOutgoingCategory = database.where(category.class).equalTo("id", id).findFirst();
+                final String oldName = modifiedOutgoingCategory.getName();
 
                 if (!newName.equals(modifiedOutgoingCategory.getName())) {
                     database.executeTransaction(new Realm.Transaction() {
@@ -610,26 +513,9 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
                         }
                     });
 
-                    mainFragment.updateCategoryNameChanged(modifiedOutgoingCategory);
-                    settingFragment.modifyOutgoingCategory(modifiedOutgoingCategory);
-                }
-            }
-        } else if (requestCode == REQUEST_EDIT_SUBCATEGORY) {
-            if (resultCode == RESULT_OK) {
-                Bundle extras = data.getExtras();
-                final String newName = extras.getString(FINAL_VALUE_KEY);
-                long id = extras.getLong(ID_KEY);
-                final subcategory modifiedSubcategory = database.where(subcategory.class).equalTo("id", id).findFirst();
-                String oldName = modifiedSubcategory.getName();
+                    actionsFragment.editCategoryInFilters(newName, oldName);
+                    settingFragment.modifyCategory(modifiedOutgoingCategory);
 
-                if (!newName.equals(modifiedSubcategory.getName())) {
-                    database.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            modifiedSubcategory.setName(newName);
-                            database.copyToRealmOrUpdate(modifiedSubcategory);
-                        }
-                    });
                     RealmList<entry> entries = new RealmList<>();
                     entries.addAll(database.where(entry.class).equalTo("category", oldName).findAll());
                     for (int i = 0; i < entries.size(); i++) {
@@ -638,99 +524,43 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
                         nextVersion.setId(entry.getId());
                         onEntriesChangeInterface.editEntry(nextVersion);
                     }
-
-                    actionsFragment.editCategoryInFilters(newName, oldName);
-                    settingFragment.modifyOutgoingCategory(modifiedSubcategory);
-                }
-            }
-        } else if (requestCode == REQUEST_EDIT_OUTGOING_CATEGORY_MAXIMUM) {
-            if (resultCode == RESULT_OK) {
-                Bundle extras = data.getExtras();
-                final Double newMaximum = extras.getDouble(FINAL_VALUE_KEY);
-                long id = extras.getLong(ID_KEY);
-                final outgoingCategory modifiedOutgoingCategory = database.where(outgoingCategory.class).equalTo("id", id).findFirst();
-
-                if (newMaximum != modifiedOutgoingCategory.getMaximum()) {
-                    database.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            modifiedOutgoingCategory.setMaximum(newMaximum);
-                            database.copyToRealmOrUpdate(modifiedOutgoingCategory);
-                        }
-                    });
-
-                    mainFragment.updateCategoryMaximumChanged(modifiedOutgoingCategory);
-                    settingFragment.modifyOutgoingCategory(modifiedOutgoingCategory);
                 }
             }
         } else if (requestCode == REQUEST_ADD_OUTGOING_CATEGORY) {
             if (resultCode == RESULT_OK) {
                 Bundle extras = data.getExtras();
-                String name = extras.getString(CATEGORY_NAME_KEY);
-                Double max = extras.getDouble(CATEGORY_MAXIMUM_KEY);
-                ArrayList<String> subcategories = extras.getStringArrayList(CATEGORY_SUBCATEGORIES_KEY);
-                RealmList<subcategory> formattedSubcategories = new RealmList<>();
-                for (int i = 0; i < subcategories.size(); i++) {
-                    formattedSubcategories.add(new subcategory(subcategories.get(i)));
-                }
-                final outgoingCategory newOutgoingCategory = new outgoingCategory(formattedSubcategories, max, name);
+                String name = extras.getString(FINAL_VALUE_KEY);
+                final category newCategory = new category(name, category.OUTGOING);
 
                 database.executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(@NonNull Realm realm) {
-                        appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
-                        currentConfiguration.getOutgoingCategories().add(newOutgoingCategory);
-                        database.copyToRealmOrUpdate(currentConfiguration);
+                        database.copyToRealm(newCategory);
                     }
                 });
 
-                outgoingCategory storedOutgoingCategory = database.where(outgoingCategory.class).equalTo("id", newOutgoingCategory.getId()).findFirst();
-                mainFragment.updateCategoryAdded(storedOutgoingCategory);
-                actionsFragment.addCategoryInFilters(storedOutgoingCategory);
-                settingFragment.confirmAddedCategory(storedOutgoingCategory);
+                category storedCategory = database.where(category.class).equalTo("id", newCategory.getId()).findFirst();
+                actionsFragment.addCategoryInFilters(storedCategory.getName());
+                settingFragment.confirmAddedCategory(storedCategory);
             } else {
                 settingFragment.newOutgoingCategoryCanceled();
-            }
-        } else if (requestCode == REQUEST_EDIT_INCOME_CATEGORY) {
-            if (resultCode == RESULT_OK) {
-                Bundle extras = data.getExtras();
-                final String newName = extras.getString(FINAL_VALUE_KEY);
-                long id = extras.getLong(ID_KEY);
-
-                final incomeCategory modifiedIncomeCategory = database.where(incomeCategory.class).equalTo("id", id).findFirst();
-                final String oldName = modifiedIncomeCategory.getName();
-
-                if (!newName.equals(modifiedIncomeCategory.getName())) {
-                    database.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            modifiedIncomeCategory.setName(newName);
-                            database.copyToRealmOrUpdate(modifiedIncomeCategory);
-                        }
-                    });
-
-                    actionsFragment.editCategoryInFilters(newName, oldName);
-                    settingFragment.modifyIncomeCategory(modifiedIncomeCategory);
-                }
             }
         } else if (requestCode == REQUEST_ADD_INCOME_CATEGORY) {
             if (resultCode == RESULT_OK) {
                 Bundle extras = data.getExtras();
                 String name = extras.getString(FINAL_VALUE_KEY);
-                final incomeCategory newIncomeCategory = new incomeCategory(name);
+                final category newCategory = new category(name, category.INCOME);
 
                 database.executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(@NonNull Realm realm) {
-                        appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
-                        currentConfiguration.getIncomeCategories().add(newIncomeCategory);
-                        database.copyToRealmOrUpdate(currentConfiguration);
+                        database.copyToRealm(newCategory);
                     }
                 });
 
-                incomeCategory storedIncomeCategory = database.where(incomeCategory.class).equalTo("id", newIncomeCategory.getId()).findFirst();
-                actionsFragment.addCategoryInFilters(storedIncomeCategory);
-                settingFragment.confirmAddedCategory(storedIncomeCategory);
+                category storedCategory = database.where(category.class).equalTo("id", newCategory.getId()).findFirst();
+                actionsFragment.addCategoryInFilters(storedCategory.getName());
+                settingFragment.confirmAddedCategory(storedCategory);
             } else {
                 settingFragment.newIncomeCategoryCanceled();
             }

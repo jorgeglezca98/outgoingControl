@@ -20,11 +20,10 @@ import android.widget.ImageView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.activities.editFieldActivity.editIncomeCategoryInterface;
-import com.example.jorgegonzalezcabrera.outgoing.adapters.editableIncomeCategoriesAdapter;
+import com.example.jorgegonzalezcabrera.outgoing.adapters.editableCategoriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.editableOutgoingCategoriesAdapter;
-import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
+import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
-import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 public class settingFragment extends Fragment {
@@ -33,13 +32,16 @@ public class settingFragment extends Fragment {
     private localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface;
     private editableOutgoingCategoriesAdapter.editOutgoingCategoryInterface editOutgoingCategoryInterface;
     private editIncomeCategoryInterface editIncomeCategoryInterface;
-    private editableOutgoingCategoriesAdapter outgoingCategoriesAdapter;
-    private editableIncomeCategoriesAdapter incomeCategoriesAdapter;
+    private editableCategoriesAdapter outgoingCategoriesAdapter;
+    private editableCategoriesAdapter incomeCategoriesAdapter;
+    private editableOutgoingCategoriesAdapter moneyControllersAdapter;
+    private RecyclerView recyclerViewMoneyControllers;
     private RecyclerView recyclerViewEditableOutgoingCategories;
     private RecyclerView recyclerViewEditableIncomeCategories;
     private NestedScrollView scrollViewSettingFragment;
     private ImageView incomeCategoriesExpandImage;
     private ImageView outgoingCategoriesExpandImage;
+    private ImageView moneyControllerExpandImage;
 
     @Override
     public void onAttach(Context context) {
@@ -52,42 +54,12 @@ public class settingFragment extends Fragment {
         } catch (Exception e) {
             onCategoriesChangeInterface = new localUtils.OnCategoriesChangeInterface() {
                 @Override
-                public void removeAndReplaceCategory(@NonNull outgoingCategory removedOutgoingCategory, @NonNull String newCategory) {
+                public void removeAndReplaceCategory(@NonNull category removedCategory, @NonNull String newSubcategory) {
 
                 }
 
                 @Override
-                public void removeAndKeepCategory(@NonNull outgoingCategory removedOutgoingCategory) {
-
-                }
-
-                @Override
-                public void removeAndReplaceCategory(@NonNull incomeCategory removedIncomeCategory, @NonNull String newCategory) {
-
-                }
-
-                @Override
-                public void removeAndKeepCategory(@NonNull incomeCategory removedIncomeCategory) {
-
-                }
-
-                @Override
-                public void removeAndReplaceCategory(@NonNull subcategory removedSubcategory, @NonNull String newSubcategory) {
-
-                }
-
-                @Override
-                public void removeAndKeepCategory(@NonNull subcategory removedSubcategory, @NonNull outgoingCategory category) {
-
-                }
-
-                @Override
-                public void addedCategory(@NonNull outgoingCategory newOutgoingCategory) {
-
-                }
-
-                @Override
-                public void addedCategory(@NonNull incomeCategory newIncomeCategory) {
+                public void removeAndKeepCategory(@NonNull category removedCategory) {
 
                 }
             };
@@ -122,23 +94,31 @@ public class settingFragment extends Fragment {
         final View view = inflater.inflate(R.layout.setting_fragment, container, false);
 
         recyclerViewEditableOutgoingCategories = view.findViewById(R.id.recyclerViewEditableOutgoingCategories);
-        outgoingCategoriesAdapter = new editableOutgoingCategoriesAdapter(getContext(), onCategoriesChangeInterface, editOutgoingCategoryInterface);
-        outgoingCategoriesAdapter.addOnEditCategoryFieldInterface(editIncomeCategoryInterface);
+        outgoingCategoriesAdapter = new editableCategoriesAdapter(getContext(), onCategoriesChangeInterface, editIncomeCategoryInterface, category.OUTGOING);
         recyclerViewEditableOutgoingCategories.setAdapter(outgoingCategoriesAdapter);
         recyclerViewEditableOutgoingCategories.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewEditableOutgoingCategories.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
 
         recyclerViewEditableIncomeCategories = view.findViewById(R.id.recyclerViewEditableIncomeCategories);
-        incomeCategoriesAdapter = new editableIncomeCategoriesAdapter(getContext(), onCategoriesChangeInterface, editIncomeCategoryInterface);
+        incomeCategoriesAdapter = new editableCategoriesAdapter(getContext(), onCategoriesChangeInterface, editIncomeCategoryInterface, category.INCOME);
         recyclerViewEditableIncomeCategories.setAdapter(incomeCategoriesAdapter);
         recyclerViewEditableIncomeCategories.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewEditableIncomeCategories.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
+
+        recyclerViewMoneyControllers = view.findViewById(R.id.recyclerViewMoneyControllers);
+        moneyControllersAdapter = new editableOutgoingCategoriesAdapter(getContext(), onCategoriesChangeInterface, editOutgoingCategoryInterface);
+        moneyControllersAdapter.addOnEditCategoryFieldInterface(editIncomeCategoryInterface);
+        recyclerViewMoneyControllers.setAdapter(moneyControllersAdapter);
+        recyclerViewMoneyControllers.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerViewMoneyControllers.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
 
         scrollViewSettingFragment = view.findViewById(R.id.scrollViewSettingFragment);
         ConstraintLayout incomeCategoriesHeader = view.findViewById(R.id.incomeCategoriesHeader);
         incomeCategoriesExpandImage = view.findViewById(R.id.imageViewExpandIncomeCategories);
         ConstraintLayout outgoingCategoriesHeader = view.findViewById(R.id.outgoingCategoriesHeader);
         outgoingCategoriesExpandImage = view.findViewById(R.id.imageViewExpandOutgoingCategories);
+        ConstraintLayout moneyControllerHeader = view.findViewById(R.id.moneyControllerHeader);
+        moneyControllerExpandImage = view.findViewById(R.id.imageViewExpandMoneyController);
 
         incomeCategoriesHeader.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,12 +127,9 @@ public class settingFragment extends Fragment {
                     recyclerViewEditableIncomeCategories.setVisibility(View.GONE);
                     incomeCategoriesExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
                 } else if (recyclerViewEditableIncomeCategories.getVisibility() == View.GONE) {
+                    closeExpandableLists();
                     recyclerViewEditableIncomeCategories.setVisibility(View.VISIBLE);
                     incomeCategoriesExpandImage.animate().rotation(0.0f).setDuration(500).setListener(null);
-                    if (recyclerViewEditableOutgoingCategories.getVisibility() == View.VISIBLE) {
-                        recyclerViewEditableOutgoingCategories.setVisibility(View.GONE);
-                        outgoingCategoriesExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
-                    }
                     scrollViewSettingFragment.scrollTo(0, recyclerViewEditableIncomeCategories.getScrollY());
                 }
             }
@@ -165,18 +142,43 @@ public class settingFragment extends Fragment {
                     recyclerViewEditableOutgoingCategories.setVisibility(View.GONE);
                     outgoingCategoriesExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
                 } else if (recyclerViewEditableOutgoingCategories.getVisibility() == View.GONE) {
+                    closeExpandableLists();
                     recyclerViewEditableOutgoingCategories.setVisibility(View.VISIBLE);
                     outgoingCategoriesExpandImage.animate().rotation(0.0f).setDuration(500).setListener(null);
-                    if (recyclerViewEditableIncomeCategories.getVisibility() == View.VISIBLE) {
-                        recyclerViewEditableIncomeCategories.setVisibility(View.GONE);
-                        incomeCategoriesExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
-                    }
                     scrollViewSettingFragment.scrollTo(0, recyclerViewEditableOutgoingCategories.getScrollY());
                 }
             }
         });
 
+        moneyControllerHeader.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (recyclerViewMoneyControllers.getVisibility() == View.VISIBLE) {
+                    recyclerViewMoneyControllers.setVisibility(View.GONE);
+                    moneyControllerExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
+                } else if (recyclerViewMoneyControllers.getVisibility() == View.GONE) {
+                    closeExpandableLists();
+                    recyclerViewMoneyControllers.setVisibility(View.VISIBLE);
+                    moneyControllerExpandImage.animate().rotation(0.0f).setDuration(500).setListener(null);
+                    scrollViewSettingFragment.scrollTo(0, recyclerViewMoneyControllers.getScrollY());
+                }
+            }
+        });
+
         return view;
+    }
+
+    private void closeExpandableLists() {
+        if (recyclerViewEditableOutgoingCategories.getVisibility() == View.VISIBLE) {
+            recyclerViewEditableOutgoingCategories.setVisibility(View.GONE);
+            outgoingCategoriesExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
+        } else if (recyclerViewEditableIncomeCategories.getVisibility() == View.VISIBLE) {
+            recyclerViewEditableIncomeCategories.setVisibility(View.GONE);
+            incomeCategoriesExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
+        } else if (recyclerViewMoneyControllers.getVisibility() == View.VISIBLE) {
+            recyclerViewMoneyControllers.setVisibility(View.GONE);
+            moneyControllerExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
+        }
     }
 
     public void addIncomeCategory() {
@@ -190,12 +192,9 @@ public class settingFragment extends Fragment {
         };
 
         if (recyclerViewEditableIncomeCategories.getVisibility() == View.GONE) {
+            closeExpandableLists();
             recyclerViewEditableIncomeCategories.setVisibility(View.VISIBLE);
             incomeCategoriesExpandImage.animate().rotation(0.0f).setDuration(500).setListener(animatorListenerAdapter);
-            if (recyclerViewEditableOutgoingCategories.getVisibility() == View.VISIBLE) {
-                recyclerViewEditableOutgoingCategories.setVisibility(View.GONE);
-                outgoingCategoriesExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
-            }
         } else {
             scrollViewSettingFragment.fullScroll(NestedScrollView.FOCUS_DOWN);
             incomeCategoriesAdapter.addOne();
@@ -213,20 +212,21 @@ public class settingFragment extends Fragment {
         };
 
         if (recyclerViewEditableOutgoingCategories.getVisibility() == View.GONE) {
+            closeExpandableLists();
             recyclerViewEditableOutgoingCategories.setVisibility(View.VISIBLE);
             outgoingCategoriesExpandImage.animate().rotation(0.0f).setDuration(500).setListener(animatorListenerAdapter);
-            if (recyclerViewEditableIncomeCategories.getVisibility() == View.VISIBLE) {
-                recyclerViewEditableIncomeCategories.setVisibility(View.GONE);
-                incomeCategoriesExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
-            }
         } else {
             scrollViewSettingFragment.fullScroll(NestedScrollView.FOCUS_DOWN);
             outgoingCategoriesAdapter.addOne();
         }
     }
 
-    public void confirmAddedCategory(incomeCategory storedIncomeCategory) {
-        incomeCategoriesAdapter.confirmLast(storedIncomeCategory);
+    public void confirmAddedCategory(category storedCategory) {
+        if (storedCategory.getType() == category.INCOME) {
+            incomeCategoriesAdapter.confirmLast(storedCategory);
+        } else {
+            outgoingCategoriesAdapter.confirmLast(storedCategory);
+        }
     }
 
     public void newIncomeCategoryCanceled() {
@@ -237,19 +237,11 @@ public class settingFragment extends Fragment {
         outgoingCategoriesAdapter.cancelNewCategory();
     }
 
-    public void confirmAddedCategory(outgoingCategory storedOutgoingCategory) {
-        outgoingCategoriesAdapter.confirmLast(storedOutgoingCategory);
-    }
-
-    public void modifyIncomeCategory(incomeCategory modifiedIncomeCategory) {
-        incomeCategoriesAdapter.modify(modifiedIncomeCategory);
-    }
-
-    public void modifyOutgoingCategory(outgoingCategory modifiedOutgoingCategory) {
-        outgoingCategoriesAdapter.modify(modifiedOutgoingCategory);
-    }
-
-    public void modifyOutgoingCategory(subcategory modifiedSubcategory) {
-        outgoingCategoriesAdapter.modifySubcategory(modifiedSubcategory);
+    public void modifyCategory(category modifiedCategory) {
+        if (modifiedCategory.getType() == category.INCOME) {
+            incomeCategoriesAdapter.modify(modifiedCategory);
+        } else {
+            outgoingCategoriesAdapter.modify(modifiedCategory);
+        }
     }
 }

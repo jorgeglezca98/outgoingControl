@@ -12,20 +12,18 @@ public class outgoingCategory extends RealmObject {
 
     @PrimaryKey
     private long id;
-    private RealmList<subcategory> subcategories;
-    private RealmList<subcategory> removedSubcategories;
+    private RealmList<category> subcategories;
     private double maximum;
     private String name;
 
     public outgoingCategory() {
         this.id = -1;
         this.subcategories = new RealmList<>();
-        this.removedSubcategories = new RealmList<>();
         this.maximum = 0;
         this.name = "";
     }
 
-    public outgoingCategory(@Nonnull RealmList<subcategory> subcategories, double maximum, @Nonnull String name) {
+    public outgoingCategory(@Nonnull RealmList<category> subcategories, double maximum, @Nonnull String name) {
         this.id = myApplication.outgoingCategoryId.incrementAndGet();
         this.subcategories = new RealmList<>();
         for (int i = 0; i < subcategories.size(); i++) {
@@ -33,10 +31,6 @@ public class outgoingCategory extends RealmObject {
                 this.subcategories.add(subcategories.get(i));
             }
         }
-        if (this.subcategories.isEmpty()) {
-            this.subcategories.add(new subcategory(name));
-        }
-        this.removedSubcategories = new RealmList<>();
         this.maximum = maximum;
         this.name = name;
     }
@@ -49,32 +43,17 @@ public class outgoingCategory extends RealmObject {
         this.id = myApplication.outgoingCategoryId.incrementAndGet();
     }
 
-    public RealmList<subcategory> getSubcategories() {
+    public RealmList<category> getSubcategories() {
         return subcategories;
     }
 
-    public void setSubcategories(@Nonnull RealmList<subcategory> subcategories) {
+    public void setSubcategories(@Nonnull RealmList<category> subcategories) {
         this.subcategories = new RealmList<>();
         for (int i = 0; i < subcategories.size(); i++) {
             if (subcategories.get(i) != null) {
                 this.subcategories.add(subcategories.get(i));
             }
         }
-    }
-
-    public RealmList<subcategory> getRemovedSubcategories() {
-        return removedSubcategories;
-    }
-
-    public void setRemovedSubcategories(RealmList<subcategory> removedSubcategories) {
-        this.removedSubcategories = removedSubcategories;
-    }
-
-    public RealmList<subcategory> getAllSubcategories() {
-        RealmList<subcategory> result = new RealmList<>();
-        result.addAll(getSubcategories());
-        result.addAll(getRemovedSubcategories());
-        return result;
     }
 
     public double getMaximum() {
@@ -93,18 +72,4 @@ public class outgoingCategory extends RealmObject {
         this.name = name;
     }
 
-    public boolean checkData() {
-        if (maximum == 0.0d || name.isEmpty()) {
-            return false;
-        } else {
-            subcategory subcategory;
-            for (int i = 0; i < getSubcategories().size(); i++) {
-                subcategory = getSubcategories().get(i);
-                if (subcategory == null || subcategory.getName().isEmpty()) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
 }

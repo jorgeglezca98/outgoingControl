@@ -51,6 +51,7 @@
     <string name="add_outgoing_category">Add outgoing category</string>
     <string name="add_income_category">Add income category</string>
     <string name="add_subcategory">Add subcategory</string>
+    <string name="money_controllers_title">Money controllers</string>
 
     <string-array name="periodic_types">
         <item>Annual</item>

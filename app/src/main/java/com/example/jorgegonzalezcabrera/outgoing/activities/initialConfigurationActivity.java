@@ -15,11 +15,13 @@ import com.example.jorgegonzalezcabrera.outgoing.fragments.initialMoneyInitialCo
 import com.example.jorgegonzalezcabrera.outgoing.fragments.secondPageInitialConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.thirdPageInitialConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
+import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.others.customViewPager;
 
 import java.util.Vector;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 
 public class initialConfigurationActivity extends AppCompatActivity {
 
@@ -78,11 +80,14 @@ public class initialConfigurationActivity extends AppCompatActivity {
                 if (selectedTabPosition == (configurationTabLayout.getTabCount() - 1)) {
                     if (thirdFragment.checkData()) {
                         double currentMoney = firstFragment.getData();
-                        appConfiguration newConfiguration = new appConfiguration(currentMoney, secondFragment.getData(), thirdFragment.getData());
+                        appConfiguration newConfiguration = new appConfiguration(currentMoney);
+                        RealmList<category> categories = secondFragment.getData();
+                        categories.addAll(thirdFragment.getData());
 
                         Realm database = Realm.getDefaultInstance();
                         database.beginTransaction();
                         database.copyToRealm(newConfiguration);
+                        database.copyToRealm(categories);
                         database.commitTransaction();
 
                         Intent intent = new Intent(initialConfigurationActivity.this, MainActivity.class);

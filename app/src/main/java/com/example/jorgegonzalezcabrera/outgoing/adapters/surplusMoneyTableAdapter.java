@@ -11,9 +11,9 @@ import android.widget.FrameLayout;
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.backSurplusMoneyFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.frontSurplusMoneyFragment;
+import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
-import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.utils;
 
 import java.util.Date;
@@ -54,7 +54,7 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
 
     public void updateData(String category, double value, boolean addData) {
         for (int i = 0; i < items.size(); i++) {
-            RealmList<subcategory> subcategories = items.get(i).category.getSubcategories();
+            RealmList<category> subcategories = items.get(i).category.getSubcategories();
             if (subcategories.where().equalTo("name", category).findFirst() != null) {
                 if (addData) {
                     items.get(i).surplusMoney -= value;
@@ -72,7 +72,7 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
         boolean deleted = !utils.areFromTheSameMonth(dateOfLastUpdate, currentEntry.getCreationDate());
 
         for (int i = 0; i < items.size() && !(included && deleted); i++) {
-            RealmList<subcategory> subcategories = items.get(i).category.getSubcategories();
+            RealmList<category> subcategories = items.get(i).category.getSubcategories();
             if (subcategories.where().equalTo("name", currentEntry.getCategory()).findFirst() != null) {
                 if (utils.areFromTheSameMonth(dateOfLastUpdate, currentEntry.getCreationDate())) {
                     items.get(i).surplusMoney += currentEntry.getValor();

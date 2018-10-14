@@ -1,7 +1,6 @@
 package com.example.jorgegonzalezcabrera.outgoing.adapters;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputLayout;
@@ -16,10 +15,8 @@ import android.widget.LinearLayout;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.activities.editFieldActivity;
-import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
-import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
+import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
-import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 import java.util.Vector;
@@ -27,9 +24,8 @@ import java.util.Vector;
 import io.realm.Realm;
 import io.realm.RealmList;
 
-import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_OUTGOING_CATEGORY_MAXIMUM;
-import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_OUTGOING_CATEGORY_NAME;
-import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_SUBCATEGORY;
+import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_CATEGORY;
+import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_MONEY_CONTROLLER_MAXIMUM;
 
 public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<editableOutgoingCategoriesAdapter.ViewHolder> {
 
@@ -51,8 +47,7 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
                                              editOutgoingCategoryInterface editOutgoingCategoryInterface) {
         this.context = context;
         this.categories = new RealmList<>();
-        appConfiguration currentConfiguration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
-        this.categories.addAll(currentConfiguration.getOutgoingCategories());
+        this.categories.addAll(Realm.getDefaultInstance().where(outgoingCategory.class).findAll());
         this.layout = R.layout.editable_outgoing_category;
         this.onCategoriesChangeInterface = onCategoriesChangeInterface;
         this.editOutgoingCategoryInterface = editOutgoingCategoryInterface;
@@ -123,9 +118,9 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
         }
     }
 
-    public void modifySubcategory(subcategory modifiedSubcategory) {
+    public void modifySubcategory(category modifiedCategory) {
         for (int i = 0; i < categories.size(); i++) {
-            if (categories.get(i).getSubcategories().where().equalTo("id", modifiedSubcategory.getId()).findFirst() != null) {
+            if (categories.get(i).getSubcategories().where().equalTo("id", modifiedCategory.getId()).findFirst() != null) {
                 notifyItemChanged(i);
                 return;
             }
@@ -182,7 +177,7 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
                 @Override
                 public void onClick(View view) {
                     onEditCategoryFieldInterface.editCategoryField(
-                            name.getText().toString(), layoutEditableOutgoingCategory, name, "Category name", REQUEST_EDIT_OUTGOING_CATEGORY_NAME, category.getId());
+                            name.getText().toString(), layoutEditableOutgoingCategory, name, "Category name", REQUEST_EDIT_CATEGORY, category.getId());
                 }
             });
 
@@ -192,7 +187,7 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
                 @Override
                 public void onClick(View view) {
                     onEditCategoryFieldInterface.editCategoryField(
-                            max.getText().toString(), layoutEditableOutgoingCategory, max, "Maximum", REQUEST_EDIT_OUTGOING_CATEGORY_MAXIMUM, category.getId());
+                            max.getText().toString(), layoutEditableOutgoingCategory, max, "Maximum", REQUEST_EDIT_MONEY_CONTROLLER_MAXIMUM, category.getId());
                 }
             });
 
@@ -207,46 +202,12 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
                     vh.name.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            long subcategoryId = category.getSubcategories().get(vh.getAdapterPosition()).getId();
-                            onEditCategoryFieldInterface.editCategoryField(
-                                    vh.name.getText().toString(), layoutEditableOutgoingCategory, name, "Subcategory name", REQUEST_EDIT_SUBCATEGORY, subcategoryId);
+
                         }
                     });
                     vh.deleteItemButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            String title = "Choose what to do with entries of this category";
-                            Vector<String> options = new Vector<>();
-                            options.add("Change the category to the entries");
-                            options.add("Keep entries as before");
-                            options.add("Cancel");
-                            dialogs.chooseOptionDialog(context, title, options, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    if (i == 0) {
-                                        final Vector<String> allCategories = localUtils.getFunctioningOutgoingCategories();
-                                        allCategories.remove(vh.name.getText().toString());
-                                        dialogs.chooseOptionDialog(context, "Pick a category", allCategories, new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                String categoryName = vh.name.getText().toString();
-                                                subcategory subcategory = category.getSubcategories().where().equalTo("name", categoryName).findFirst();
-                                                onCategoriesChangeInterface.removeAndReplaceCategory(subcategory, allCategories.get(i));
-                                                subcategoriesAdapter.deleteItemAt(vh.getAdapterPosition());
-                                            }
-                                        });
-                                        dialogInterface.dismiss();
-                                    } else if (i == 1) {
-                                        String categoryName = vh.name.getText().toString();
-                                        subcategory subcategory = category.getSubcategories().where().equalTo("name", categoryName).findFirst();
-                                        onCategoriesChangeInterface.removeAndKeepCategory(subcategory, category);
-                                        subcategoriesAdapter.deleteItemAt(vh.getAdapterPosition());
-                                        dialogInterface.dismiss();
-                                    } else if (i == 2) {
-                                        dialogInterface.cancel();
-                                    }
-                                }
-                            });
                         }
                     });
                 }
@@ -289,43 +250,6 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
             removeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String title = "Choose what to do with entries of this category";
-                    Vector<String> options = new Vector<>();
-                    options.add("Change the category to the entries");
-                    options.add("Keep entries as before");
-                    options.add("Cancel");
-                    dialogs.chooseOptionDialog(context, title, options, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            if (i == 0) {
-
-                                final int categoryPosition = getAdapterPosition();
-                                final Vector<String> allCategories = localUtils.getFunctioningOutgoingCategories();
-                                outgoingCategory category = categories.get(getAdapterPosition());
-                                for (int j = 0; j < category.getSubcategories().size(); j++) {
-                                    allCategories.remove(category.getSubcategories().get(j).getName());
-                                }
-                                dialogs.chooseOptionDialog(context, "Pick a category", allCategories, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        onCategoriesChangeInterface.removeAndReplaceCategory(categories.get(categoryPosition), allCategories.get(i));
-                                        categories.remove(categoryPosition);
-                                        notifyItemRemoved(categoryPosition);
-                                    }
-                                });
-                                dialogInterface.dismiss();
-                            } else if (i == 1) {
-
-                                int categoryPosition = getAdapterPosition();
-                                onCategoriesChangeInterface.removeAndKeepCategory(categories.get(categoryPosition));
-                                categories.remove(categoryPosition);
-                                notifyItemRemoved(categoryPosition);
-                                dialogInterface.dismiss();
-                            } else if (i == 2) {
-                                dialogInterface.cancel();
-                            }
-                        }
-                    });
                 }
             });
         }

@@ -63,6 +63,7 @@
             android:id="@+id/incomeCategoriesHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
             android:background="@color/primary1"
             android:gravity="center_vertical"
             android:orientation="horizontal">
@@ -95,13 +96,57 @@
                 app:layout_constraintTop_toTopOf="parent" />
         </android.support.constraint.ConstraintLayout>
 
-
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewEditableIncomeCategories"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:visibility="gone" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/moneyControllerHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
+            android:background="@color/primary1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center_vertical|start"
+                android:padding="8dp"
+                android:text="@string/money_controllers_title"
+                android:textColor="#ffffff"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/imageViewExpandMoneyController"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imageViewExpandMoneyController"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/expand"
+                android:rotation="180"
+                android:scaleX="0.35"
+                android:scaleY="0.35"
+                android:src="@drawable/up_pointing_arrow"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerViewMoneyControllers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:visibility="gone" />
+
     </LinearLayout>
 
 </android.support.v4.widget.NestedScrollView>

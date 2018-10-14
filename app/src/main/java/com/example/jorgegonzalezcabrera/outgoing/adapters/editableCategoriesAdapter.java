@@ -14,8 +14,7 @@ import android.widget.ImageButton;
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.activities.editFieldActivity.editIncomeCategoryInterface;
 import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
-import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
-import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
+import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 import java.util.Vector;
@@ -24,25 +23,28 @@ import io.realm.Realm;
 import io.realm.RealmList;
 
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_ADD_INCOME_CATEGORY;
-import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_INCOME_CATEGORY;
+import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_ADD_OUTGOING_CATEGORY;
+import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_CATEGORY;
 
-public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editableIncomeCategoriesAdapter.ViewHolder> {
+public class editableCategoriesAdapter extends RecyclerView.Adapter<editableCategoriesAdapter.ViewHolder> {
 
     private Context context;
     private int layout;
-    private RealmList<incomeCategory> categories;
+    private RealmList<category> categories;
     private localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface;
     private editIncomeCategoryInterface editIncomeCategoryInterface;
+    private int categoriesType;
     private boolean lastIsEmpty;
     private boolean showingLast;
 
-    public editableIncomeCategoriesAdapter(Context context,
-                                           localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface,
-                                           final editIncomeCategoryInterface editIncomeCategoryInterface) {
+    public editableCategoriesAdapter(Context context,
+                                     localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface,
+                                     final editIncomeCategoryInterface editIncomeCategoryInterface,
+                                     int categoriesType) {
         this.context = context;
+        this.categoriesType = categoriesType;
         this.categories = new RealmList<>();
-        appConfiguration currentConfiguration = Realm.getDefaultInstance().where(appConfiguration.class).findFirst();
-        this.categories.addAll(currentConfiguration.getIncomeCategories());
+        this.categories.addAll(Realm.getDefaultInstance().where(category.class).equalTo("type", categoriesType).equalTo("operative", true).findAll());
         this.layout = R.layout.erasable_item;
         this.onCategoriesChangeInterface = onCategoriesChangeInterface;
         this.editIncomeCategoryInterface = editIncomeCategoryInterface;
@@ -52,13 +54,13 @@ public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editab
 
     @NonNull
     @Override
-    public editableIncomeCategoriesAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public editableCategoriesAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(layout, viewGroup, false);
-        return new editableIncomeCategoriesAdapter.ViewHolder(v);
+        return new editableCategoriesAdapter.ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull editableIncomeCategoriesAdapter.ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull editableCategoriesAdapter.ViewHolder viewHolder, int i) {
         viewHolder.bind(categories.get(i));
     }
 
@@ -69,27 +71,27 @@ public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editab
 
     public void addOne() {
         if (!lastIsEmpty) {
-            categories.add(new incomeCategory());
+            categories.add(new category("", categoriesType));
             notifyItemInserted(getItemCount() - 1);
             lastIsEmpty = true;
         }
     }
 
-    public void modify(incomeCategory modifiedIncomeCategory) {
+    public void modify(category modifiedCategory) {
         for (int i = 0; i < categories.size(); i++) {
-            if (modifiedIncomeCategory.getId() == categories.get(i).getId()) {
+            if (modifiedCategory.getId() == categories.get(i).getId()) {
                 categories.remove(i);
-                categories.add(i, modifiedIncomeCategory);
+                categories.add(i, modifiedCategory);
                 notifyItemChanged(i);
                 return;
             }
         }
     }
 
-    public void confirmLast(incomeCategory storedIncomeCategory) {
+    public void confirmLast(category storedCategory) {
         if (lastIsEmpty) {
             categories.remove(getItemCount() - 1);
-            categories.add(storedIncomeCategory);
+            categories.add(storedCategory);
             notifyItemChanged(getItemCount() - 1);
             lastIsEmpty = false;
             showingLast = false;
@@ -109,8 +111,13 @@ public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editab
     public void onViewAttachedToWindow(@NonNull ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
         if ((holder.getAdapterPosition() == (getItemCount() - 1)) && lastIsEmpty && !showingLast) {
-            editIncomeCategoryInterface.editCategoryField("",
-                    holder.container, holder.categoryName, "Income category name", REQUEST_ADD_INCOME_CATEGORY, -1);
+            if (categoriesType == category.INCOME) {
+                editIncomeCategoryInterface.editCategoryField("",
+                        holder.container, holder.categoryName, "Income category", REQUEST_ADD_INCOME_CATEGORY, -1);
+            } else {
+                editIncomeCategoryInterface.editCategoryField("",
+                        holder.container, holder.categoryName, "Outgoing category", REQUEST_ADD_OUTGOING_CATEGORY, -1);
+            }
             showingLast = true;
         }
     }
@@ -132,18 +139,23 @@ public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editab
             removeButton = itemView.findViewById(R.id.imageButtonRemoveItem);
         }
 
-        void bind(final incomeCategory incomeCategory) {
-            container.setTransitionName(CONTAINER_TRANSITION_NAME + getAdapterPosition());
-            categoryName.setTransitionName(CATEGORY_NAME_TRANSITION_NAME + getAdapterPosition());
+        void bind(final category categoryToBind) {
+            container.setTransitionName(CONTAINER_TRANSITION_NAME + categoryToBind.getId());
+            categoryName.setTransitionName(CATEGORY_NAME_TRANSITION_NAME + categoryToBind.getId());
 
-            categoryName.setText(incomeCategory.getName());
+            categoryName.setText(categoryToBind.getName());
             categoryName.setFocusable(false);
             categoryName.setFocusableInTouchMode(false);
             categoryName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    editIncomeCategoryInterface.editCategoryField(incomeCategory.getName(),
-                            container, categoryName, "Income category name", REQUEST_EDIT_INCOME_CATEGORY, incomeCategory.getId());
+                    if (categoriesType == com.example.jorgegonzalezcabrera.outgoing.models.category.INCOME) {
+                        editIncomeCategoryInterface.editCategoryField(categoryToBind.getName(),
+                                container, categoryName, "Income category", REQUEST_EDIT_CATEGORY, categoryToBind.getId());
+                    } else {
+                        editIncomeCategoryInterface.editCategoryField(categoryToBind.getName(),
+                                container, categoryName, "Outgoing category", REQUEST_EDIT_CATEGORY, categoryToBind.getId());
+                    }
                 }
             });
 
@@ -161,7 +173,7 @@ public class editableIncomeCategoriesAdapter extends RecyclerView.Adapter<editab
                             if (i == 0) {
 
                                 final int categoryPosition = getAdapterPosition();
-                                final Vector<String> allCategories = localUtils.getFunctioningIncomeCategories();
+                                final Vector<String> allCategories = (categoriesType == category.OUTGOING ? localUtils.getFunctioningOutgoingCategories() : localUtils.getFunctioningIncomeCategories());
                                 allCategories.remove(categories.get(getAdapterPosition()).getName());
 
                                 dialogs.chooseOptionDialog(context, "Pick a category", allCategories, new DialogInterface.OnClickListener() {

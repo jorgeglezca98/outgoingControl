@@ -14,15 +14,16 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
-import com.example.jorgegonzalezcabrera.outgoing.adapters.newOutgoingCategoriesAdapter;
-import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
-import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
+import com.example.jorgegonzalezcabrera.outgoing.adapters.erasableItemsAdapter;
+import com.example.jorgegonzalezcabrera.outgoing.models.category;
+
+import java.util.Vector;
 
 import io.realm.RealmList;
 
 public class secondPageInitialConfiguration extends Fragment {
 
-    private newOutgoingCategoriesAdapter outgoingCategoriesAdapter;
+    private erasableItemsAdapter outgoingCategoriesAdapter;
 
     @Nullable
     @Override
@@ -39,7 +40,7 @@ public class secondPageInitialConfiguration extends Fragment {
         });
 
         RecyclerView recyclerViewOutgoingCategories = view.findViewById(R.id.recyclerViewOutgoingsCategoriesRequest);
-        outgoingCategoriesAdapter = new newOutgoingCategoriesAdapter(getContext());
+        outgoingCategoriesAdapter = new erasableItemsAdapter("Outgoing category");
         recyclerViewOutgoingCategories.setAdapter(outgoingCategoriesAdapter);
         final LinearLayoutManager outgoingCategoriesLayoutManager = new LinearLayoutManager(getContext());
         recyclerViewOutgoingCategories.setLayoutManager(outgoingCategoriesLayoutManager);
@@ -57,25 +58,22 @@ public class secondPageInitialConfiguration extends Fragment {
     }
 
     public boolean checkData() {
-        boolean check = true;
-        RealmList<outgoingCategory> outgoingCategories = outgoingCategoriesAdapter.getCategories();
-        for (int i = 0; i < outgoingCategories.size(); i++) {
-            outgoingCategory category = outgoingCategories.get(i);
-            if (!category.checkData()) {
-                check = false;
+        Vector<String> adapterItems = outgoingCategoriesAdapter.getItems();
+        int i = 0;
+        while (i < adapterItems.size()) {
+            if (adapterItems.get(i).isEmpty()) {
+                return false;
             }
+            i++;
         }
-        return check;
+        return true;
     }
 
-    public RealmList<outgoingCategory> getData() {
-        RealmList<outgoingCategory> data = outgoingCategoriesAdapter.getCategories();
-        for (int i = 0; i < data.size(); i++) {
-            outgoingCategory category = data.get(i);
-            if (category.getSubcategories().isEmpty()) {
-                category.getSubcategories().add(new subcategory(category.getName()));
-                outgoingCategoriesAdapter.notifyItemChanged(i);
-            }
+    public RealmList<category> getData() {
+        Vector<String> adapterItems = outgoingCategoriesAdapter.getItems();
+        RealmList<category> data = new RealmList<>();
+        for (int i = 0; i < adapterItems.size(); i++) {
+            data.add(new category(adapterItems.get(i), category.OUTGOING));
         }
         return data;
     }

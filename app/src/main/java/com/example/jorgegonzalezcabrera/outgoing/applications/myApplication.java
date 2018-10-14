@@ -3,11 +3,10 @@ package com.example.jorgegonzalezcabrera.outgoing.applications;
 import android.app.Application;
 
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
+import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
-import com.example.jorgegonzalezcabrera.outgoing.models.incomeCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
-import com.example.jorgegonzalezcabrera.outgoing.models.subcategory;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -20,8 +19,7 @@ public class myApplication extends Application {
     public static AtomicInteger appConfigurationId;
     public static AtomicInteger entryId;
     public static AtomicInteger outgoingCategoryId;
-    public static AtomicInteger incomeCategoryId;
-    public static AtomicInteger outgoingCategorySubcategoryId;
+    public static AtomicInteger categoryId;
 
     @Override
     public void onCreate() {
@@ -42,11 +40,8 @@ public class myApplication extends Application {
         Number higherOutgoingCategoryId = Realm.getDefaultInstance().where(outgoingCategory.class).max("id");
         outgoingCategoryId = new AtomicInteger((higherOutgoingCategoryId == null) ? 0 : higherOutgoingCategoryId.intValue());
 
-        Number higherIncomeCategoryId = Realm.getDefaultInstance().where(incomeCategory.class).max("id");
-        incomeCategoryId = new AtomicInteger((higherIncomeCategoryId == null) ? 0 : higherIncomeCategoryId.intValue());
-
-        Number higherOutgoingCategorySubcategoryId = Realm.getDefaultInstance().where(subcategory.class).max("id");
-        outgoingCategorySubcategoryId = new AtomicInteger((higherOutgoingCategorySubcategoryId == null) ? 0 : higherOutgoingCategorySubcategoryId.intValue());
+        Number higherCategoryId = Realm.getDefaultInstance().where(category.class).max("id");
+        categoryId = new AtomicInteger((higherCategoryId == null) ? 0 : higherCategoryId.intValue());
     }
 }
 //TODO: explore configuration possibilities
