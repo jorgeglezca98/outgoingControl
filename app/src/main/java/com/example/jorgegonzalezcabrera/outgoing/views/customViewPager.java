@@ -1,4 +1,4 @@
-package com.example.jorgegonzalezcabrera.outgoing.others;
+package com.example.jorgegonzalezcabrera.outgoing.views;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

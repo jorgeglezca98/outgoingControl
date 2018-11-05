@@ -16,7 +16,7 @@ import com.example.jorgegonzalezcabrera.outgoing.fragments.secondPageInitialConf
 import com.example.jorgegonzalezcabrera.outgoing.fragments.thirdPageInitialConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.category;
-import com.example.jorgegonzalezcabrera.outgoing.others.customViewPager;
+import com.example.jorgegonzalezcabrera.outgoing.views.customViewPager;
 
 import java.util.Vector;
 

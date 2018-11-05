@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.activities.editFieldActivity.editIncomeCategoryInterface;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.editableOutgoingCategoriesAdapter;
+import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.actionsFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.mainFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.settingFragment;
@@ -206,7 +207,14 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         fabFilterActions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                actionsFragment.expandFilters();
+                dialogs.filtersDialog(MainActivity.this,
+                        actionsFragment.getFiltersManipulation(),
+                        actionsFragment.getCategories(),
+                        actionsFragment.getMinDate(),
+                        actionsFragment.getMaxDate(),
+                        actionsFragment.getMinValue(),
+                        actionsFragment.getMaxValue(),
+                        actionsFragment.getDescription());
                 closeFloatingMenu();
             }
         });

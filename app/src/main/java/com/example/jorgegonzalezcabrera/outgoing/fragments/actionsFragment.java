@@ -8,19 +8,14 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.allEntriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSelectionAdapter;
-import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.others.HeaderItemDecoration;
 import com.example.jorgegonzalezcabrera.outgoing.others.HeaderItemDecoration.StickyHeaderInterface;
@@ -28,34 +23,48 @@ import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.Vector;
 
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.Sort;
 
-import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newDatePickerDialog;
-
 public class actionsFragment extends Fragment implements StickyHeaderInterface {
 
     private allEntriesAdapter adapter;
     private RealmList<entry> allTheActions;
     private Context context;
-    private EditText editTextMinValue;
-    private EditText editTextMaxValue;
-    private EditText editTextDescriptionFilter;
-    private RecyclerView recyclerViewCategoriesSelection;
-    private categoriesSelectionAdapter categoriesSelectionAdapter;
-    private LinearLayout expandableFilterLayout;
-    private EditText editTextMinDate;
-    private EditText editTextMaxDate;
+    private Vector<categoriesSelectionAdapter.categoryCheckBox> categories;
     private Date minDate;
     private Date maxDate;
+    private String minValue;
+    private String maxValue;
+    private String description;
+    private filterActions filtersManipulation;
     private localUtils.OnEntriesChangeInterface onEntriesChangeInterface;
+
+    public interface filterActions {
+        void cleanFilters();
+
+        void applyFilters(Vector<categoriesSelectionAdapter.categoryCheckBox> categories, Date minDate,
+                          Date maxDate, String minValue, String maxValue, String description);
+    }
+
+    public actionsFragment() {
+        Vector<String> categoryNames = localUtils.getAllCategories();
+        this.categories = new Vector<>();
+        for (int i = 0; i < categoryNames.size(); i++) {
+            categories.add(new categoriesSelectionAdapter.categoryCheckBox(categoryNames.get(i), true));
+        }
+        minDate = null;
+        maxDate = null;
+        minValue = "";
+        maxValue = "";
+        description = "";
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -104,153 +113,126 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
         recyclerViewAllTheActions.addItemDecoration(new HeaderItemDecoration(R.layout.entries_by_month, this));
         recyclerViewAllTheActions.addItemDecoration(new DividerItemDecoration(context, actionsLayoutManager.getOrientation()));
 
-        expandableFilterLayout = view.findViewById(R.id.expandableFilterLayout);
-
-        recyclerViewCategoriesSelection = view.findViewById(R.id.recyclerViewCategoriesSelection);
-        categoriesSelectionAdapter = new categoriesSelectionAdapter();
-        recyclerViewCategoriesSelection.setAdapter(categoriesSelectionAdapter);
-        StaggeredGridLayoutManager categoriesSelectionLayoutManager = new StaggeredGridLayoutManager(2, LinearLayoutManager.HORIZONTAL);
-        recyclerViewCategoriesSelection.setLayoutManager(categoriesSelectionLayoutManager);
-
-        Button buttonApplyFilters = view.findViewById(R.id.buttonApplyFilters);
-        Button buttonCancelFilters = view.findViewById(R.id.buttonCancelFilters);
-        editTextMinValue = view.findViewById(R.id.editTextMinValue);
-        editTextMaxValue = view.findViewById(R.id.editTextMaxValue);
-        editTextDescriptionFilter = view.findViewById(R.id.editTextDescriptionFilter);
-
-        buttonApplyFilters.setOnClickListener(new View.OnClickListener() {
+        filtersManipulation = new filterActions() {
             @Override
-            public void onClick(View view) {
-                applyFilters();
-                expandableFilterLayout.setVisibility(View.GONE);
+            public void cleanFilters() {
+                for (int i = 0; i < categories.size(); i++) {
+                    categories.get(i).selected = true;
+                }
+                minDate = null;
+                maxDate = null;
+                minValue = "";
+                maxValue = "";
+                description = "";
+                allTheActions.clear();
+                allTheActions.addAll(Realm.getDefaultInstance().where(entry.class).findAll());
+                adapter.changeData(allTheActions);
             }
-        });
 
-        buttonCancelFilters.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                cleanFilters();
-                applyFilters();
-                expandableFilterLayout.setVisibility(View.GONE);
-            }
-        });
+            public void applyFilters(Vector<categoriesSelectionAdapter.categoryCheckBox> categories, Date minDate,
+                                     Date maxDate, String minValue, String maxValue, @NonNull String description) {
 
-        editTextMinDate = view.findViewById(R.id.editTextMinDate);
-        editTextMinDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Date initialDate = editTextMinDate.getText().toString().isEmpty() ? new Date() : minDate;
-                newDatePickerDialog(initialDate, context, new dialogs.OnDateRemovedListener() {
-                    @Override
-                    public void onDateRemoved() {
-                        editTextMinDate.setText("");
-                    }
-                }, new dialogs.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(int year, int month, int day) {
-                        GregorianCalendar dateSet = new GregorianCalendar();
-                        dateSet.set(year, month, day, 0, 0, 0);
-                        dateSet.set(Calendar.MILLISECOND, 0);
+                RealmQuery<entry> filteredResults = Realm.getDefaultInstance().where(entry.class);
 
-                        minDate = dateSet.getTime();
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", new Locale("es", "ES"));
-                        editTextMinDate.setText(dateFormat.format(minDate));
-                    }
-                });
-            }
-        });
-        editTextMaxDate = view.findViewById(R.id.editTextMaxDate);
-        editTextMaxDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Date initialDate = editTextMaxDate.getText().toString().isEmpty() ? new Date() : maxDate;
-                newDatePickerDialog(initialDate, context, new dialogs.OnDateRemovedListener() {
-                    @Override
-                    public void onDateRemoved() {
-                        editTextMaxDate.setText("");
-                    }
-                }, new dialogs.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(int year, int month, int day) {
-                        GregorianCalendar dateSet = new GregorianCalendar();
-                        dateSet.set(year, month, day, 0, 0, 0);
-                        dateSet.set(Calendar.MILLISECOND, 0);
-                        dateSet.add(Calendar.DATE, 1);
+                setMinValue(minValue);
+                if (!minValue.isEmpty()) {
+                    filteredResults.greaterThanOrEqualTo("valor", Double.valueOf(minValue));
+                }
 
-                        maxDate = dateSet.getTime();
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", new Locale("es", "ES"));
-                        editTextMaxDate.setText(dateFormat.format(maxDate));
+                setMaxValue(maxValue);
+                if (!maxValue.isEmpty()) {
+                    filteredResults.lessThanOrEqualTo("valor", Double.valueOf(maxValue));
+                }
+
+                setDescription(description);
+                if (!description.isEmpty()) {
+                    filteredResults.contains("description", description);
+                }
+
+                setCategories(categories);
+                for (int i = 0; i < categories.size(); i++) {
+                    if (!categories.get(i).selected) {
+                        filteredResults.notEqualTo("category", categories.get(i).name);
                     }
-                });
+                }
+
+                setMinDate(minDate);
+                if (minDate != null) {
+                    filteredResults.greaterThanOrEqualTo("creationDate", minDate);
+                }
+
+                setMaxDate(maxDate);
+                if (maxDate != null) {
+                    filteredResults.lessThan("creationDate", maxDate);
+                }
+                allTheActions.clear();
+                allTheActions.addAll(filteredResults.findAll());
+                adapter.changeData(allTheActions);
             }
-        });
+        };
 
         return view;
     }
 
-    public void cleanFilters() {
-        editTextMinValue.setText("");
-        editTextMaxValue.setText("");
-        editTextDescriptionFilter.setText("");
-        editTextMinDate.setText("");
-        editTextMaxDate.setText("");
-
-        categoriesSelectionAdapter.ViewHolder viewHolder;
-        for (int i = 0; i < categoriesSelectionAdapter.getItemCount(); i++) {
-            viewHolder = (categoriesSelectionAdapter.ViewHolder) recyclerViewCategoriesSelection.findViewHolderForAdapterPosition(i);
-            if (viewHolder != null) {
-                viewHolder.checkboxCategory.setChecked(true);
-            }
-        }
-    }
-
-    public void expandFilters() {
-        expandableFilterLayout.setVisibility(View.VISIBLE);
-    }
-
-    private void applyFilters() {
-        RealmQuery<entry> filteredResults = Realm.getDefaultInstance().where(entry.class);
-        if (!editTextMinValue.getText().toString().isEmpty()) {
-            double minValue = Double.valueOf(editTextMinValue.getText().toString());
-            filteredResults.greaterThanOrEqualTo("valor", minValue);
-        }
-
-        if (!editTextMaxValue.getText().toString().isEmpty()) {
-            double maxValue = Double.valueOf(editTextMaxValue.getText().toString());
-            filteredResults.lessThanOrEqualTo("valor", maxValue);
-        }
-
-        if (!editTextDescriptionFilter.getText().toString().isEmpty()) {
-            filteredResults.contains("description", editTextDescriptionFilter.getText().toString());
-        }
-
-        categoriesSelectionAdapter.ViewHolder viewHolder;
-        for (int i = 0; i < categoriesSelectionAdapter.getItemCount(); i++) {
-            viewHolder = (categoriesSelectionAdapter.ViewHolder) recyclerViewCategoriesSelection.findViewHolderForAdapterPosition(i);
-            if (viewHolder != null && !viewHolder.checkboxCategory.isChecked()) {
-                filteredResults.notEqualTo("category", viewHolder.checkboxCategory.getText().toString());
-            }
-        }
-
-        if (!editTextMinDate.getText().toString().isEmpty()) {
-            filteredResults.greaterThanOrEqualTo("creationDate", minDate);
-        }
-
-        if (!editTextMaxDate.getText().toString().isEmpty()) {
-            filteredResults.lessThan("creationDate", maxDate);
-        }
-
-        allTheActions.clear();
-        allTheActions.addAll(filteredResults.findAll());
-        adapter.changeData(allTheActions);
-    }
-
     public void updateDataAdded(entry newEntry) {
-        adapter.newEntryAdded(newEntry);
+        adapter.newEntryAdded(newEntry); //TODO: check filters first
     }
 
     public void updateDataModified(entry nextVersion) {
         adapter.entryModified(nextVersion);
+    }
+
+    public Vector<categoriesSelectionAdapter.categoryCheckBox> getCategories() {
+        return categories;
+    }
+
+    public Date getMinDate() {
+        return minDate;
+    }
+
+    public Date getMaxDate() {
+        return maxDate;
+    }
+
+    public String getMinValue() {
+        return minValue;
+    }
+
+    public String getMaxValue() {
+        return maxValue;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public filterActions getFiltersManipulation() {
+        return filtersManipulation;
+    }
+
+    public void setCategories(Vector<categoriesSelectionAdapter.categoryCheckBox> categories) {
+        this.categories = categories;
+    }
+
+    public void setMinDate(Date minDate) {
+        this.minDate = minDate;
+    }
+
+    public void setMaxDate(Date maxDate) {
+        this.maxDate = maxDate;
+    }
+
+    public void setMinValue(String minValue) {
+        this.minValue = minValue;
+    }
+
+    public void setMaxValue(String maxValue) {
+        this.maxValue = maxValue;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
@@ -275,14 +257,28 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
     }
 
     public void removeCategoryInFilters(String removedCategory) {
-        categoriesSelectionAdapter.removeCategory(removedCategory);
+        int i = 0;
+        while (i < categories.size()) {
+            if (categories.get(i).name.equals(removedCategory)) {
+                categories.remove(i);
+                return;
+            }
+            i++;
+        }
     }
 
     public void addCategoryInFilters(String newCategory) {
-        categoriesSelectionAdapter.addCategory(newCategory);
+        categories.add(new categoriesSelectionAdapter.categoryCheckBox(newCategory, true));
     }
 
     public void editCategoryInFilters(String newName, String oldName) {
-        categoriesSelectionAdapter.editCategory(newName, oldName);
+        int i = 0;
+        while (i < categories.size()) {
+            if (categories.get(i).name.equals(oldName)) {
+                categories.get(i).name = newName;
+                return;
+            }
+            i++;
+        }
     }
 }

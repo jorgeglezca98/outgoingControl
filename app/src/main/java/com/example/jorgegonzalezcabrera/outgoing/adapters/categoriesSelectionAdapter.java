@@ -10,16 +10,39 @@ import android.widget.CheckBox;
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
-import java.util.List;
+import java.util.Vector;
 
 public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesSelectionAdapter.ViewHolder> {
 
+    public static class categoryCheckBox {
+        public String name;
+        public boolean selected;
+
+        public categoryCheckBox(@NonNull String name, boolean selected) {
+            this.name = name;
+            this.selected = selected;
+        }
+    }
+
     private int layout;
-    private List<String> categories;
+    private Vector<categoryCheckBox> categories;
 
     public categoriesSelectionAdapter() {
-        layout = R.layout.category_selection_item;
-        categories = localUtils.getAllCategories();
+        this.layout = R.layout.category_selection_item;
+        Vector<String> categoryNames = localUtils.getAllCategories();
+        this.categories = new Vector<>();
+        for (int i = 0; i < categoryNames.size(); i++) {
+            categories.add(new categoryCheckBox(categoryNames.get(i), true));
+        }
+    }
+
+    public categoriesSelectionAdapter(@NonNull Vector<categoryCheckBox> categories) {
+        this.layout = R.layout.category_selection_item;
+        this.categories = categories;
+    }
+
+    public Vector<categoryCheckBox> getCategories() {
+        return categories;
     }
 
     @NonNull
@@ -39,26 +62,6 @@ public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesS
         return categories.size();
     }
 
-    public void removeCategory(String removedCategory) {
-        categories.remove(removedCategory);
-    }
-
-    public void addCategory(String newCategory) {
-        categories.add(newCategory);
-        notifyItemInserted(categories.size() - 1);
-    }
-
-    public void editCategory(String newName, String oldName) {
-        for (int i = 0; i < categories.size(); i++) {
-            if (categories.get(i).equals(oldName)) {
-                categories.remove(i);
-                categories.add(newName);
-                notifyItemChanged(i);
-                return;
-            }
-        }
-    }
-
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public CheckBox checkboxCategory;
@@ -69,9 +72,9 @@ public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesS
             checkboxCategory = itemView.findViewById(R.id.checkboxCategory);
         }
 
-        void bind(String categoryName) {
-            checkboxCategory.setChecked(true);
-            checkboxCategory.setText(categoryName);
+        void bind(categoryCheckBox category) {
+            checkboxCategory.setChecked(category.selected);
+            checkboxCategory.setText(category.name);
         }
     }
 }
