@@ -55,15 +55,13 @@ import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.get
 public class dialogs {
 
     public static void newEntryDialog(final Context context, final localUtils.OnEntriesChangeInterface onEntriesChange) {
-        final Dialog dialog = new Dialog(context);
+        final Dialog dialog = new Dialog(new ContextThemeWrapper(context, R.style.AppTheme_TransparentActivity));
+        dialog.getWindow().setWindowAnimations(R.style.DialogAnimationFromRight);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
         dialog.setContentView(R.layout.new_entry_dialog);
-        Window dialogWindow = dialog.getWindow();
-        if (dialogWindow != null) {
-            dialogWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            dialogWindow.setWindowAnimations(R.style.DialogAnimation);
-        }
+        dialog.getWindow().getAttributes().width = WindowManager.LayoutParams.MATCH_PARENT;
+        dialog.getWindow().getAttributes().height = WindowManager.LayoutParams.MATCH_PARENT;
 
         final ConstraintLayout dialogContainer = dialog.findViewById(R.id.dialogContainer);
         final EditText valueEditText = dialog.findViewById(R.id.editTextValueNewEntry);
