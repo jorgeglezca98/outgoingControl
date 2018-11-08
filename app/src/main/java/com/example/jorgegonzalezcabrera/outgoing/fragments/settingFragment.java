@@ -26,6 +26,8 @@ import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
+import java.util.Vector;
+
 public class settingFragment extends Fragment {
 
     private Context context;
@@ -65,6 +67,11 @@ public class settingFragment extends Fragment {
 
                 @Override
                 public void removeMoneyController(@NonNull outgoingCategory removedCategory) {
+
+                }
+
+                @Override
+                public void changeMoneyControllerSubcategories(@NonNull outgoingCategory moneyControllers, @NonNull Vector<String> newCategories) {
 
                 }
             };

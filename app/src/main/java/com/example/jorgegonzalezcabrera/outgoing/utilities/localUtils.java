@@ -28,6 +28,8 @@ public class localUtils {
         void removeAndKeepCategory(@NonNull category removedCategory);
 
         void removeMoneyController(@NonNull outgoingCategory removedCategory);
+
+        void changeMoneyControllerSubcategories(@NonNull outgoingCategory moneyControllers, @NonNull Vector<String> newCategories);
     }
 
     public static type getTypeFromOrdinal(int ordinal) {

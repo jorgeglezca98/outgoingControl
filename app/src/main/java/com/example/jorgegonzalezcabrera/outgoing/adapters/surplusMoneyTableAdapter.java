@@ -118,6 +118,24 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
         }
     }
 
+    public void updateSubcategories(outgoingCategory modifiedOutgoingCategory) {
+        for (int i = 0; i < items.size(); i++) {
+            if (modifiedOutgoingCategory.getId() == items.get(i).category.getId()) {
+                items.get(i).category = modifiedOutgoingCategory;
+                Date date = utils.firstDateOfTheMonth(new Date());
+                RealmResults<entry> entries = Realm.getDefaultInstance().where(entry.class).greaterThanOrEqualTo("creationDate", date).findAll();
+                double outgoingsByCategory = 0;
+                for (int j = 0; j < modifiedOutgoingCategory.getSubcategories().size(); j++) {
+                    String subcategoryName = modifiedOutgoingCategory.getSubcategories().get(j).getName();
+                    outgoingsByCategory += entries.where().equalTo("category", subcategoryName).sum("valor").doubleValue();
+                }
+                items.get(i).surplusMoney = modifiedOutgoingCategory.getMaximum() - outgoingsByCategory;
+                notifyItemChanged(i);
+                return;
+            }
+        }
+    }
+
     @NonNull
     @Override
     public surplusMoneyTableAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {

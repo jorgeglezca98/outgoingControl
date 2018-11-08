@@ -458,6 +458,24 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         });
     }
 
+    @Override
+    public void changeMoneyControllerSubcategories(@NonNull final outgoingCategory moneyControllers, @NonNull final Vector<String> newCategories) {
+        mainFragment.updateCategorySubcategoriesChanged(moneyControllers);
+        settingFragment.modifyOutgoingCategory(moneyControllers);
+        database.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                moneyControllers.getSubcategories().clear();
+                for (int i = 0; i < newCategories.size(); i++) {
+                    category newCategory = database.where(category.class).contains("name", newCategories.get(i)).findFirst();
+                    moneyControllers.getSubcategories().add(newCategory);
+                }
+                database.copyToRealmOrUpdate(moneyControllers);
+            }
+        });
+
+    }
+
     public final static String CATEGORY_NAME_KEY = "categoryName";
     public final static String CATEGORY_MAXIMUM_KEY = "categoryMax";
     public final static String CATEGORY_SUBCATEGORIES_KEY = "categorySubcategories";

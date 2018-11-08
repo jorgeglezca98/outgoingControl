@@ -1,5 +1,6 @@
 package com.example.jorgegonzalezcabrera.outgoing.adapters;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -9,15 +10,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.activities.editFieldActivity;
-import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
+
+import java.util.ArrayList;
+import java.util.Vector;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -116,15 +120,6 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
         }
     }
 
-    public void modifySubcategory(category modifiedCategory) {
-        for (int i = 0; i < categories.size(); i++) {
-            if (categories.get(i).getSubcategories().where().equalTo("id", modifiedCategory.getId()).findFirst() != null) {
-                notifyItemChanged(i);
-                return;
-            }
-        }
-    }
-
     @Override
     public void onViewAttachedToWindow(@NonNull ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
@@ -190,8 +185,57 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
             });
 
             final categoriesSelectionAdapter subcategoriesAdapter = new categoriesSelectionAdapter(categoriesSelectionAdapter.FUNCTIONING_OUTGOING_CATEGORIES);
+            ArrayList<String> subcategories = new ArrayList<>();
+            for (int i = 0; i < category.getSubcategories().size(); i++) {
+                subcategories.add(category.getSubcategories().get(i).getName());
+            }
+            subcategoriesAdapter.markAsChecked(subcategories);
             subcategoriesRecyclerView.setAdapter(subcategoriesAdapter);
             subcategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+            layoutEditableOutgoingCategory.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final Dialog dialog = new Dialog(context);
+                    dialog.setCancelable(true);
+                    dialog.setContentView(R.layout.subcategories_dialog);
+
+                    RecyclerView recyclerViewSubcategories = dialog.findViewById(R.id.recyclerViewSubcategories);
+                    final categoriesSelectionAdapter adapter = new categoriesSelectionAdapter(categoriesSelectionAdapter.FUNCTIONING_OUTGOING_CATEGORIES);
+                    ArrayList<String> categoriesToCheck = new ArrayList<>();
+                    for (int i = 0; i < category.getSubcategories().size(); i++) {
+                        categoriesToCheck.add(category.getSubcategories().get(i).getName());
+                    }
+                    adapter.markAsChecked(categoriesToCheck);
+                    recyclerViewSubcategories.setAdapter(adapter);
+                    recyclerViewSubcategories.setLayoutManager(new LinearLayoutManager(context));
+
+                    Button buttonCancel = dialog.findViewById(R.id.buttonCancel);
+                    buttonCancel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    Button buttonApply = dialog.findViewById(R.id.buttonApply);
+                    buttonApply.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Vector<String> newCategories = new Vector<>();
+                            for (int i = 0; i < adapter.getCategories().size(); i++) {
+                                if (adapter.getCategories().get(i).selected) {
+                                    newCategories.add(adapter.getCategories().get(i).name);
+                                }
+                            }
+                            onCategoriesChangeInterface.changeMoneyControllerSubcategories(category, newCategories);
+                            dialog.dismiss();
+                        }
+                    });
+
+                    dialog.show();
+                }
+            });
 
             expandButton.setOnClickListener(new View.OnClickListener() {
                 @Override
