@@ -1,6 +1,7 @@
 package com.example.jorgegonzalezcabrera.outgoing.activities;
 
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -136,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
                         labelAddIncomeCategory.animate().alpha(1.0f).setDuration(600);
                     }
                 }
+                tab.getIcon().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_IN);
             }
 
             @Override
@@ -155,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
                         labelAddIncomeCategory.animate().alpha(0.0f).setDuration(300);
                     }
                 }
+                tab.getIcon().setColorFilter(getResources().getColor(android.R.color.black), PorterDuff.Mode.SRC_IN);
             }
 
             @Override
