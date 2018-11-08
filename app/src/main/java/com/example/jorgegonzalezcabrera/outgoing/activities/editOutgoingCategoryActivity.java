@@ -12,13 +12,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
-import com.example.jorgegonzalezcabrera.outgoing.adapters.erasableItemsAdapter;
+import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSelectionAdapter;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.CATEGORY_MAXIMUM_KEY;
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.CATEGORY_MAXIMUM_TRANSITION_NAME_KEY;
@@ -32,7 +30,7 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
 
     private EditText editTextCategoryName;
     private EditText editTextMaxValue;
-    private erasableItemsAdapter subcategoriesAdapter;
+    private categoriesSelectionAdapter subcategoriesAdapter;
     private TextInputLayout categoryNameContainer;
     private TextInputLayout categoryMaxContainer;
 
@@ -53,7 +51,6 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
         String categoryMax = String.valueOf(extras.getDouble(CATEGORY_MAXIMUM_KEY));
 
         ArrayList<String> subcategories = extras.getStringArrayList(CATEGORY_SUBCATEGORIES_KEY);
-        Vector<String> formattedSubcategories = new Vector<>(subcategories);
 
         editTextCategoryName = findViewById(R.id.editTextCategoryName);
         editTextCategoryName.setTransitionName(categoryNameTransitionName);
@@ -67,22 +64,13 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
         editTextMaxValue.setText(categoryMax);
 
         final RecyclerView recyclerViewSubcategories = findViewById(R.id.recyclerViewSubcategories);
-        subcategoriesAdapter = new erasableItemsAdapter("Subcategory");
+        subcategoriesAdapter = new categoriesSelectionAdapter(categoriesSelectionAdapter.FUNCTIONING_OUTGOING_CATEGORIES);
+        subcategoriesAdapter.markAsChecked(subcategories);
         recyclerViewSubcategories.setAdapter(subcategoriesAdapter);
         recyclerViewSubcategories.setLayoutManager(new LinearLayoutManager(this));
-        subcategoriesAdapter.updateItems(formattedSubcategories);
 
         ConstraintLayout constraintLayout = findViewById(R.id.layoutEditableOutgoingCategory);
         constraintLayout.setTransitionName(containerTransitionName);
-
-        ImageButton imageButtonAddSubcategory = findViewById(R.id.imageButtonAddSubcategory);
-        imageButtonAddSubcategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                subcategoriesAdapter.addOne();
-                recyclerViewSubcategories.scrollToPosition(subcategoriesAdapter.getItemCount() - 1);
-            }
-        });
 
         Button buttonCancel = findViewById(R.id.buttonCancel);
         buttonCancel.setOnClickListener(new View.OnClickListener() {
@@ -100,9 +88,17 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (checkDataAndShowErrors()) {
                     Intent returnIntent = new Intent();
+
+                    ArrayList<String> finalSubcategories = new ArrayList<>();
+                    for (int i = 0; i < subcategoriesAdapter.getCategories().size(); i++) {
+                        if (subcategoriesAdapter.getCategories().get(i).selected) {
+                            finalSubcategories.add(subcategoriesAdapter.getCategories().get(i).name);
+                        }
+                    }
+
                     returnIntent.putExtra(CATEGORY_NAME_KEY, editTextCategoryName.getText().toString());
                     returnIntent.putExtra(CATEGORY_MAXIMUM_KEY, Double.valueOf(editTextMaxValue.getText().toString()));
-                    returnIntent.putStringArrayListExtra(CATEGORY_SUBCATEGORIES_KEY, new ArrayList<>(subcategoriesAdapter.getItems()));
+                    returnIntent.putStringArrayListExtra(CATEGORY_SUBCATEGORIES_KEY, finalSubcategories);
                     setResult(Activity.RESULT_OK, returnIntent);
                     supportFinishAfterTransition();
                 }
@@ -127,13 +123,6 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
             result = false;
         } else {
             categoryMaxContainer.setError(null);
-        }
-
-        if (!subcategoriesAdapter.checkData()) {
-            subcategoriesAdapter.showErrorMessage();
-            result = false;
-        } else {
-            subcategoriesAdapter.removeErrorMessage();
         }
 
         return result;

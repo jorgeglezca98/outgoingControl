@@ -19,13 +19,11 @@ import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
-import java.util.Vector;
-
 import io.realm.Realm;
 import io.realm.RealmList;
 
-import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_CATEGORY;
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_MONEY_CONTROLLER_MAXIMUM;
+import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_OUTGOING_CATEGORY_NAME;
 
 public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<editableOutgoingCategoriesAdapter.ViewHolder> {
 
@@ -177,7 +175,7 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
                 @Override
                 public void onClick(View view) {
                     onEditCategoryFieldInterface.editCategoryField(
-                            name.getText().toString(), layoutEditableOutgoingCategory, name, "Category name", REQUEST_EDIT_CATEGORY, category.getId());
+                            name.getText().toString(), layoutEditableOutgoingCategory, name, "Category name", REQUEST_EDIT_OUTGOING_CATEGORY_NAME, category.getId());
                 }
             });
 
@@ -191,32 +189,7 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
                 }
             });
 
-            final erasableItemsAdapter subcategoriesAdapter = new erasableItemsAdapter("Subcategory");
-            subcategoriesAdapter.setCustomizeViewInterface(new erasableItemsAdapter.customizeView() {
-                @Override
-                public void custom(final erasableItemsAdapter.ViewHolder vh) {
-                    vh.name.setFocusable(false);
-                    vh.name.setFocusableInTouchMode(false);
-                    vh.name.setLongClickable(false);
-                    vh.name.setClickable(true);
-                    vh.name.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-
-                        }
-                    });
-                    vh.deleteItemButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                        }
-                    });
-                }
-            });
-            Vector<String> subcategories = new Vector<>();
-            for (int i = 0; i < category.getSubcategories().size(); i++) {
-                subcategories.add(category.getSubcategories().get(i).getName());
-            }
-            subcategoriesAdapter.updateItems(subcategories);
+            final categoriesSelectionAdapter subcategoriesAdapter = new categoriesSelectionAdapter(categoriesSelectionAdapter.FUNCTIONING_OUTGOING_CATEGORIES);
             subcategoriesRecyclerView.setAdapter(subcategoriesAdapter);
             subcategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 

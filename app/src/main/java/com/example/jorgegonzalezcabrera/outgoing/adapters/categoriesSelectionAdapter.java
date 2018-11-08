@@ -6,10 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesSelectionAdapter.ViewHolder> {
@@ -27,13 +29,25 @@ public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesS
     private int layout;
     private Vector<categoryCheckBox> categories;
 
-    public categoriesSelectionAdapter() {
+    public final static int FUNCTIONING_OUTGOING_CATEGORIES = 0;
+    public final static int ALL_CATEGORIES = 1;
+
+
+    public categoriesSelectionAdapter(int option) {
         this.layout = R.layout.category_selection_item;
-        Vector<String> categoryNames = localUtils.getAllCategories();
         this.categories = new Vector<>();
-        for (int i = 0; i < categoryNames.size(); i++) {
-            categories.add(new categoryCheckBox(categoryNames.get(i), true));
+        if (option == FUNCTIONING_OUTGOING_CATEGORIES) {
+            Vector<String> categoryNames = localUtils.getFunctioningOutgoingCategories();
+            for (int i = 0; i < categoryNames.size(); i++) {
+                categories.add(new categoryCheckBox(categoryNames.get(i), true));
+            }
+        } else if (option == ALL_CATEGORIES) {
+            Vector<String> categoryNames = localUtils.getAllCategories();
+            for (int i = 0; i < categoryNames.size(); i++) {
+                categories.add(new categoryCheckBox(categoryNames.get(i), true));
+            }
         }
+
     }
 
     public categoriesSelectionAdapter(@NonNull Vector<categoryCheckBox> categories) {
@@ -43,6 +57,14 @@ public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesS
 
     public Vector<categoryCheckBox> getCategories() {
         return categories;
+    }
+
+    public void markAsChecked(ArrayList<String> checkedCategories) {
+        if (checkedCategories != null) {
+            for (int i = 0; i < this.categories.size(); i++) {
+                this.categories.get(i).selected = checkedCategories.contains(this.categories.get(i).name);
+            }
+        }
     }
 
     @NonNull
@@ -73,7 +95,14 @@ public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesS
         }
 
         void bind(categoryCheckBox category) {
+            final int categoryPosition = getAdapterPosition();
             checkboxCategory.setChecked(category.selected);
+            checkboxCategory.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    categories.get(categoryPosition).selected = b;
+                }
+            });
             checkboxCategory.setText(category.name);
         }
     }

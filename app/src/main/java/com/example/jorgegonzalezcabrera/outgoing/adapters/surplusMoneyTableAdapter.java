@@ -108,7 +108,7 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
                 RealmResults<entry> entries = Realm.getDefaultInstance().where(entry.class).greaterThanOrEqualTo("creationDate", date).findAll();
                 double outgoingsByCategory = 0;
                 for (int j = 0; j < modifiedOutgoingCategory.getSubcategories().size(); j++) {
-                    String subcategoryName = modifiedOutgoingCategory.getSubcategories().get(i).getName();
+                    String subcategoryName = modifiedOutgoingCategory.getSubcategories().get(j).getName();
                     outgoingsByCategory += entries.where().equalTo("category", subcategoryName).sum("valor").doubleValue();
                 }
                 items.get(i).surplusMoney = modifiedOutgoingCategory.getMaximum() - outgoingsByCategory;

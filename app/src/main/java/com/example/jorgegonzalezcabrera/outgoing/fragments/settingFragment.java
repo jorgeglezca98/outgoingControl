@@ -229,6 +229,10 @@ public class settingFragment extends Fragment {
         }
     }
 
+    public void confirmAddedMoneyController(outgoingCategory moneyController) {
+        moneyControllersAdapter.confirmLast(moneyController);
+    }
+
     public void newIncomeCategoryCanceled() {
         incomeCategoriesAdapter.cancelNewCategory();
     }
@@ -237,11 +241,39 @@ public class settingFragment extends Fragment {
         outgoingCategoriesAdapter.cancelNewCategory();
     }
 
+    public void newMoneyControllerCanceled() {
+        moneyControllersAdapter.cancelNewCategory();
+    }
+
     public void modifyCategory(category modifiedCategory) {
         if (modifiedCategory.getType() == category.INCOME) {
             incomeCategoriesAdapter.modify(modifiedCategory);
         } else {
             outgoingCategoriesAdapter.modify(modifiedCategory);
         }
+    }
+
+    public void addMoneyController() {
+        AnimatorListenerAdapter animatorListenerAdapter = new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                scrollViewSettingFragment.fullScroll(NestedScrollView.FOCUS_DOWN);
+                moneyControllersAdapter.addOne();
+            }
+        };
+
+        if (recyclerViewMoneyControllers.getVisibility() == View.GONE) {
+            closeExpandableLists();
+            recyclerViewMoneyControllers.setVisibility(View.VISIBLE);
+            moneyControllerExpandImage.animate().rotation(0.0f).setDuration(500).setListener(animatorListenerAdapter);
+        } else {
+            scrollViewSettingFragment.fullScroll(NestedScrollView.FOCUS_DOWN);
+            moneyControllersAdapter.addOne();
+        }
+    }
+
+    public void modifyOutgoingCategory(outgoingCategory modifiedOutgoingCategory) {
+        moneyControllersAdapter.modify(modifiedOutgoingCategory);
     }
 }
