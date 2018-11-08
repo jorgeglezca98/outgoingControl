@@ -62,6 +62,11 @@ public class settingFragment extends Fragment {
                 public void removeAndKeepCategory(@NonNull category removedCategory) {
 
                 }
+
+                @Override
+                public void removeMoneyController(@NonNull outgoingCategory removedCategory) {
+
+                }
             };
         }
 

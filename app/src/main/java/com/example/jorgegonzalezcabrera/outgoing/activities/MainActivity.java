@@ -447,6 +447,17 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         });
     }
 
+    @Override
+    public void removeMoneyController(@NonNull final outgoingCategory removedCategory) {
+        mainFragment.updateCategoryRemoved(removedCategory);
+        database.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                removedCategory.deleteFromRealm();
+            }
+        });
+    }
+
     public final static String CATEGORY_NAME_KEY = "categoryName";
     public final static String CATEGORY_MAXIMUM_KEY = "categoryMax";
     public final static String CATEGORY_SUBCATEGORIES_KEY = "categorySubcategories";
@@ -625,7 +636,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
                     settingFragment.modifyOutgoingCategory(modifiedOutgoingCategory);
                 }
             }
-        } else if (requestCode == REQUEST_EDIT_MONEY_CONTROLLER_MAXIMUM){
+        } else if (requestCode == REQUEST_EDIT_MONEY_CONTROLLER_MAXIMUM) {
             if (resultCode == RESULT_OK) {
                 Bundle extras = data.getExtras();
                 final Double newMaximum = extras.getDouble(FINAL_VALUE_KEY);
@@ -643,7 +654,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
                     settingFragment.modifyOutgoingCategory(modifiedOutgoingCategory);
                 }
             }
-        }else {
+        } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }

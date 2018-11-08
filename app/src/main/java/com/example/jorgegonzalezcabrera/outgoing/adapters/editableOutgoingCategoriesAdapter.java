@@ -223,6 +223,10 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
             removeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    int pos = getAdapterPosition();
+                    categories.remove(pos);
+                    notifyItemRemoved(pos);
+                    onCategoriesChangeInterface.removeMoneyController(category);
                 }
             });
         }
