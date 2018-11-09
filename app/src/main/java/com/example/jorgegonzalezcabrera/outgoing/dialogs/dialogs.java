@@ -63,7 +63,6 @@ public class dialogs {
         dialog.getWindow().getAttributes().width = WindowManager.LayoutParams.MATCH_PARENT;
         dialog.getWindow().getAttributes().height = WindowManager.LayoutParams.MATCH_PARENT;
 
-        final ConstraintLayout dialogContainer = dialog.findViewById(R.id.dialogContainer);
         final EditText valueEditText = dialog.findViewById(R.id.editTextValueNewEntry);
         final EditText categorySelectionEditText = dialog.findViewById(R.id.editTextCategorySelection);
         final EditText descriptionEditText = dialog.findViewById(R.id.editTextConceptNewEntry);
@@ -100,24 +99,18 @@ public class dialogs {
         creationDate.setTime(new Date());
         String initialDate = creationDate.get(Calendar.DAY_OF_MONTH) + "/" + creationDate.get(Calendar.MONTH) + "/" + creationDate.get(Calendar.YEAR);
         datePickerEditText.setText(initialDate);
+        final DateFormat df = new SimpleDateFormat("dd/MM/yyyy", new Locale("es", "ES"));
         datePickerEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialogContainer.setVisibility(View.INVISIBLE);
-                newDatePickerDialog(creationDate.getTime(), context, new OnDateRemovedListener() {
+                Dialog dialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
                     @Override
-                    public void onDateRemoved() {
-                        dialogContainer.setVisibility(View.VISIBLE);
-                    }
-                }, new OnDateSetListener() {
-                    @Override
-                    public void onDateSet(int year, int month, int day) {
-                        dialogContainer.setVisibility(View.VISIBLE);
+                    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         creationDate.set(year, month, day);
-                        String updatedDate = day + "/" + month + "/" + year;
-                        datePickerEditText.setText(updatedDate);
+                        datePickerEditText.setText(df.format(creationDate.getTime()));
                     }
-                });
+                }, creationDate.get(Calendar.YEAR), creationDate.get(Calendar.MONTH), creationDate.get(Calendar.DAY_OF_MONTH));
+                dialog.show();
             }
         });
 
@@ -202,24 +195,18 @@ public class dialogs {
         creationDate.setTime(lastVersion.getCreationDate());
         String initialDate = creationDate.get(Calendar.DAY_OF_MONTH) + "/" + creationDate.get(Calendar.MONTH) + "/" + creationDate.get(Calendar.YEAR);
         datePickerEditText.setText(initialDate);
+        final DateFormat df = new SimpleDateFormat("dd/MM/yyyy", new Locale("es", "ES"));
         datePickerEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialogContainer.setVisibility(View.INVISIBLE);
-                newDatePickerDialog(creationDate.getTime(), context, new OnDateRemovedListener() {
+                Dialog dialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
                     @Override
-                    public void onDateRemoved() {
-                        dialogContainer.setVisibility(View.VISIBLE);
-                    }
-                }, new OnDateSetListener() {
-                    @Override
-                    public void onDateSet(int year, int month, int day) {
-                        dialogContainer.setVisibility(View.VISIBLE);
+                    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         creationDate.set(year, month, day);
-                        String updatedDate = day + "/" + month + "/" + year;
-                        datePickerEditText.setText(updatedDate);
+                        datePickerEditText.setText(df.format(creationDate.getTime()));
                     }
-                });
+                }, creationDate.get(Calendar.YEAR), creationDate.get(Calendar.MONTH), creationDate.get(Calendar.DAY_OF_MONTH));
+                dialog.show();
             }
         });
 
@@ -395,14 +382,6 @@ public class dialogs {
         formattedOptions = options.toArray(formattedOptions);
         dialogBuilder.setTitle(title).setItems(formattedOptions, onClickListener);
         dialogBuilder.create().show();
-    }
-
-    public static void newDatePickerDialog(Context context,
-                                           final OnDateRemovedListener onDateRemovedListener,
-                                           final OnDateSetListener onDateSetListener) {
-
-        newDatePickerDialog(new Date(), context, onDateRemovedListener, onDateSetListener);
-
     }
 
     public static void filtersDialog(final Context context, final actionsFragment.filterActions filtersManipulation,

@@ -50,7 +50,7 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.context = context;
         this.onEntriesChangeInterface = onEntriesChangeInterface;
 
-        Date firstDayOfMonth = new Date();
+        Date firstDayOfMonth = allEntries.last().getCreationDate();
         entries = new Vector<>();
         for (int i = allEntries.size() - 1; i >= 0; i--) {
             entry entry = allEntries.get(i);
