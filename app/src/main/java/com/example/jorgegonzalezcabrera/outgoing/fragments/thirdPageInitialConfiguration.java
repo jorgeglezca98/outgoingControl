@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -24,6 +23,7 @@ import io.realm.RealmList;
 public class thirdPageInitialConfiguration extends Fragment {
 
     private erasableItemsAdapter incomeCategoriesAdapter;
+    private LinearLayoutManager incomeCategoriesLayoutManager;
 
     @Nullable
     @Override
@@ -42,19 +42,15 @@ public class thirdPageInitialConfiguration extends Fragment {
         RecyclerView incomeCategoriesRecyclerView = view.findViewById(R.id.recyclerViewIncomeCategoriesRequest);
         incomeCategoriesAdapter = new erasableItemsAdapter("Income category");
         incomeCategoriesRecyclerView.setAdapter(incomeCategoriesAdapter);
-        final LinearLayoutManager incomeCategoriesLayoutManager = new LinearLayoutManager(getContext());
+        incomeCategoriesLayoutManager = new LinearLayoutManager(getContext());
         incomeCategoriesRecyclerView.setLayoutManager(incomeCategoriesLayoutManager);
 
-        Button buttonAddNewIncomeCategory = view.findViewById(R.id.buttonAddNewIncomeCategory);
-        buttonAddNewIncomeCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                incomeCategoriesAdapter.addOne();
-                incomeCategoriesLayoutManager.scrollToPosition(incomeCategoriesAdapter.getItemCount() - 1);
-            }
-        });
-
         return view;
+    }
+
+    public void addOne() {
+        incomeCategoriesAdapter.addOne();
+        incomeCategoriesLayoutManager.scrollToPosition(incomeCategoriesAdapter.getItemCount() - 1);
     }
 
     public boolean checkData() {

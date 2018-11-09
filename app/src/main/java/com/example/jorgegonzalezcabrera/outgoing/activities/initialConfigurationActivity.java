@@ -1,13 +1,19 @@
 package com.example.jorgegonzalezcabrera.outgoing.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
@@ -59,7 +65,7 @@ public class initialConfigurationActivity extends AppCompatActivity {
         });
         configurationViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(configurationTabLayout));
 
-        final FloatingActionButton backButton = findViewById(R.id.fabBack);
+        final ImageButton backButton = findViewById(R.id.buttonBack);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,7 +78,7 @@ public class initialConfigurationActivity extends AppCompatActivity {
                 }
             }
         });
-        final FloatingActionButton forwardButton = findViewById(R.id.fabForward);
+        final ImageButton forwardButton = findViewById(R.id.buttonForward);
         forwardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -111,12 +117,28 @@ public class initialConfigurationActivity extends AppCompatActivity {
             }
         });
 
+        final FloatingActionButton fabAddSomething = findViewById(R.id.fabAddSomething);
+        fabAddSomething.hide();
+        fabAddSomething.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (fragments.get(configurationTabLayout.getSelectedTabPosition()) == secondFragment) {
+                    secondFragment.addOne();
+                } else if (fragments.get(configurationTabLayout.getSelectedTabPosition()) == thirdFragment) {
+                    thirdFragment.addOne();
+                }
+            }
+        });
+
         configurationTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 configurationViewPager.setCurrentItem(tab.getPosition());
                 if (tab.getPosition() == 0) {
-                    backButton.hide();
+                    backButton.setVisibility(View.GONE);
+                    fabAddSomething.hide();
+                } else {
+                    fabAddSomething.show();
                 }
 
                 if (tab.getPosition() == configurationTabLayout.getTabCount() - 1) {
@@ -132,7 +154,7 @@ public class initialConfigurationActivity extends AppCompatActivity {
                     forwardButton.animate().rotation(90).start();
                 }
                 if (tab.getPosition() == 0) {
-                    backButton.show();
+                    backButton.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -141,5 +163,16 @@ public class initialConfigurationActivity extends AppCompatActivity {
 
             }
         });
+
+        LinearLayout tabLayout = ((LinearLayout) configurationTabLayout.getChildAt(0));
+        for (int i = 0; i < tabLayout.getChildCount(); i++) {
+            tabLayout.getChildAt(i).setOnTouchListener(new View.OnTouchListener() {
+                @SuppressLint("ClickableViewAccessibility")
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
+        }
     }
 }

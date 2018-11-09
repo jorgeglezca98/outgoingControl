@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -24,6 +23,7 @@ import io.realm.RealmList;
 public class secondPageInitialConfiguration extends Fragment {
 
     private erasableItemsAdapter outgoingCategoriesAdapter;
+    private LinearLayoutManager outgoingCategoriesLayoutManager;
 
     @Nullable
     @Override
@@ -42,19 +42,15 @@ public class secondPageInitialConfiguration extends Fragment {
         RecyclerView recyclerViewOutgoingCategories = view.findViewById(R.id.recyclerViewOutgoingsCategoriesRequest);
         outgoingCategoriesAdapter = new erasableItemsAdapter("Outgoing category");
         recyclerViewOutgoingCategories.setAdapter(outgoingCategoriesAdapter);
-        final LinearLayoutManager outgoingCategoriesLayoutManager = new LinearLayoutManager(getContext());
+        outgoingCategoriesLayoutManager = new LinearLayoutManager(getContext());
         recyclerViewOutgoingCategories.setLayoutManager(outgoingCategoriesLayoutManager);
 
-        Button buttonAddNewOutgoingCategory = view.findViewById(R.id.buttonAddNewOutgoingCategory);
-        buttonAddNewOutgoingCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                outgoingCategoriesAdapter.addOne();
-                outgoingCategoriesLayoutManager.scrollToPosition(outgoingCategoriesAdapter.getItemCount() - 1);
-            }
-        });
-
         return view;
+    }
+
+    public void addOne() {
+        outgoingCategoriesAdapter.addOne();
+        outgoingCategoriesLayoutManager.scrollToPosition(outgoingCategoriesAdapter.getItemCount() - 1);
     }
 
     public boolean checkData() {
