@@ -11,6 +11,7 @@ import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 
@@ -46,7 +47,7 @@ public class editFieldActivity extends AppCompatActivity {
         final int requestCode = extras.getInt(REQUEST_CODE_KEY);
         final long id = extras.getLong(ID_KEY);
 
-        ConstraintLayout container = findViewById(R.id.container);
+        LinearLayout container = findViewById(R.id.container);
         container.setTransitionName(containerTransitionName);
 
         final EditText fieldEditText = findViewById(R.id.editTextField);

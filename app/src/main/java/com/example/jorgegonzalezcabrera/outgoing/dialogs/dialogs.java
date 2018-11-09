@@ -4,10 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.LinearLayoutManager;
@@ -335,44 +332,6 @@ public class dialogs {
         dialog.show();
     }
 
-    public static void newDatePickerDialog(Date currentDate,
-                                           Context context,
-                                           final OnDateRemovedListener onDateRemovedListener,
-                                           final OnDateSetListener onDateSetListener) {
-        final Dialog dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCancelable(true);
-        dialog.setContentView(R.layout.date_picker_dialog);
-
-        final DatePicker datePicker = dialog.findViewById(R.id.datePicker);
-        datePicker.setMaxDate((new Date()).getTime());
-
-        GregorianCalendar updatedDate = new GregorianCalendar();
-        updatedDate.setTime(currentDate);
-        datePicker.updateDate(updatedDate.get(Calendar.YEAR), updatedDate.get(Calendar.MONTH), updatedDate.get(Calendar.DAY_OF_MONTH));
-
-        Button buttonRemove = dialog.findViewById(R.id.buttonRemoveDatePicker);
-        buttonRemove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onDateRemovedListener.onDateRemoved();
-                dialog.dismiss();
-            }
-        });
-
-        Button buttonSetDate = dialog.findViewById(R.id.buttonSetDate);
-        buttonSetDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onDateSetListener.onDateSet(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-                dialog.dismiss();
-            }
-        });
-
-        dialog.show();
-
-    }
-
     public static void chooseOptionDialog(Context context, String title, Vector<String> options, DialogInterface.OnClickListener onClickListener) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
         String[] formattedOptions = new String[options.size()];
@@ -489,14 +448,6 @@ public class dialogs {
         });
 
         dialog.show();
-    }
-
-    public interface OnDateSetListener {
-        void onDateSet(int year, int month, int day);
-    }
-
-    public interface OnDateRemovedListener {
-        void onDateRemoved();
     }
 
 }
