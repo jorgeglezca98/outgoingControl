@@ -55,6 +55,7 @@
     <string name="next_window">Next window</string>
     <string name="previous_window">Previous window</string>
     <string name="complete_the_field">Complete the field</string>
+    <string name="periodic">Periodic</string>
 
     <string-array name="periodic_types">
         <item>Annual</item>
