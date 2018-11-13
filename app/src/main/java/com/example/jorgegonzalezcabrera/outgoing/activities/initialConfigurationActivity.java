@@ -3,7 +3,6 @@ package com.example.jorgegonzalezcabrera.outgoing.activities;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -11,17 +10,18 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.fragments.fourthPageInitialConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.initialMoneyInitialConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.secondPageInitialConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.thirdPageInitialConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.category;
+import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
 import com.example.jorgegonzalezcabrera.outgoing.views.customViewPager;
 
 import java.util.Vector;
@@ -34,6 +34,7 @@ public class initialConfigurationActivity extends AppCompatActivity {
     private initialMoneyInitialConfiguration firstFragment;
     private secondPageInitialConfiguration secondFragment;
     private thirdPageInitialConfiguration thirdFragment;
+    private fourthPageInitialConfiguration fourthFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,7 @@ public class initialConfigurationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_initial_configuration);
 
         final customViewPager configurationViewPager = findViewById(R.id.viewPagerInitialConfiguration);
+        configurationViewPager.setOffscreenPageLimit(4);
         final TabLayout configurationTabLayout = findViewById(R.id.tabLayoutInitialConfiguration);
         configurationTabLayout.setupWithViewPager(configurationViewPager, true);
 
@@ -51,6 +53,8 @@ public class initialConfigurationActivity extends AppCompatActivity {
         fragments.add(secondFragment);
         thirdFragment = new thirdPageInitialConfiguration();
         fragments.add(thirdFragment);
+        fourthFragment = new fourthPageInitialConfiguration();
+        fragments.add(fourthFragment);
 
         configurationViewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
@@ -84,16 +88,18 @@ public class initialConfigurationActivity extends AppCompatActivity {
             public void onClick(View view) {
                 int selectedTabPosition = configurationTabLayout.getSelectedTabPosition();
                 if (selectedTabPosition == (configurationTabLayout.getTabCount() - 1)) {
-                    if (thirdFragment.checkData()) {
+                    if (fourthFragment.checkData()) {
                         double currentMoney = firstFragment.getData();
                         appConfiguration newConfiguration = new appConfiguration(currentMoney);
                         RealmList<category> categories = secondFragment.getData();
                         categories.addAll(thirdFragment.getData());
+                        RealmList<outgoingCategory> moneyControllers = fourthFragment.getData();
 
                         Realm database = Realm.getDefaultInstance();
                         database.beginTransaction();
                         database.copyToRealm(newConfiguration);
                         database.copyToRealm(categories);
+                        database.copyToRealmOrUpdate(moneyControllers);
                         database.commitTransaction();
 
                         Intent intent = new Intent(initialConfigurationActivity.this, MainActivity.class);
@@ -103,7 +109,14 @@ public class initialConfigurationActivity extends AppCompatActivity {
                         Toast.makeText(initialConfigurationActivity.this, "Complete all fields first", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    boolean dataChecked = selectedTabPosition == 0 ? firstFragment.checkData() : secondFragment.checkData();
+                    boolean dataChecked = false;
+                    if (selectedTabPosition == 0)
+                        dataChecked = firstFragment.checkData();
+                    else if (selectedTabPosition == 1)
+                        dataChecked = secondFragment.checkData();
+                    else if (selectedTabPosition == 2)
+                        dataChecked = thirdFragment.checkData();
+
                     if (dataChecked) {
                         TabLayout.Tab newSelectedTab = configurationTabLayout.getTabAt(selectedTabPosition + 1);
                         if (newSelectedTab != null) {
@@ -126,6 +139,8 @@ public class initialConfigurationActivity extends AppCompatActivity {
                     secondFragment.addOne();
                 } else if (fragments.get(configurationTabLayout.getSelectedTabPosition()) == thirdFragment) {
                     thirdFragment.addOne();
+                } else if (fragments.get(configurationTabLayout.getSelectedTabPosition()) == fourthFragment) {
+                    fourthFragment.addOne();
                 }
             }
         });
@@ -144,6 +159,8 @@ public class initialConfigurationActivity extends AppCompatActivity {
                 if (tab.getPosition() == configurationTabLayout.getTabCount() - 1) {
                     forwardButton.setImageResource(R.drawable.check);
                     forwardButton.animate().rotation(0).start();
+
+                    fourthFragment.setCategories(secondFragment.getData());
                 }
             }
 

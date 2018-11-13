@@ -60,4 +60,12 @@ public class category extends RealmObject {
     public void setType(int type) {
         this.type = type;
     }
+
+    public void setValidId() {
+        this.id = myApplication.categoryId.incrementAndGet();
+    }
+
+    public boolean check() {
+        return id >= 0 && !name.isEmpty() && (type == INCOME || type == OUTGOING);
+    }
 }

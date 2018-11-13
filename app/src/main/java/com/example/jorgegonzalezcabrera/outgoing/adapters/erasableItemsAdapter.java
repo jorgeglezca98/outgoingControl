@@ -37,7 +37,7 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
         this.customizeViewInterface = null;
     }
 
-    erasableItemsAdapter(String hint, erasableItemsAdapter.onItemsChange onItemsChange, customizeView customizeViewInterface) {
+    public erasableItemsAdapter(String hint, erasableItemsAdapter.onItemsChange onItemsChange, customizeView customizeViewInterface) {
         this.layout = R.layout.erasable_item;
         this.items = new Vector<>();
         this.items.add("");
@@ -45,6 +45,7 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
         this.errorByItem.add(null);
         this.hint = hint;
         this.onItemsChange = onItemsChange;
+        this.onItemsChange.onItemAdded(0);
         this.customizeViewInterface = customizeViewInterface;
     }
 
@@ -103,6 +104,10 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
                 notifyItemChanged(i);
             }
         }
+    }
+
+    public void setOnItemsChange(erasableItemsAdapter.onItemsChange onItemsChange) {
+        this.onItemsChange = onItemsChange;
     }
 
     public interface onItemsChange {

@@ -24,6 +24,36 @@ public class secondPageInitialConfiguration extends Fragment {
 
     private erasableItemsAdapter outgoingCategoriesAdapter;
     private LinearLayoutManager outgoingCategoriesLayoutManager;
+    private RealmList<category> data;
+
+    public secondPageInitialConfiguration() {
+        data = new RealmList<>();
+        outgoingCategoriesAdapter = new erasableItemsAdapter("Outgoing category", new erasableItemsAdapter.onItemsChange() {
+            @Override
+            public void onItemModified(int position, @NonNull String item) {
+                data.get(position).setName(item);
+            }
+
+            @Override
+            public void onItemRemoved(int position) {
+                data.remove(position);
+            }
+
+            @Override
+            public void onItemAdded(int position) {
+                category categoryAdded = new category("", category.OUTGOING);
+                data.add(position, categoryAdded);
+            }
+
+            @Override
+            public void onItemsChanged(@NonNull Vector<String> newItems) {
+                data.clear();
+                for (int i = 0; i < newItems.size(); i++) {
+                    data.add(new category(newItems.get(i), category.OUTGOING));
+                }
+            }
+        }, null);
+    }
 
     @Nullable
     @Override
@@ -40,7 +70,6 @@ public class secondPageInitialConfiguration extends Fragment {
         });
 
         RecyclerView recyclerViewOutgoingCategories = view.findViewById(R.id.recyclerViewOutgoingsCategoriesRequest);
-        outgoingCategoriesAdapter = new erasableItemsAdapter("Outgoing category");
         recyclerViewOutgoingCategories.setAdapter(outgoingCategoriesAdapter);
         outgoingCategoriesLayoutManager = new LinearLayoutManager(getContext());
         recyclerViewOutgoingCategories.setLayoutManager(outgoingCategoriesLayoutManager);
@@ -54,10 +83,9 @@ public class secondPageInitialConfiguration extends Fragment {
     }
 
     public boolean checkData() {
-        Vector<String> adapterItems = outgoingCategoriesAdapter.getItems();
         int i = 0;
-        while (i < adapterItems.size()) {
-            if (adapterItems.get(i).isEmpty()) {
+        while (i < data.size()) {
+            if (data.get(i) == null || !data.get(i).check()) {
                 return false;
             }
             i++;
@@ -66,11 +94,6 @@ public class secondPageInitialConfiguration extends Fragment {
     }
 
     public RealmList<category> getData() {
-        Vector<String> adapterItems = outgoingCategoriesAdapter.getItems();
-        RealmList<category> data = new RealmList<>();
-        for (int i = 0; i < adapterItems.size(); i++) {
-            data.add(new category(adapterItems.get(i), category.OUTGOING));
-        }
         return data;
     }
 }

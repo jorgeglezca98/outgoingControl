@@ -72,4 +72,8 @@ public class outgoingCategory extends RealmObject {
         this.name = name;
     }
 
+    public boolean check() {
+        return id >= 0 && subcategories != null && subcategories.size() != 0 && maximum > 0 && !name.isEmpty();
+    }
+
 }

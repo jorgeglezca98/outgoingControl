@@ -28,10 +28,14 @@ public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesS
 
     private int layout;
     private Vector<categoryCheckBox> categories;
+    private onItemsChangedInterface onItemsChangedInterface;
+
+    public interface onItemsChangedInterface {
+        void onItemChange(categoryCheckBox category);
+    }
 
     public final static int FUNCTIONING_OUTGOING_CATEGORIES = 0;
     public final static int ALL_CATEGORIES = 1;
-
 
     public categoriesSelectionAdapter(int option) {
         this.layout = R.layout.category_selection_item;
@@ -47,12 +51,27 @@ public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesS
                 categories.add(new categoryCheckBox(categoryNames.get(i), true));
             }
         }
+        this.onItemsChangedInterface = new onItemsChangedInterface() {
+            @Override
+            public void onItemChange(categoryCheckBox category) {
 
+            }
+        };
     }
 
     public categoriesSelectionAdapter(@NonNull Vector<categoryCheckBox> categories) {
         this.layout = R.layout.category_selection_item;
         this.categories = categories;
+        this.onItemsChangedInterface = new onItemsChangedInterface() {
+            @Override
+            public void onItemChange(categoryCheckBox category) {
+
+            }
+        };
+    }
+
+    public void setOnItemsChangedInterface(categoriesSelectionAdapter.onItemsChangedInterface onItemsChangedInterface) {
+        this.onItemsChangedInterface = onItemsChangedInterface;
     }
 
     public Vector<categoryCheckBox> getCategories() {
@@ -65,6 +84,24 @@ public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesS
                 this.categories.get(i).selected = checkedCategories.contains(this.categories.get(i).name);
             }
         }
+    }
+
+    public void updateCategories(Vector<String> newCategories) {
+        Vector<categoryCheckBox> updatedCategories = new Vector<>();
+        for (int i = 0; i < newCategories.size(); i++) {
+            boolean selected = false;
+            int j = 0;
+            while (j < categories.size()) {
+                if (categories.get(j).name.equals(newCategories.get(i))) {
+                    selected = categories.get(j).selected;
+                    break;
+                }
+                j++;
+            }
+            updatedCategories.add(new categoryCheckBox(newCategories.get(i), selected));
+        }
+        this.categories = updatedCategories;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -90,19 +127,19 @@ public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesS
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-
             checkboxCategory = itemView.findViewById(R.id.checkboxCategory);
         }
 
-        void bind(categoryCheckBox category) {
+        void bind(final categoryCheckBox category) {
             final int categoryPosition = getAdapterPosition();
-            checkboxCategory.setChecked(category.selected);
             checkboxCategory.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                     categories.get(categoryPosition).selected = b;
+                    onItemsChangedInterface.onItemChange(categories.get(categoryPosition));
                 }
             });
+            checkboxCategory.setChecked(category.selected);
             checkboxCategory.setText(category.name);
         }
     }

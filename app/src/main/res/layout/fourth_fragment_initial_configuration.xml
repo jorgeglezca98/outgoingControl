@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        android:text="@string/income_categories_title"
+        android:text="@string/money_controllers"
         android:textColor="@android:color/primary_text_light"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -31,12 +31,12 @@
         app:layout_constraintTop_toTopOf="@+id/incomeCategoriesTitle" />
 
     <TextView
-        android:id="@+id/incomeCategoriesDescription"
+        android:id="@+id/moneyControllerDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingEnd="20dp"
         android:paddingStart="20dp"
-        android:text="@string/third_configuration_information"
+        android:text=""
         android:textAlignment="center"
         android:textColor="@android:color/primary_text_light"
         android:visibility="gone"
@@ -45,18 +45,16 @@
         app:layout_constraintTop_toBottomOf="@+id/incomeCategoriesTitle" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerViewIncomeCategoriesRequest"
+        android:id="@+id/recyclerViewMoneyControllersRequest"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginStart="30dp"
         android:layout_marginTop="30dp"
         android:clipToPadding="false"
-        android:overScrollMode="never"
+        android:nestedScrollingEnabled="true"
         android:paddingBottom="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/incomeCategoriesDescription" />
+        app:layout_constraintTop_toBottomOf="@+id/moneyControllerDescription" />
 
 </android.support.constraint.ConstraintLayout>
