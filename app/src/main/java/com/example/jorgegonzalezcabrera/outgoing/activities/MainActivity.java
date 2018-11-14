@@ -69,13 +69,11 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     private FloatingActionButton fabMenu;
     private FloatingActionButton fabAddEntry;
     private FloatingActionButton fabAddPeriodicEntry;
-    private FloatingActionButton fabFilterActions;
     private FloatingActionButton fabAddOutgoingCategory;
     private FloatingActionButton fabAddIncomeCategory;
     private FloatingActionButton fabAddMoneyController;
     private CardView labelAddIncomeCategory;
     private CardView labelAddOutgoingCategory;
-    private CardView labelFilterActions;
     private CardView labelAddEntry;
     private CardView labelAddPeriodicEntry;
 
@@ -123,11 +121,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
                 if (floatingMenuOpen) {
-                    if (fragments.get(tab.getPosition()) == actionsFragment) {
-                        fabFilterActions.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
-                        labelFilterActions.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
-                        labelFilterActions.animate().alpha(1.0f).setDuration(450);
-                    } else if (fragments.get(tab.getPosition()) == settingFragment) {
+                    if (fragments.get(tab.getPosition()) == settingFragment) {
                         fabAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
                         labelAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
                         labelAddOutgoingCategory.animate().alpha(1.0f).setDuration(450);
@@ -142,11 +136,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
                 if (floatingMenuOpen) {
-                    if (fragments.get(tab.getPosition()) == actionsFragment) {
-                        fabFilterActions.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
-                        labelFilterActions.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
-                        labelFilterActions.animate().alpha(0.0f).setDuration(300);
-                    } else if (fragments.get(tab.getPosition()) == settingFragment) {
+                    if (fragments.get(tab.getPosition()) == settingFragment) {
                         fabAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
                         labelAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
                         labelAddOutgoingCategory.animate().alpha(0.0f).setDuration(300);
@@ -172,8 +162,6 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         fabAddPeriodicEntry = findViewById(R.id.fabAddPeriodicEntry);
         labelAddEntry = findViewById(R.id.labelAddEntry);
         labelAddPeriodicEntry = findViewById(R.id.labelAddPeriodicEntry);
-        fabFilterActions = findViewById(R.id.fabFilterActions);
-        labelFilterActions = findViewById(R.id.labelFilterActions);
         fabAddOutgoingCategory = findViewById(R.id.fabAddOutgoingCategory);
         labelAddOutgoingCategory = findViewById(R.id.labelAddOutgoingCategory);
         fabAddIncomeCategory = findViewById(R.id.fabAddIncomeCategory);
@@ -203,21 +191,6 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
             @Override
             public void onClick(View view) {
                 newPeriodicEntryDialog(MainActivity.this);
-                closeFloatingMenu();
-            }
-        });
-
-        fabFilterActions.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialogs.filtersDialog(MainActivity.this,
-                        actionsFragment.getFiltersManipulation(),
-                        actionsFragment.getCategories(),
-                        actionsFragment.getMinDate(),
-                        actionsFragment.getMaxDate(),
-                        actionsFragment.getMinValue(),
-                        actionsFragment.getMaxValue(),
-                        actionsFragment.getDescription());
                 closeFloatingMenu();
             }
         });
@@ -266,6 +239,16 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
                 menuItem.clearAnimation();
                 Toast.makeText(this, "Updated", Toast.LENGTH_SHORT).show();
                 return true;
+            case R.id.filters:
+                dialogs.filtersDialog(MainActivity.this,
+                        actionsFragment.getFiltersManipulation(),
+                        actionsFragment.getCategories(),
+                        actionsFragment.getMinDate(),
+                        actionsFragment.getMaxDate(),
+                        actionsFragment.getMinValue(),
+                        actionsFragment.getMaxValue(),
+                        actionsFragment.getDescription());
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
 
@@ -283,10 +266,6 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         labelAddPeriodicEntry.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
         labelAddPeriodicEntry.animate().alpha(0.0f).setDuration(300);
 
-        fabFilterActions.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
-        labelFilterActions.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
-        labelFilterActions.animate().alpha(0.0f).setDuration(300);
-
         fabAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
         labelAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
         labelAddOutgoingCategory.animate().alpha(0.0f).setDuration(300);
@@ -294,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         fabAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
         labelAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
         labelAddIncomeCategory.animate().alpha(0.0f).setDuration(300);
-        floatingMenuOpen = !floatingMenuOpen;
+        floatingMenuOpen = false;
     }
 
     private void openFloatingMenu() {
@@ -308,11 +287,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         labelAddPeriodicEntry.animate().translationY(dpToPixels(MainActivity.this, -101.0f));
         labelAddPeriodicEntry.animate().alpha(1.0f).setDuration(300);
 
-        if (actionsFragment == viewPagerAdapter.getItem(viewPager.getCurrentItem())) {
-            fabFilterActions.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
-            labelFilterActions.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
-            labelFilterActions.animate().alpha(1.0f).setDuration(450);
-        } else if (settingFragment == viewPagerAdapter.getItem(viewPager.getCurrentItem())) {
+        if (settingFragment == viewPagerAdapter.getItem(viewPager.getCurrentItem())) {
             fabAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
             labelAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
             labelAddOutgoingCategory.animate().alpha(1.0f).setDuration(450);
@@ -321,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
             labelAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, -191.0f));
             labelAddIncomeCategory.animate().alpha(1.0f).setDuration(600);
         }
-        floatingMenuOpen = !floatingMenuOpen;
+        floatingMenuOpen = true;
     }
 
     @Override

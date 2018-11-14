@@ -7,4 +7,9 @@
         android:title="@string/refresh_title"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/filters"
+        android:title="@string/filters_title"
+        app:showAsAction="never" />
+
 </menu>
