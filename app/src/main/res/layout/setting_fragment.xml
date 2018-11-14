@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scrollViewSettingFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,11 +9,10 @@
     android:paddingBottom="91dp"
     android:scrollbars="none">
 
-    <LinearLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:animateLayoutChanges="true"
-        android:orientation="vertical">
+        android:animateLayoutChanges="true">
 
         <TextView
             android:id="@+id/outgoingsCategoriesHeader"
@@ -30,7 +30,23 @@
             android:text="@string/outgoing_categories_title"
             android:textColor="@color/primary3"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/addOutgoingCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:visibility="gone"
+            app:backgroundTint="@color/complement0"
+            app:fabSize="mini"
+            app:layout_constraintBottom_toBottomOf="@+id/outgoingsCategoriesHeader"
+            app:layout_constraintEnd_toEndOf="@+id/outgoingsCategoriesHeader"
+            app:layout_constraintTop_toBottomOf="@+id/outgoingsCategoriesHeader"
+            app:srcCompat="@drawable/add" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewEditableOutgoingCategories"
@@ -38,7 +54,10 @@
             android:layout_height="wrap_content"
             android:background="#eeeeee"
             android:clipToPadding="false"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/outgoingsCategoriesHeader"
+            app:layout_constraintStart_toStartOf="@id/outgoingsCategoriesHeader"
+            app:layout_constraintTop_toBottomOf="@id/outgoingsCategoriesHeader" />
 
         <TextView
             android:id="@+id/incomeCategoriesHeader"
@@ -56,14 +75,33 @@
             android:text="@string/income_categories_title"
             android:textColor="@color/primary3"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@id/recyclerViewEditableOutgoingCategories"
+            app:layout_constraintStart_toStartOf="@id/recyclerViewEditableOutgoingCategories"
+            app:layout_constraintTop_toBottomOf="@id/recyclerViewEditableOutgoingCategories" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/addIncomeCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:visibility="gone"
+            app:backgroundTint="@color/complement0"
+            app:fabSize="mini"
+            app:layout_constraintBottom_toBottomOf="@+id/incomeCategoriesHeader"
+            app:layout_constraintEnd_toEndOf="@+id/incomeCategoriesHeader"
+            app:layout_constraintTop_toBottomOf="@+id/incomeCategoriesHeader"
+            app:srcCompat="@drawable/add" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewEditableIncomeCategories"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipToPadding="false"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/incomeCategoriesHeader"
+            app:layout_constraintStart_toStartOf="@id/incomeCategoriesHeader"
+            app:layout_constraintTop_toBottomOf="@id/incomeCategoriesHeader" />
 
         <TextView
             android:id="@+id/moneyControllersHeader"
@@ -81,15 +119,34 @@
             android:text="@string/money_controllers_title"
             android:textColor="@color/primary3"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@id/recyclerViewEditableIncomeCategories"
+            app:layout_constraintStart_toStartOf="@id/recyclerViewEditableIncomeCategories"
+            app:layout_constraintTop_toBottomOf="@id/recyclerViewEditableIncomeCategories" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/addMoneyControllerCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:visibility="gone"
+            app:backgroundTint="@color/complement0"
+            app:fabSize="mini"
+            app:layout_constraintBottom_toBottomOf="@+id/moneyControllersHeader"
+            app:layout_constraintEnd_toEndOf="@+id/moneyControllersHeader"
+            app:layout_constraintTop_toBottomOf="@+id/moneyControllersHeader"
+            app:srcCompat="@drawable/add" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewMoneyControllers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipToPadding="false"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/moneyControllersHeader"
+            app:layout_constraintStart_toStartOf="@id/moneyControllersHeader"
+            app:layout_constraintTop_toBottomOf="@id/moneyControllersHeader" />
 
-    </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 
 </android.support.v4.widget.NestedScrollView>

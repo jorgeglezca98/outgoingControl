@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.DividerItemDecoration;
@@ -42,6 +43,9 @@ public class settingFragment extends Fragment {
     private TextView outgoingCategoriesHeader;
     private TextView incomeCategoriesHeader;
     private TextView moneyControllersHeader;
+    private FloatingActionButton addOutgoingCategory;
+    private FloatingActionButton addIncomeCategory;
+    private FloatingActionButton addMoneyController;
 
     @Override
     public void onAttach(Context context) {
@@ -127,6 +131,30 @@ public class settingFragment extends Fragment {
         incomeCategoriesHeader = view.findViewById(R.id.incomeCategoriesHeader);
         moneyControllersHeader = view.findViewById(R.id.moneyControllersHeader);
 
+        addOutgoingCategory = view.findViewById(R.id.addOutgoingCategory);
+        addOutgoingCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addOutgoingCategory();
+            }
+        });
+
+        addIncomeCategory = view.findViewById(R.id.addIncomeCategory);
+        addIncomeCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addIncomeCategory();
+            }
+        });
+
+        addMoneyController = view.findViewById(R.id.addMoneyControllerCategory);
+        addMoneyController.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addMoneyController();
+            }
+        });
+
         incomeCategoriesHeader.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -134,12 +162,14 @@ public class settingFragment extends Fragment {
                     recyclerViewEditableIncomeCategories.setVisibility(View.GONE);
                     outgoingCategoriesHeader.setVisibility(View.VISIBLE);
                     moneyControllersHeader.setVisibility(View.VISIBLE);
+                    addIncomeCategory.hide();
                 } else if (recyclerViewEditableIncomeCategories.getVisibility() == View.GONE) {
                     closeExpandableLists();
                     recyclerViewEditableIncomeCategories.setVisibility(View.VISIBLE);
                     outgoingCategoriesHeader.setVisibility(View.GONE);
                     moneyControllersHeader.setVisibility(View.GONE);
                     scrollViewSettingFragment.fullScroll(View.FOCUS_UP);
+                    addIncomeCategory.show();
                 }
             }
         });
@@ -151,12 +181,14 @@ public class settingFragment extends Fragment {
                     recyclerViewEditableOutgoingCategories.setVisibility(View.GONE);
                     incomeCategoriesHeader.setVisibility(View.VISIBLE);
                     moneyControllersHeader.setVisibility(View.VISIBLE);
+                    addOutgoingCategory.hide();
                 } else if (recyclerViewEditableOutgoingCategories.getVisibility() == View.GONE) {
                     closeExpandableLists();
                     recyclerViewEditableOutgoingCategories.setVisibility(View.VISIBLE);
                     incomeCategoriesHeader.setVisibility(View.GONE);
                     moneyControllersHeader.setVisibility(View.GONE);
                     scrollViewSettingFragment.fullScroll(View.FOCUS_UP);
+                    addOutgoingCategory.show();
                 }
             }
         });
@@ -168,12 +200,14 @@ public class settingFragment extends Fragment {
                     recyclerViewMoneyControllers.setVisibility(View.GONE);
                     outgoingCategoriesHeader.setVisibility(View.VISIBLE);
                     incomeCategoriesHeader.setVisibility(View.VISIBLE);
+                    addMoneyController.hide();
                 } else if (recyclerViewMoneyControllers.getVisibility() == View.GONE) {
                     closeExpandableLists();
                     recyclerViewMoneyControllers.setVisibility(View.VISIBLE);
                     outgoingCategoriesHeader.setVisibility(View.GONE);
                     incomeCategoriesHeader.setVisibility(View.GONE);
                     scrollViewSettingFragment.fullScroll(View.FOCUS_UP);
+                    addMoneyController.show();
                 }
             }
         });
@@ -185,12 +219,15 @@ public class settingFragment extends Fragment {
         if (recyclerViewEditableOutgoingCategories.getVisibility() == View.VISIBLE) {
             outgoingCategoriesHeader.setVisibility(View.GONE);
             recyclerViewEditableOutgoingCategories.setVisibility(View.GONE);
+            addOutgoingCategory.hide();
         } else if (recyclerViewEditableIncomeCategories.getVisibility() == View.VISIBLE) {
             outgoingCategoriesHeader.setVisibility(View.GONE);
             recyclerViewEditableIncomeCategories.setVisibility(View.GONE);
+            addIncomeCategory.hide();
         } else if (recyclerViewMoneyControllers.getVisibility() == View.VISIBLE) {
             outgoingCategoriesHeader.setVisibility(View.GONE);
             recyclerViewMoneyControllers.setVisibility(View.GONE);
+            addMoneyController.hide();
         }
     }
 

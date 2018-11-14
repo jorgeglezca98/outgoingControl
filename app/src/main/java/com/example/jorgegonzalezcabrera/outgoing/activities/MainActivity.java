@@ -69,11 +69,6 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     private FloatingActionButton fabMenu;
     private FloatingActionButton fabAddEntry;
     private FloatingActionButton fabAddPeriodicEntry;
-    private FloatingActionButton fabAddOutgoingCategory;
-    private FloatingActionButton fabAddIncomeCategory;
-    private FloatingActionButton fabAddMoneyController;
-    private CardView labelAddIncomeCategory;
-    private CardView labelAddOutgoingCategory;
     private CardView labelAddEntry;
     private CardView labelAddPeriodicEntry;
 
@@ -120,32 +115,11 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
-                if (floatingMenuOpen) {
-                    if (fragments.get(tab.getPosition()) == settingFragment) {
-                        fabAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
-                        labelAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
-                        labelAddOutgoingCategory.animate().alpha(1.0f).setDuration(450);
-
-                        fabAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, -191.0f));
-                        labelAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, -191.0f));
-                        labelAddIncomeCategory.animate().alpha(1.0f).setDuration(600);
-                    }
-                }
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                if (floatingMenuOpen) {
-                    if (fragments.get(tab.getPosition()) == settingFragment) {
-                        fabAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
-                        labelAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
-                        labelAddOutgoingCategory.animate().alpha(0.0f).setDuration(300);
 
-                        fabAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
-                        labelAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
-                        labelAddIncomeCategory.animate().alpha(0.0f).setDuration(300);
-                    }
-                }
             }
 
             @Override
@@ -162,11 +136,6 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         fabAddPeriodicEntry = findViewById(R.id.fabAddPeriodicEntry);
         labelAddEntry = findViewById(R.id.labelAddEntry);
         labelAddPeriodicEntry = findViewById(R.id.labelAddPeriodicEntry);
-        fabAddOutgoingCategory = findViewById(R.id.fabAddOutgoingCategory);
-        labelAddOutgoingCategory = findViewById(R.id.labelAddOutgoingCategory);
-        fabAddIncomeCategory = findViewById(R.id.fabAddIncomeCategory);
-        labelAddIncomeCategory = findViewById(R.id.labelAddIncomeCategory);
-        fabAddMoneyController = findViewById(R.id.fabAddMoneyController);
 
         fabMenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,29 +161,6 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
             public void onClick(View view) {
                 newPeriodicEntryDialog(MainActivity.this);
                 closeFloatingMenu();
-            }
-        });
-
-        fabAddOutgoingCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                settingFragment.addOutgoingCategory();
-                closeFloatingMenu();
-            }
-        });
-
-        fabAddIncomeCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                settingFragment.addIncomeCategory();
-                closeFloatingMenu();
-            }
-        });
-
-        fabAddMoneyController.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                settingFragment.addMoneyController();
             }
         });
 
@@ -266,13 +212,6 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         labelAddPeriodicEntry.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
         labelAddPeriodicEntry.animate().alpha(0.0f).setDuration(300);
 
-        fabAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
-        labelAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
-        labelAddOutgoingCategory.animate().alpha(0.0f).setDuration(300);
-
-        fabAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
-        labelAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
-        labelAddIncomeCategory.animate().alpha(0.0f).setDuration(300);
         floatingMenuOpen = false;
     }
 
@@ -287,15 +226,6 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         labelAddPeriodicEntry.animate().translationY(dpToPixels(MainActivity.this, -101.0f));
         labelAddPeriodicEntry.animate().alpha(1.0f).setDuration(300);
 
-        if (settingFragment == viewPagerAdapter.getItem(viewPager.getCurrentItem())) {
-            fabAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
-            labelAddOutgoingCategory.animate().translationY(dpToPixels(MainActivity.this, -146.0f));
-            labelAddOutgoingCategory.animate().alpha(1.0f).setDuration(450);
-
-            fabAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, -191.0f));
-            labelAddIncomeCategory.animate().translationY(dpToPixels(MainActivity.this, -191.0f));
-            labelAddIncomeCategory.animate().alpha(1.0f).setDuration(600);
-        }
         floatingMenuOpen = true;
     }
 
