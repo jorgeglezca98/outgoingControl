@@ -21,7 +21,7 @@ import com.example.jorgegonzalezcabrera.outgoing.fragments.secondPageInitialConf
 import com.example.jorgegonzalezcabrera.outgoing.fragments.thirdPageInitialConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.category;
-import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
+import com.example.jorgegonzalezcabrera.outgoing.models.moneyController;
 import com.example.jorgegonzalezcabrera.outgoing.views.customViewPager;
 
 import java.util.Vector;
@@ -93,7 +93,7 @@ public class initialConfigurationActivity extends AppCompatActivity {
                         appConfiguration newConfiguration = new appConfiguration(currentMoney);
                         RealmList<category> categories = secondFragment.getData();
                         categories.addAll(thirdFragment.getData());
-                        RealmList<outgoingCategory> moneyControllers = fourthFragment.getData();
+                        RealmList<moneyController> moneyControllers = fourthFragment.getData();
 
                         Realm database = Realm.getDefaultInstance();
                         database.beginTransaction();

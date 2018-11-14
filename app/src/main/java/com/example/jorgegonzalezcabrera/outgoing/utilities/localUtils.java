@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
-import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
+import com.example.jorgegonzalezcabrera.outgoing.models.moneyController;
 
 import java.util.Vector;
 
@@ -27,9 +27,9 @@ public class localUtils {
 
         void removeAndKeepCategory(@NonNull category removedCategory);
 
-        void removeMoneyController(@NonNull outgoingCategory removedCategory);
+        void removeMoneyController(@NonNull moneyController removedCategory);
 
-        void changeMoneyControllerSubcategories(@NonNull outgoingCategory moneyControllers, @NonNull Vector<String> newCategories);
+        void changeMoneyControllerSubcategories(@NonNull moneyController moneyControllers, @NonNull Vector<String> newCategories);
     }
 
     public static type getTypeFromOrdinal(int ordinal) {

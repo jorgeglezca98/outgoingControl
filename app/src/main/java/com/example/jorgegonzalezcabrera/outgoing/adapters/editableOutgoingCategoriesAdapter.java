@@ -17,7 +17,7 @@ import android.widget.LinearLayout;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.activities.editFieldActivity;
-import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
+import com.example.jorgegonzalezcabrera.outgoing.models.moneyController;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
 
     private final Context context;
     private int layout;
-    private RealmList<outgoingCategory> categories;
+    private RealmList<moneyController> categories;
     private localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface;
     private editFieldActivity.editIncomeCategoryInterface onEditCategoryFieldInterface;
     private editOutgoingCategoryInterface editOutgoingCategoryInterface;
@@ -41,7 +41,7 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
     private boolean showingLast;
 
     public interface editOutgoingCategoryInterface {
-        void edit(outgoingCategory outgoingCategory, ConstraintLayout container, EditText categoryName, EditText categoryMaximum);
+        void edit(moneyController moneyController, ConstraintLayout container, EditText categoryName, EditText categoryMaximum);
     }
 
     public editableOutgoingCategoriesAdapter(Context context,
@@ -49,7 +49,7 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
                                              editOutgoingCategoryInterface editOutgoingCategoryInterface) {
         this.context = context;
         this.categories = new RealmList<>();
-        this.categories.addAll(Realm.getDefaultInstance().where(outgoingCategory.class).findAll());
+        this.categories.addAll(Realm.getDefaultInstance().where(moneyController.class).findAll());
         this.layout = R.layout.editable_outgoing_category;
         this.onCategoriesChangeInterface = onCategoriesChangeInterface;
         this.editOutgoingCategoryInterface = editOutgoingCategoryInterface;
@@ -82,16 +82,16 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
 
     public void addOne() {
         if (!lastIsEmpty) {
-            categories.add(new outgoingCategory());
+            categories.add(new moneyController());
             notifyItemInserted(getItemCount() - 1);
             lastIsEmpty = true;
         }
     }
 
-    public void confirmLast(outgoingCategory storedOutgoingCategory) {
+    public void confirmLast(moneyController storedMoneyController) {
         if (lastIsEmpty) {
             categories.remove(getItemCount() - 1);
-            categories.add(storedOutgoingCategory);
+            categories.add(storedMoneyController);
             notifyItemChanged(getItemCount() - 1);
             lastIsEmpty = false;
             showingLast = false;
@@ -111,9 +111,9 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
         this.onEditCategoryFieldInterface = onEditCategoryFieldInterface;
     }
 
-    public void modify(outgoingCategory modifiedOutgoingCategory) {
+    public void modify(moneyController modifiedMoneyController) {
         for (int i = 0; i < categories.size(); i++) {
-            if (modifiedOutgoingCategory.getId() == categories.get(i).getId()) {
+            if (modifiedMoneyController.getId() == categories.get(i).getId()) {
                 notifyItemChanged(i);
                 return;
             }
@@ -161,7 +161,7 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
             expanded = false;
         }
 
-        void bind(final outgoingCategory category) {
+        void bind(final moneyController category) {
             layoutEditableOutgoingCategory.setTransitionName(CONTAINER_TRANSITION_NAME + getAdapterPosition());
 
             name.setTransitionName(CATEGORY_NAME_TRANSITION_NAME + getAdapterPosition());

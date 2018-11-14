@@ -8,7 +8,7 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class outgoingCategory extends RealmObject {
+public class moneyController extends RealmObject {
 
     @PrimaryKey
     private long id;
@@ -16,14 +16,14 @@ public class outgoingCategory extends RealmObject {
     private double maximum;
     private String name;
 
-    public outgoingCategory() {
+    public moneyController() {
         this.id = -1;
         this.subcategories = new RealmList<>();
         this.maximum = 0;
         this.name = "";
     }
 
-    public outgoingCategory(@Nonnull RealmList<category> subcategories, double maximum, @Nonnull String name) {
+    public moneyController(@Nonnull RealmList<category> subcategories, double maximum, @Nonnull String name) {
         this.id = myApplication.outgoingCategoryId.incrementAndGet();
         this.subcategories = new RealmList<>();
         for (int i = 0; i < subcategories.size(); i++) {

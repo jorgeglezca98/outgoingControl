@@ -22,7 +22,7 @@ import com.example.jorgegonzalezcabrera.outgoing.activities.editFieldActivity.ed
 import com.example.jorgegonzalezcabrera.outgoing.adapters.editableCategoriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.editableOutgoingCategoriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.models.category;
-import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
+import com.example.jorgegonzalezcabrera.outgoing.models.moneyController;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 import java.util.Vector;
@@ -68,12 +68,12 @@ public class settingFragment extends Fragment {
                 }
 
                 @Override
-                public void removeMoneyController(@NonNull outgoingCategory removedCategory) {
+                public void removeMoneyController(@NonNull moneyController removedCategory) {
 
                 }
 
                 @Override
-                public void changeMoneyControllerSubcategories(@NonNull outgoingCategory moneyControllers, @NonNull Vector<String> newCategories) {
+                public void changeMoneyControllerSubcategories(@NonNull moneyController moneyControllers, @NonNull Vector<String> newCategories) {
 
                 }
             };
@@ -84,7 +84,7 @@ public class settingFragment extends Fragment {
         } catch (Exception e) {
             editOutgoingCategoryInterface = new editableOutgoingCategoriesAdapter.editOutgoingCategoryInterface() {
                 @Override
-                public void edit(outgoingCategory outgoingCategory, ConstraintLayout container, EditText categoryName, EditText categoryMaximum) {
+                public void edit(moneyController moneyController, ConstraintLayout container, EditText categoryName, EditText categoryMaximum) {
 
                 }
             };
@@ -259,7 +259,7 @@ public class settingFragment extends Fragment {
         }
     }
 
-    public void confirmAddedMoneyController(outgoingCategory moneyController) {
+    public void confirmAddedMoneyController(moneyController moneyController) {
         moneyControllersAdapter.confirmLast(moneyController);
     }
 
@@ -293,7 +293,7 @@ public class settingFragment extends Fragment {
         }
     }
 
-    public void modifyOutgoingCategory(outgoingCategory modifiedOutgoingCategory) {
-        moneyControllersAdapter.modify(modifiedOutgoingCategory);
+    public void modifyOutgoingCategory(moneyController modifiedMoneyController) {
+        moneyControllersAdapter.modify(modifiedMoneyController);
     }
 }

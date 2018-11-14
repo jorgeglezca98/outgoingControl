@@ -16,7 +16,7 @@ import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.surplusMoneyTableAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
-import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
+import com.example.jorgegonzalezcabrera.outgoing.models.moneyController;
 import com.example.jorgegonzalezcabrera.outgoing.others.ItemOffsetDecoration;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.utils;
 
@@ -72,7 +72,7 @@ public class mainFragment extends Fragment {
         RealmResults<entry> entriesOfTheMonth = database.where(entry.class).greaterThanOrEqualTo("creationDate", date).findAll();
 
         Vector<surplusMoneyTableAdapter.surplusMoneyByCategory> surplusMoneyByCategoryVector = new Vector<>();
-        RealmResults<outgoingCategory> outgoingCategories = database.where(outgoingCategory.class).findAll();
+        RealmResults<moneyController> outgoingCategories = database.where(moneyController.class).findAll();
         for (int i = 0; i < outgoingCategories.size(); i++) {
             double outgoingsByCategory = 0;
             for (int j = 0; j < outgoingCategories.get(i).getSubcategories().size(); j++) {
@@ -80,8 +80,8 @@ public class mainFragment extends Fragment {
                 outgoingsByCategory += entriesOfTheMonth.where().equalTo("category", subcategoryName).sum("valor").doubleValue();
             }
             double surplusMoneyByCategory = outgoingCategories.get(i).getMaximum() - outgoingsByCategory;
-            outgoingCategory outgoingCategory = outgoingCategories.get(i);
-            surplusMoneyByCategoryVector.add(new surplusMoneyTableAdapter.surplusMoneyByCategory(outgoingCategory, surplusMoneyByCategory));
+            moneyController moneyController = outgoingCategories.get(i);
+            surplusMoneyByCategoryVector.add(new surplusMoneyTableAdapter.surplusMoneyByCategory(moneyController, surplusMoneyByCategory));
         }
         totalOutgoings = entriesOfTheMonth.where().equalTo("type", entry.type.OUTGOING.ordinal()).sum("valor").longValue();
         String outgoingsOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€";
@@ -109,7 +109,7 @@ public class mainFragment extends Fragment {
         RealmResults<entry> entriesOfTheMonth = database.where(entry.class).greaterThanOrEqualTo("creationDate", date).findAll();
 
         Vector<surplusMoneyTableAdapter.surplusMoneyByCategory> surplusMoneyByCategoryVector = new Vector<>();
-        RealmResults<outgoingCategory> outgoingCategories = database.where(outgoingCategory.class).findAll();
+        RealmResults<moneyController> outgoingCategories = database.where(moneyController.class).findAll();
         for (int i = 0; i < outgoingCategories.size(); i++) {
             double outgoingsByCategory = 0;
             for (int j = 0; j < outgoingCategories.get(i).getSubcategories().size(); j++) {
@@ -117,8 +117,8 @@ public class mainFragment extends Fragment {
                 outgoingsByCategory += entriesOfTheMonth.where().equalTo("category", subcategoryName).sum("valor").doubleValue();
             }
             double surplusMoneyByCategory = outgoingCategories.get(i).getMaximum() - outgoingsByCategory;
-            outgoingCategory outgoingCategory = outgoingCategories.get(i);
-            surplusMoneyByCategoryVector.add(new surplusMoneyTableAdapter.surplusMoneyByCategory(outgoingCategory, surplusMoneyByCategory));
+            moneyController moneyController = outgoingCategories.get(i);
+            surplusMoneyByCategoryVector.add(new surplusMoneyTableAdapter.surplusMoneyByCategory(moneyController, surplusMoneyByCategory));
         }
         totalOutgoings = entriesOfTheMonth.where().equalTo("type", entry.type.OUTGOING.ordinal()).sum("valor").longValue();
         String outgoingsOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€";
@@ -213,23 +213,23 @@ public class mainFragment extends Fragment {
         }
     }
 
-    public void updateCategoryRemoved(@NonNull outgoingCategory category) {
+    public void updateCategoryRemoved(@NonNull moneyController category) {
         surplusMoneyAdapter.removeCategory(category);
     }
 
-    public void updateCategoryAdded(@NonNull outgoingCategory newOutgoingCategory) {
-        surplusMoneyAdapter.addCategory(newOutgoingCategory);
+    public void updateCategoryAdded(@NonNull moneyController newMoneyController) {
+        surplusMoneyAdapter.addCategory(newMoneyController);
     }
 
-    public void updateCategoryNameChanged(outgoingCategory modifiedOutgoingCategory) {
-        surplusMoneyAdapter.updateCategoryName(modifiedOutgoingCategory);
+    public void updateCategoryNameChanged(moneyController modifiedMoneyController) {
+        surplusMoneyAdapter.updateCategoryName(modifiedMoneyController);
     }
 
-    public void updateCategoryMaximumChanged(outgoingCategory modifiedOutgoingCategory) {
-        surplusMoneyAdapter.updateCategoryMaximum(modifiedOutgoingCategory);
+    public void updateCategoryMaximumChanged(moneyController modifiedMoneyController) {
+        surplusMoneyAdapter.updateCategoryMaximum(modifiedMoneyController);
     }
 
-    public void updateCategorySubcategoriesChanged(outgoingCategory modifiedOutgoingCategory) {
-        surplusMoneyAdapter.updateSubcategories(modifiedOutgoingCategory);
+    public void updateCategorySubcategoriesChanged(moneyController modifiedMoneyController) {
+        surplusMoneyAdapter.updateSubcategories(modifiedMoneyController);
     }
 }

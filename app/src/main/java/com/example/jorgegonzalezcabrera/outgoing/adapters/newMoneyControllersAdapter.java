@@ -15,7 +15,7 @@ import android.widget.ImageButton;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.models.category;
-import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
+import com.example.jorgegonzalezcabrera.outgoing.models.moneyController;
 
 import java.util.Vector;
 
@@ -26,13 +26,13 @@ public class newMoneyControllersAdapter extends RecyclerView.Adapter<newMoneyCon
 
     private final Context context;
     private int layout;
-    private Vector<outgoingCategory> controllers;
+    private Vector<moneyController> controllers;
     private RealmList<category> categories;
 
     public newMoneyControllersAdapter(Context context, @NonNull RealmList<category> categories) {
         this.context = context;
         this.controllers = new Vector<>();
-        this.controllers.addAll(Realm.getDefaultInstance().where(outgoingCategory.class).findAll());
+        this.controllers.addAll(Realm.getDefaultInstance().where(moneyController.class).findAll());
         this.layout = R.layout.new_money_controller_item;
         this.categories = categories;
     }
@@ -55,12 +55,12 @@ public class newMoneyControllersAdapter extends RecyclerView.Adapter<newMoneyCon
     }
 
     public void addOne() {
-        controllers.add(new outgoingCategory());
+        controllers.add(new moneyController());
         controllers.lastElement().setAvailableId();
         notifyItemInserted(getItemCount() - 1);
     }
 
-    public Vector<outgoingCategory> getData() {
+    public Vector<moneyController> getData() {
         return this.controllers;
     }
 
@@ -91,7 +91,7 @@ public class newMoneyControllersAdapter extends RecyclerView.Adapter<newMoneyCon
             removeButton = itemView.findViewById(R.id.imageButtonRemoveMoneyController);
         }
 
-        void bind(final outgoingCategory category) {
+        void bind(final moneyController category) {
             View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View view, boolean b) {
@@ -164,7 +164,7 @@ public class newMoneyControllersAdapter extends RecyclerView.Adapter<newMoneyCon
                             controllers.get(getAdapterPosition()).getSubcategories().add(categoryToAdd);
                     } else {
                         int i = 0;
-                        outgoingCategory moneyController = controllers.get(getAdapterPosition());
+                        moneyController moneyController = controllers.get(getAdapterPosition());
                         while (i < moneyController.getSubcategories().size()) {
                             if (moneyController.getSubcategories().get(i).getName().equals(changedCategory.name)) {
                                 moneyController.getSubcategories().remove(i);

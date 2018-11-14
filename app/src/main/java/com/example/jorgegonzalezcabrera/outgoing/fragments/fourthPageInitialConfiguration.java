@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.newMoneyControllersAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.models.category;
-import com.example.jorgegonzalezcabrera.outgoing.models.outgoingCategory;
+import com.example.jorgegonzalezcabrera.outgoing.models.moneyController;
 
 import java.util.Vector;
 
@@ -64,7 +64,7 @@ public class fourthPageInitialConfiguration extends Fragment {
     }
 
     public boolean checkData() {
-        Vector<outgoingCategory> adapterItems = moneyControllerAdapter.getData();
+        Vector<moneyController> adapterItems = moneyControllerAdapter.getData();
         int i = 0;
         while (i < adapterItems.size()) {
             if (!adapterItems.get(i).check()) {
@@ -75,8 +75,8 @@ public class fourthPageInitialConfiguration extends Fragment {
         return true;
     }
 
-    public RealmList<outgoingCategory> getData() {
-        RealmList<outgoingCategory> data = new RealmList<>();
+    public RealmList<moneyController> getData() {
+        RealmList<moneyController> data = new RealmList<>();
         data.addAll(moneyControllerAdapter.getData());
         return data;
     }
