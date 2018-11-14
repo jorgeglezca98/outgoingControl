@@ -4,12 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
+    android:background="@color/transparent"
     android:orientation="vertical">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerViewAllTheActions"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:clipToPadding="false"
         android:paddingBottom="91dp" />
 </LinearLayout>
