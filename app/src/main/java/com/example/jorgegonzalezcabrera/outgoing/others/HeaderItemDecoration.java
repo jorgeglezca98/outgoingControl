@@ -44,7 +44,8 @@ public class HeaderItemDecoration extends RecyclerView.ItemDecoration {
         View childInContact = null;
         for (int i = 0; i < parent.getChildCount(); i++) {
             View child = parent.getChildAt(i);
-            if (child.getBottom() > contactPoint) {
+            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) child.getLayoutParams();
+            if (child.getBottom() + lp.bottomMargin > contactPoint) {
                 if (child.getTop() <= contactPoint) {
                     childInContact = child;
                     break;
