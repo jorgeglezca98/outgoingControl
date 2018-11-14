@@ -27,7 +27,7 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
     private static final String ERROR_MESSAGE = "Mandatory field";
 
     public erasableItemsAdapter(@NonNull String hint) {
-        this.layout = R.layout.erasable_item;
+        this.layout = R.layout.editable_item;
         this.items = new Vector<>();
         this.items.add("");
         this.errorByItem = new Vector<>();
@@ -38,7 +38,7 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
     }
 
     public erasableItemsAdapter(String hint, erasableItemsAdapter.onItemsChange onItemsChange, customizeView customizeViewInterface) {
-        this.layout = R.layout.erasable_item;
+        this.layout = R.layout.editable_item;
         this.items = new Vector<>();
         this.items.add("");
         this.errorByItem = new Vector<>();

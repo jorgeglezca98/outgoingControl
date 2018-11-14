@@ -95,7 +95,7 @@ public class settingFragment extends Fragment {
         } catch (Exception e) {
             editIncomeCategoryInterface = new editIncomeCategoryInterface() {
                 @Override
-                public void editCategoryField(String initialValue, ConstraintLayout container, EditText field, String hint, int requestCode, long id) {
+                public void editCategoryField(String initialValue, ConstraintLayout container, TextView field, String hint, int requestCode, long id) {
 
                 }
             };

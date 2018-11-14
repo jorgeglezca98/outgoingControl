@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 
@@ -27,7 +28,7 @@ import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.
 public class editFieldActivity extends AppCompatActivity {
 
     public interface editIncomeCategoryInterface {
-        void editCategoryField(String initialValue, ConstraintLayout container, EditText field, String hint, int requestCode, long id);
+        void editCategoryField(String initialValue, ConstraintLayout container, TextView field, String hint, int requestCode, long id);
     }
 
     private final static String ERROR_MESSAGE = "Mandatory field";

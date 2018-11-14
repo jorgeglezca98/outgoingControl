@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.activities.editFieldActivity;
@@ -55,7 +56,7 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
         this.editOutgoingCategoryInterface = editOutgoingCategoryInterface;
         this.onEditCategoryFieldInterface = new editFieldActivity.editIncomeCategoryInterface() {
             @Override
-            public void editCategoryField(String initialValue, ConstraintLayout container, EditText field, String hint, int requestCode, long id) {
+            public void editCategoryField(String initialValue, ConstraintLayout container, TextView field, String hint, int requestCode, long id) {
 
             }
         };

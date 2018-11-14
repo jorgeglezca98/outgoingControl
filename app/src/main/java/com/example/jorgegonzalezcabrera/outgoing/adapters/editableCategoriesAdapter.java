@@ -8,8 +8,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.activities.editFieldActivity.editIncomeCategoryInterface;
@@ -125,17 +125,17 @@ public class editableCategoriesAdapter extends RecyclerView.Adapter<editableCate
     class ViewHolder extends RecyclerView.ViewHolder {
 
         ConstraintLayout container;
-        EditText categoryName;
+        TextView categoryName;
         ImageButton removeButton;
 
         private final static String CONTAINER_TRANSITION_NAME = "container";
-        private final static String CATEGORY_NAME_TRANSITION_NAME = "categoryNameEditText";
+        private final static String CATEGORY_NAME_TRANSITION_NAME = "categoryNameTextView";
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             container = itemView.findViewById(R.id.constraintLayout);
-            categoryName = itemView.findViewById(R.id.editTextErasableItem);
+            categoryName = itemView.findViewById(R.id.textViewCategoryName);
             removeButton = itemView.findViewById(R.id.imageButtonRemoveItem);
         }
 

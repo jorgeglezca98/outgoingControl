@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
@@ -430,7 +431,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     public static final String REQUEST_CODE_KEY = "requestCode";
 
     @Override
-    public void editCategoryField(String initialValue, ConstraintLayout container, EditText field, String hint, int requestCode, long id) {
+    public void editCategoryField(String initialValue, ConstraintLayout container, TextView field, String hint, int requestCode, long id) {
         Intent intent = new Intent(this, editFieldActivity.class);
 
         intent.putExtra(CONTAINER_TRANSITION_NAME_KEY, container.getTransitionName());
