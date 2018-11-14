@@ -50,9 +50,9 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewEditableOutgoingCategories"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="#eeeeee"
+            android:background="@android:color/white"
             android:clipToPadding="false"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@id/outgoingsCategoriesHeader"
@@ -95,8 +95,9 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewEditableIncomeCategories"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:background="@android:color/white"
             android:clipToPadding="false"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@id/incomeCategoriesHeader"
@@ -139,8 +140,9 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewMoneyControllers"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:background="@android:color/white"
             android:clipToPadding="false"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@id/moneyControllersHeader"
