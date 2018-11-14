@@ -1,7 +1,5 @@
 package com.example.jorgegonzalezcabrera.outgoing.fragments;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,7 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.activities.editFieldActivity.editIncomeCategoryInterface;
@@ -41,9 +39,9 @@ public class settingFragment extends Fragment {
     private RecyclerView recyclerViewEditableOutgoingCategories;
     private RecyclerView recyclerViewEditableIncomeCategories;
     private NestedScrollView scrollViewSettingFragment;
-    private ImageView incomeCategoriesExpandImage;
-    private ImageView outgoingCategoriesExpandImage;
-    private ImageView moneyControllerExpandImage;
+    private TextView outgoingCategoriesHeader;
+    private TextView incomeCategoriesHeader;
+    private TextView moneyControllersHeader;
 
     @Override
     public void onAttach(Context context) {
@@ -125,24 +123,23 @@ public class settingFragment extends Fragment {
         recyclerViewMoneyControllers.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
 
         scrollViewSettingFragment = view.findViewById(R.id.scrollViewSettingFragment);
-        ConstraintLayout incomeCategoriesHeader = view.findViewById(R.id.incomeCategoriesHeader);
-        incomeCategoriesExpandImage = view.findViewById(R.id.imageViewExpandIncomeCategories);
-        ConstraintLayout outgoingCategoriesHeader = view.findViewById(R.id.outgoingCategoriesHeader);
-        outgoingCategoriesExpandImage = view.findViewById(R.id.imageViewExpandOutgoingCategories);
-        ConstraintLayout moneyControllerHeader = view.findViewById(R.id.moneyControllerHeader);
-        moneyControllerExpandImage = view.findViewById(R.id.imageViewExpandMoneyController);
+        outgoingCategoriesHeader = view.findViewById(R.id.outgoingsCategoriesHeader);
+        incomeCategoriesHeader = view.findViewById(R.id.incomeCategoriesHeader);
+        moneyControllersHeader = view.findViewById(R.id.moneyControllersHeader);
 
         incomeCategoriesHeader.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (recyclerViewEditableIncomeCategories.getVisibility() == View.VISIBLE) {
                     recyclerViewEditableIncomeCategories.setVisibility(View.GONE);
-                    incomeCategoriesExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
+                    outgoingCategoriesHeader.setVisibility(View.VISIBLE);
+                    moneyControllersHeader.setVisibility(View.VISIBLE);
                 } else if (recyclerViewEditableIncomeCategories.getVisibility() == View.GONE) {
                     closeExpandableLists();
                     recyclerViewEditableIncomeCategories.setVisibility(View.VISIBLE);
-                    incomeCategoriesExpandImage.animate().rotation(0.0f).setDuration(500).setListener(null);
-                    scrollViewSettingFragment.scrollTo(0, recyclerViewEditableIncomeCategories.getScrollY());
+                    outgoingCategoriesHeader.setVisibility(View.GONE);
+                    moneyControllersHeader.setVisibility(View.GONE);
+                    scrollViewSettingFragment.fullScroll(View.FOCUS_UP);
                 }
             }
         });
@@ -152,27 +149,31 @@ public class settingFragment extends Fragment {
             public void onClick(View view) {
                 if (recyclerViewEditableOutgoingCategories.getVisibility() == View.VISIBLE) {
                     recyclerViewEditableOutgoingCategories.setVisibility(View.GONE);
-                    outgoingCategoriesExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
+                    incomeCategoriesHeader.setVisibility(View.VISIBLE);
+                    moneyControllersHeader.setVisibility(View.VISIBLE);
                 } else if (recyclerViewEditableOutgoingCategories.getVisibility() == View.GONE) {
                     closeExpandableLists();
                     recyclerViewEditableOutgoingCategories.setVisibility(View.VISIBLE);
-                    outgoingCategoriesExpandImage.animate().rotation(0.0f).setDuration(500).setListener(null);
-                    scrollViewSettingFragment.scrollTo(0, recyclerViewEditableOutgoingCategories.getScrollY());
+                    incomeCategoriesHeader.setVisibility(View.GONE);
+                    moneyControllersHeader.setVisibility(View.GONE);
+                    scrollViewSettingFragment.fullScroll(View.FOCUS_UP);
                 }
             }
         });
 
-        moneyControllerHeader.setOnClickListener(new View.OnClickListener() {
+        moneyControllersHeader.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (recyclerViewMoneyControllers.getVisibility() == View.VISIBLE) {
                     recyclerViewMoneyControllers.setVisibility(View.GONE);
-                    moneyControllerExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
+                    outgoingCategoriesHeader.setVisibility(View.VISIBLE);
+                    incomeCategoriesHeader.setVisibility(View.VISIBLE);
                 } else if (recyclerViewMoneyControllers.getVisibility() == View.GONE) {
                     closeExpandableLists();
                     recyclerViewMoneyControllers.setVisibility(View.VISIBLE);
-                    moneyControllerExpandImage.animate().rotation(0.0f).setDuration(500).setListener(null);
-                    scrollViewSettingFragment.scrollTo(0, recyclerViewMoneyControllers.getScrollY());
+                    outgoingCategoriesHeader.setVisibility(View.GONE);
+                    incomeCategoriesHeader.setVisibility(View.GONE);
+                    scrollViewSettingFragment.fullScroll(View.FOCUS_UP);
                 }
             }
         });
@@ -182,31 +183,21 @@ public class settingFragment extends Fragment {
 
     private void closeExpandableLists() {
         if (recyclerViewEditableOutgoingCategories.getVisibility() == View.VISIBLE) {
+            outgoingCategoriesHeader.setVisibility(View.GONE);
             recyclerViewEditableOutgoingCategories.setVisibility(View.GONE);
-            outgoingCategoriesExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
         } else if (recyclerViewEditableIncomeCategories.getVisibility() == View.VISIBLE) {
+            outgoingCategoriesHeader.setVisibility(View.GONE);
             recyclerViewEditableIncomeCategories.setVisibility(View.GONE);
-            incomeCategoriesExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
         } else if (recyclerViewMoneyControllers.getVisibility() == View.VISIBLE) {
+            outgoingCategoriesHeader.setVisibility(View.GONE);
             recyclerViewMoneyControllers.setVisibility(View.GONE);
-            moneyControllerExpandImage.animate().rotation(180.0f).setDuration(500).setListener(null);
         }
     }
 
     public void addIncomeCategory() {
-        AnimatorListenerAdapter animatorListenerAdapter = new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                scrollViewSettingFragment.fullScroll(NestedScrollView.FOCUS_DOWN);
-                incomeCategoriesAdapter.addOne();
-            }
-        };
-
         if (recyclerViewEditableIncomeCategories.getVisibility() == View.GONE) {
             closeExpandableLists();
             recyclerViewEditableIncomeCategories.setVisibility(View.VISIBLE);
-            incomeCategoriesExpandImage.animate().rotation(0.0f).setDuration(500).setListener(animatorListenerAdapter);
         } else {
             scrollViewSettingFragment.fullScroll(NestedScrollView.FOCUS_DOWN);
             incomeCategoriesAdapter.addOne();
@@ -214,19 +205,9 @@ public class settingFragment extends Fragment {
     }
 
     public void addOutgoingCategory() {
-        AnimatorListenerAdapter animatorListenerAdapter = new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                scrollViewSettingFragment.fullScroll(NestedScrollView.FOCUS_DOWN);
-                outgoingCategoriesAdapter.addOne();
-            }
-        };
-
         if (recyclerViewEditableOutgoingCategories.getVisibility() == View.GONE) {
             closeExpandableLists();
             recyclerViewEditableOutgoingCategories.setVisibility(View.VISIBLE);
-            outgoingCategoriesExpandImage.animate().rotation(0.0f).setDuration(500).setListener(animatorListenerAdapter);
         } else {
             scrollViewSettingFragment.fullScroll(NestedScrollView.FOCUS_DOWN);
             outgoingCategoriesAdapter.addOne();
@@ -266,19 +247,9 @@ public class settingFragment extends Fragment {
     }
 
     public void addMoneyController() {
-        AnimatorListenerAdapter animatorListenerAdapter = new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                scrollViewSettingFragment.fullScroll(NestedScrollView.FOCUS_DOWN);
-                moneyControllersAdapter.addOne();
-            }
-        };
-
         if (recyclerViewMoneyControllers.getVisibility() == View.GONE) {
             closeExpandableLists();
             recyclerViewMoneyControllers.setVisibility(View.VISIBLE);
-            moneyControllerExpandImage.animate().rotation(0.0f).setDuration(500).setListener(animatorListenerAdapter);
         } else {
             scrollViewSettingFragment.fullScroll(NestedScrollView.FOCUS_DOWN);
             moneyControllersAdapter.addOne();
