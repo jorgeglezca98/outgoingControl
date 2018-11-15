@@ -16,8 +16,8 @@
         android:maxLines="1"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/imageButtonRemoveItem"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageButtonRemoveItem"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
@@ -30,7 +30,7 @@
         android:scaleY="0.5"
         android:src="@drawable/remove"
         app:layout_constraintBottom_toBottomOf="@+id/textViewCategoryName"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textViewCategoryName" />
 
 </android.support.constraint.ConstraintLayout>
