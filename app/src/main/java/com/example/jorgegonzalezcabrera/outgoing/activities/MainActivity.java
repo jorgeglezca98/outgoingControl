@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
 
         Toolbar toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         database = Realm.getDefaultInstance();
 
