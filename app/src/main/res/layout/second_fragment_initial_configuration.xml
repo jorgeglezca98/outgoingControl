@@ -8,15 +8,16 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/outgoingsCategoriesTitle"
+        android:id="@+id/categoriesTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:padding="10dp"
-        android:text="@string/outgoing_categories_title"
+        android:text="@string/categories_title"
         android:textColor="@android:color/primary_text_light"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:translationZ="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -28,9 +29,9 @@
         android:background="#00000000"
         android:contentDescription="@string/information"
         android:src="@android:drawable/ic_menu_info_details"
-        app:layout_constraintBottom_toBottomOf="@+id/outgoingsCategoriesTitle"
-        app:layout_constraintStart_toEndOf="@+id/outgoingsCategoriesTitle"
-        app:layout_constraintTop_toTopOf="@+id/outgoingsCategoriesTitle" />
+        app:layout_constraintBottom_toBottomOf="@+id/categoriesTitle"
+        app:layout_constraintStart_toEndOf="@+id/categoriesTitle"
+        app:layout_constraintTop_toTopOf="@+id/categoriesTitle" />
 
     <TextView
         android:id="@+id/outgoingsCategoriesDescription"
@@ -44,7 +45,21 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/outgoingsCategoriesTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/categoriesTitle" />
+
+    <TextView
+        android:id="@+id/outgoingsCategoriesTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:background="@android:color/white"
+        android:elevation="5dp"
+        android:padding="5dp"
+        android:text="@string/outgoing_categories_title"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@id/recyclerViewOutgoingsCategoriesRequest"
+        app:layout_constraintStart_toStartOf="@id/recyclerViewOutgoingsCategoriesRequest"
+        app:layout_constraintTop_toBottomOf="@id/categoriesTitle" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerViewOutgoingsCategoriesRequest"
@@ -52,13 +67,43 @@
         android:layout_height="0dp"
         android:layout_marginEnd="30dp"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="30dp"
+        android:background="@android:color/white"
         android:clipToPadding="false"
+        android:elevation="2dp"
         android:overScrollMode="never"
         android:paddingBottom="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/outgoingsCategoriesDescription" />
+        app:layout_constraintTop_toBottomOf="@+id/outgoingsCategoriesTitle"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/incomeCategoriesTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:background="@android:color/white"
+        android:elevation="5dp"
+        android:padding="5dp"
+        android:text="@string/income_categories_title"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@id/recyclerViewOutgoingsCategoriesRequest"
+        app:layout_constraintStart_toStartOf="@id/recyclerViewOutgoingsCategoriesRequest"
+        app:layout_constraintTop_toBottomOf="@id/recyclerViewOutgoingsCategoriesRequest" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewIncomeCategoriesRequest"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@android:color/white"
+        android:clipToPadding="false"
+        android:elevation="3dp"
+        android:overScrollMode="never"
+        android:paddingBottom="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/incomeCategoriesTitle"
+        app:layout_constraintStart_toStartOf="@id/incomeCategoriesTitle"
+        app:layout_constraintTop_toBottomOf="@+id/incomeCategoriesTitle" />
 
 </android.support.constraint.ConstraintLayout>

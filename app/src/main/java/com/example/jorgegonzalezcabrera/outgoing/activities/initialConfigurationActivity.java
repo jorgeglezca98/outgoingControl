@@ -18,7 +18,6 @@ import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.fourthPageInitialConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.initialMoneyInitialConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.secondPageInitialConfiguration;
-import com.example.jorgegonzalezcabrera.outgoing.fragments.thirdPageInitialConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.moneyController;
@@ -33,7 +32,6 @@ public class initialConfigurationActivity extends AppCompatActivity {
 
     private initialMoneyInitialConfiguration firstFragment;
     private secondPageInitialConfiguration secondFragment;
-    private thirdPageInitialConfiguration thirdFragment;
     private fourthPageInitialConfiguration fourthFragment;
 
     @Override
@@ -51,8 +49,6 @@ public class initialConfigurationActivity extends AppCompatActivity {
         fragments.add(firstFragment);
         secondFragment = new secondPageInitialConfiguration();
         fragments.add(secondFragment);
-        thirdFragment = new thirdPageInitialConfiguration();
-        fragments.add(thirdFragment);
         fourthFragment = new fourthPageInitialConfiguration();
         fragments.add(fourthFragment);
 
@@ -74,7 +70,7 @@ public class initialConfigurationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 int selectedTabPosition = configurationTabLayout.getSelectedTabPosition();
-                if (selectedTabPosition > 0) {
+                if ((selectedTabPosition == 1 && !secondFragment.goBack()) || (selectedTabPosition > 1)) {
                     TabLayout.Tab newSelectedTab = configurationTabLayout.getTabAt(selectedTabPosition - 1);
                     if (newSelectedTab != null) {
                         newSelectedTab.select();
@@ -92,7 +88,6 @@ public class initialConfigurationActivity extends AppCompatActivity {
                         double currentMoney = firstFragment.getData();
                         appConfiguration newConfiguration = new appConfiguration(currentMoney);
                         RealmList<category> categories = secondFragment.getData();
-                        categories.addAll(thirdFragment.getData());
                         RealmList<moneyController> moneyControllers = fourthFragment.getData();
 
                         Realm database = Realm.getDefaultInstance();
@@ -108,16 +103,23 @@ public class initialConfigurationActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(initialConfigurationActivity.this, "Complete all fields first", Toast.LENGTH_SHORT).show();
                     }
+                } else if (selectedTabPosition == 1) {
+                    if (secondFragment.getTypeOfCategory() == category.INCOME)
+                        if (secondFragment.checkIncomeCategories()) {
+                            TabLayout.Tab newSelectedTab = configurationTabLayout.getTabAt(selectedTabPosition + 1);
+                            if (newSelectedTab != null) {
+                                newSelectedTab.select();
+                            }
+                        } else {
+                            Toast.makeText(initialConfigurationActivity.this, "Complete all fields first", Toast.LENGTH_SHORT).show();
+                        }
+                    else if (secondFragment.checkOutgoingCategories()) {
+                        secondFragment.goOn();
+                    } else {
+                        Toast.makeText(initialConfigurationActivity.this, "Complete all fields first", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    boolean dataChecked = false;
-                    if (selectedTabPosition == 0)
-                        dataChecked = firstFragment.checkData();
-                    else if (selectedTabPosition == 1)
-                        dataChecked = secondFragment.checkData();
-                    else if (selectedTabPosition == 2)
-                        dataChecked = thirdFragment.checkData();
-
-                    if (dataChecked) {
+                    if (firstFragment.checkData()) {
                         TabLayout.Tab newSelectedTab = configurationTabLayout.getTabAt(selectedTabPosition + 1);
                         if (newSelectedTab != null) {
                             newSelectedTab.select();
@@ -137,8 +139,6 @@ public class initialConfigurationActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (fragments.get(configurationTabLayout.getSelectedTabPosition()) == secondFragment) {
                     secondFragment.addOne();
-                } else if (fragments.get(configurationTabLayout.getSelectedTabPosition()) == thirdFragment) {
-                    thirdFragment.addOne();
                 } else if (fragments.get(configurationTabLayout.getSelectedTabPosition()) == fourthFragment) {
                     fourthFragment.addOne();
                 }
@@ -160,7 +160,7 @@ public class initialConfigurationActivity extends AppCompatActivity {
                     forwardButton.setImageResource(R.drawable.check);
                     forwardButton.animate().rotation(0).start();
 
-                    fourthFragment.setCategories(secondFragment.getData());
+                    fourthFragment.setCategories(secondFragment.getOutgoingCategories());
                 }
             }
 
