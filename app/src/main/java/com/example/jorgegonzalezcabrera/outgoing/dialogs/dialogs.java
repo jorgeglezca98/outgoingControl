@@ -21,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -64,8 +65,9 @@ public class dialogs {
         final EditText categorySelectionEditText = dialog.findViewById(R.id.editTextCategorySelection);
         final EditText descriptionEditText = dialog.findViewById(R.id.editTextConceptNewEntry);
         final EditText datePickerEditText = dialog.findViewById(R.id.editTextEntryDate);
-        Button cancelButton = dialog.findViewById(R.id.buttonCancel);
+        ImageButton cancelButton = dialog.findViewById(R.id.buttonCancel);
         Button applyButton = dialog.findViewById(R.id.buttonApplyNewEntry);
+        Button buttonPeriodicity = dialog.findViewById(R.id.buttonPeriodicity);
 
         final PopupMenu popup = new PopupMenu(context, categorySelectionEditText);
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -137,6 +139,25 @@ public class dialogs {
                 }
             }
         });
+
+        buttonPeriodicity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editEntryPeriodicityDialog(context);
+            }
+        });
+
+        dialog.show();
+    }
+
+    private static void editEntryPeriodicityDialog(Context context) {
+        final Dialog dialog = new Dialog(new ContextThemeWrapper(context, R.style.AppTheme_TransparentActivity));
+        dialog.getWindow().setWindowAnimations(R.style.DialogAnimationFromRight);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.setContentView(R.layout.periodicity_dialog);
+        dialog.getWindow().getAttributes().width = WindowManager.LayoutParams.MATCH_PARENT;
+        dialog.getWindow().getAttributes().height = WindowManager.LayoutParams.MATCH_PARENT;
 
         dialog.show();
     }

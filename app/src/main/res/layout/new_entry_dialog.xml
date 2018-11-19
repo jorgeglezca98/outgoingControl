@@ -18,6 +18,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageButton
+            android:id="@+id/buttonCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent"
+            android:src="@drawable/arrow_back"
+            android:layout_gravity="center_vertical"/>
+
         <TextView
             android:id="@+id/title"
             android:layout_width="0dp"
@@ -31,14 +39,17 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <Switch
+        <android.support.design.button.MaterialButton
+            android:id="@+id/buttonApplyNewEntry"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="8dp"
-            android:text="@string/periodic"
-            android:textColor="@color/primary0"
-            android:textStyle="bold" />
+            android:layout_marginEnd="6dp"
+            android:elevation="0dp"
+            android:text="@string/apply_title"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            app:backgroundTint="@color/complement0" />
     </LinearLayout>
 
     <TextView
@@ -173,25 +184,16 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <android.support.design.button.MaterialButton
-            android:id="@+id/buttonCancel"
+            android:id="@+id/buttonPeriodicity"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="6dp"
             android:elevation="0dp"
-            android:text="@string/cancel_title"
+            android:text="Periodicity"
             android:textAllCaps="false"
             android:textColor="@color/complement0"
             app:backgroundTint="@android:color/transparent" />
-
-        <android.support.design.button.MaterialButton
-            android:id="@+id/buttonApplyNewEntry"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/complement0"
-            android:text="@string/apply_title"
-            android:textAllCaps="false" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
