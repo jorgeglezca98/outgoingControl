@@ -36,13 +36,10 @@ import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.moneyController;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
-import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry.periodicType;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Vector;
 
@@ -590,34 +587,9 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
 
         RealmResults<periodicEntry> periodicEntries = database.where(periodicEntry.class).findAll();
 
-        GregorianCalendar lastChange = new GregorianCalendar();
-        GregorianCalendar currentDate = new GregorianCalendar();
-        currentDate.setTime(new Date());
+        Date currentDate = new Date();
         for (int i = 0; i < periodicEntries.size(); i++) {
-            periodicEntry periodicEntriesItem = periodicEntries.get(i);
-            if (periodicEntriesItem != null) {
-                lastChange.setTime(periodicEntriesItem.getLastChange());
-
-                if (periodicEntriesItem.getFrequency() == periodicType.ANNUAL) {
-                    lastChange.add(Calendar.YEAR, 1);
-                    while (lastChange.before(currentDate)) {
-                        periodicEntry.createEntry(periodicEntriesItem, onEntriesChangeInterface, lastChange);
-                        lastChange.add(Calendar.YEAR, 1);
-                    }
-                } else if (periodicEntriesItem.getFrequency() == periodicType.MONTHLY) {
-                    lastChange.add(Calendar.MONTH, 1);
-                    while (lastChange.before(currentDate)) {
-                        periodicEntry.createEntry(periodicEntriesItem, onEntriesChangeInterface, lastChange);
-                        lastChange.add(Calendar.MONTH, 1);
-                    }
-                } else if (periodicEntriesItem.getFrequency() == periodicType.WEEKLY) {
-                    lastChange.add(Calendar.DATE, 7);
-                    while (lastChange.before(currentDate)) {
-                        periodicEntry.createEntry(periodicEntriesItem, onEntriesChangeInterface, lastChange);
-                        lastChange.add(Calendar.DATE, 7);
-                    }
-                }
-            }
+            periodicEntries.get(i).update(currentDate, onEntriesChangeInterface);
         }
     }
 

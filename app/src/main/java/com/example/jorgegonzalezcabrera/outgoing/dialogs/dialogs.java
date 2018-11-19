@@ -274,7 +274,7 @@ public class dialogs {
     }
 
     public static void newPeriodicEntryDialog(final Context context) {
-        final Dialog dialog = new Dialog(context);
+        /*final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
         dialog.setContentView(R.layout.new_periodic_entry_dialog);
@@ -364,6 +364,7 @@ public class dialogs {
         });
 
         dialog.show();
+        */
     }
 
     public static void chooseOptionDialog(Context context, String title, Vector<String> options, DialogInterface.OnClickListener onClickListener) {
