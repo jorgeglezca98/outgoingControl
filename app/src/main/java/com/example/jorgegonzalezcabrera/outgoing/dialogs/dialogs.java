@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSelectionAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSpinnerAdapter;
+import com.example.jorgegonzalezcabrera.outgoing.adapters.customizeCheckboxesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.actionsFragment;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
@@ -158,6 +159,18 @@ public class dialogs {
         dialog.setContentView(R.layout.periodicity_dialog);
         dialog.getWindow().getAttributes().width = WindowManager.LayoutParams.MATCH_PARENT;
         dialog.getWindow().getAttributes().height = WindowManager.LayoutParams.MATCH_PARENT;
+
+        RecyclerView daysOfExecution = dialog.findViewById(R.id.daysOfExecution);
+        Vector<String> labels = new Vector<>();
+        labels.add("L");
+        labels.add("M");
+        labels.add("X");
+        labels.add("J");
+        labels.add("V");
+        labels.add("S");
+        labels.add("D");
+        daysOfExecution.setAdapter(new customizeCheckboxesAdapter(labels));
+        daysOfExecution.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
 
         dialog.show();
     }
