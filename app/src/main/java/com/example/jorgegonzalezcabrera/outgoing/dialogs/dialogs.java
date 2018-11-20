@@ -19,11 +19,13 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.Switch;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSelectionAdapter;
@@ -62,9 +64,8 @@ public class dialogs {
         final EditText categorySelectionEditText = dialog.findViewById(R.id.editTextCategorySelection);
         final EditText descriptionEditText = dialog.findViewById(R.id.editTextConceptNewEntry);
         final EditText datePickerEditText = dialog.findViewById(R.id.editTextEntryDate);
-        ImageButton cancelButton = dialog.findViewById(R.id.buttonCancel);
+        MaterialButton cancelButton = dialog.findViewById(R.id.buttonCancel);
         Button applyButton = dialog.findViewById(R.id.buttonApplyNewEntry);
-        Button buttonPeriodicity = dialog.findViewById(R.id.buttonPeriodicity);
 
         final PopupMenu popup = new PopupMenu(context, categorySelectionEditText);
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -93,7 +94,7 @@ public class dialogs {
 
         final GregorianCalendar creationDate = new GregorianCalendar();
         creationDate.setTime(new Date());
-        String initialDate = creationDate.get(Calendar.DAY_OF_MONTH) + "/" + creationDate.get(Calendar.MONTH) + "/" + creationDate.get(Calendar.YEAR);
+        final String initialDate = creationDate.get(Calendar.DAY_OF_MONTH) + "/" + creationDate.get(Calendar.MONTH) + "/" + creationDate.get(Calendar.YEAR);
         datePickerEditText.setText(initialDate);
         final DateFormat df = new SimpleDateFormat("dd/MM/yyyy", new Locale("es", "ES"));
         datePickerEditText.setOnClickListener(new View.OnClickListener() {
@@ -137,10 +138,36 @@ public class dialogs {
             }
         });
 
-        buttonPeriodicity.setOnClickListener(new View.OnClickListener() {
+        Switch switchPeriodicity = dialog.findViewById(R.id.switchPeriodicity);
+        switchPeriodicity.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
-                editEntryPeriodicityDialog(context);
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    datePickerEditText.setText("Customize");
+                    datePickerEditText.setFocusable(false);
+                    datePickerEditText.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            editEntryPeriodicityDialog(context);
+                        }
+                    });
+                } else {
+                    datePickerEditText.setText(initialDate);
+                    datePickerEditText.setFocusable(true);
+                    datePickerEditText.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Dialog dialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+                                @Override
+                                public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                                    creationDate.set(year, month, day);
+                                    datePickerEditText.setText(df.format(creationDate.getTime()));
+                                }
+                            }, creationDate.get(Calendar.YEAR), creationDate.get(Calendar.MONTH), creationDate.get(Calendar.DAY_OF_MONTH));
+                            dialog.show();
+                        }
+                    });
+                }
             }
         });
 
@@ -239,6 +266,7 @@ public class dialogs {
         final EditText lastDayEditText = dialog.findViewById(R.id.lastDayEditText);
         final GregorianCalendar endDate = new GregorianCalendar();
         endDate.setTime(new Date());
+        lastDayEditText.setText(df.format(endDate.getTime()));
         lastDayEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -254,6 +282,7 @@ public class dialogs {
         });
 
         final EditText quantityOfRepetitionsEditText = dialog.findViewById(R.id.quantityOfRepetitionsEditText);
+        quantityOfRepetitionsEditText.setText("1");
         quantityOfRepetitionsEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -264,23 +293,22 @@ public class dialogs {
         });
 
         RadioGroup endOptions = dialog.findViewById(R.id.radioGroupFinalDate);
-        lastDayEditText.setEnabled(false);
-        quantityOfRepetitionsEditText.setEnabled(false);
         endOptions.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                if (i == 1) {
+                if (i == R.id.radioButtonNever) {
                     lastDayEditText.setEnabled(false);
                     quantityOfRepetitionsEditText.setEnabled(false);
-                } else if (i == 2) {
+                } else if (i == R.id.radioButtonByDay) {
                     lastDayEditText.setEnabled(true);
                     quantityOfRepetitionsEditText.setEnabled(false);
-                } else if (i == 3) {
+                } else if (i == R.id.radioButtonAfterXRepetitions) {
                     lastDayEditText.setEnabled(false);
                     quantityOfRepetitionsEditText.setEnabled(true);
                 }
             }
         });
+        endOptions.check(R.id.radioButtonNever);
 
         MaterialButton buttonApplyPeriodicity = dialog.findViewById(R.id.buttonApplyPeriodicity);
         buttonApplyPeriodicity.setOnClickListener(new View.OnClickListener() {
@@ -294,7 +322,7 @@ public class dialogs {
         buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                dialog.cancel();
             }
         });
 
