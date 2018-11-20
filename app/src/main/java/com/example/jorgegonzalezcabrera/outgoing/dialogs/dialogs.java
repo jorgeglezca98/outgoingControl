@@ -5,8 +5,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.design.button.MaterialButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -16,23 +18,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSelectionAdapter;
-import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSpinnerAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.customizeCheckboxesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.actionsFragment;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
-import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 import com.example.jorgegonzalezcabrera.outgoing.views.editTextWithButton;
 
@@ -44,8 +42,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
-
-import io.realm.Realm;
 
 import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getFunctioningIncomeCategories;
 import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getFunctioningOutgoingCategories;
@@ -151,7 +147,7 @@ public class dialogs {
         dialog.show();
     }
 
-    private static void editEntryPeriodicityDialog(Context context) {
+    private static void editEntryPeriodicityDialog(final Context context) {
         final Dialog dialog = new Dialog(new ContextThemeWrapper(context, R.style.AppTheme_TransparentActivity));
         dialog.getWindow().setWindowAnimations(R.style.DialogAnimationFromRight);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -160,17 +156,147 @@ public class dialogs {
         dialog.getWindow().getAttributes().width = WindowManager.LayoutParams.MATCH_PARENT;
         dialog.getWindow().getAttributes().height = WindowManager.LayoutParams.MATCH_PARENT;
 
-        RecyclerView daysOfExecution = dialog.findViewById(R.id.daysOfExecution);
-        Vector<String> labels = new Vector<>();
-        labels.add("L");
-        labels.add("M");
-        labels.add("X");
-        labels.add("J");
-        labels.add("V");
-        labels.add("S");
-        labels.add("D");
-        daysOfExecution.setAdapter(new customizeCheckboxesAdapter(labels));
-        daysOfExecution.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        final LinearLayout repetitionInformation = dialog.findViewById(R.id.repetitionInformation);
+        repetitionInformation.setVisibility(View.GONE);
+        final RecyclerView daysOfExecution = dialog.findViewById(R.id.daysOfExecution);
+        Vector<String> weekLabels = new Vector<>();
+        weekLabels.add("L");
+        weekLabels.add("M");
+        weekLabels.add("X");
+        weekLabels.add("J");
+        weekLabels.add("V");
+        weekLabels.add("S");
+        weekLabels.add("D");
+        final customizeCheckboxesAdapter weekAdapter = new customizeCheckboxesAdapter(weekLabels);
+        Vector<String> monthLabels = new Vector<>();
+        for (int i = 1; i <= 31; i++) {
+            monthLabels.add(String.valueOf(i));
+        }
+        final customizeCheckboxesAdapter monthAdapter = new customizeCheckboxesAdapter(monthLabels);
+        daysOfExecution.setAdapter(weekAdapter);
+        daysOfExecution.setLayoutManager(new GridLayoutManager(context, 7, LinearLayoutManager.VERTICAL, false));
+
+        final EditText editTextQuantityOf = dialog.findViewById(R.id.editTextQuantityOf);
+        editTextQuantityOf.setText("1");
+        editTextQuantityOf.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (!b && editTextQuantityOf.getText().toString().isEmpty()) {
+                    editTextQuantityOf.setText("1");
+                }
+            }
+        });
+
+        final EditText editTextPeriodicityType = dialog.findViewById(R.id.editTextPeriodicityType);
+        editTextPeriodicityType.setText("days");
+        final PopupMenu popup = new PopupMenu(context, editTextPeriodicityType);
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                if (menuItem.getTitle().equals("weeks")) {
+                    repetitionInformation.setVisibility(View.VISIBLE);
+                    daysOfExecution.setAdapter(weekAdapter);
+                } else if (menuItem.getTitle().equals("months")) {
+                    repetitionInformation.setVisibility(View.VISIBLE);
+                    daysOfExecution.setAdapter(monthAdapter);
+                } else {
+                    repetitionInformation.setVisibility(View.GONE);
+                }
+                editTextPeriodicityType.setText(menuItem.getTitle());
+                return true;
+            }
+        });
+        popup.getMenu().add("days");
+        popup.getMenu().add("weeks");
+        popup.getMenu().add("months");
+        popup.getMenu().add("years");
+        editTextPeriodicityType.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                popup.show();
+            }
+        });
+
+        final EditText editInitialDate = dialog.findViewById(R.id.editInitialDate);
+        final GregorianCalendar creationDate = new GregorianCalendar();
+        creationDate.setTime(new Date());
+        final DateFormat df = new SimpleDateFormat("dd/MM/yyyy", new Locale("es", "ES"));
+        editInitialDate.setText(df.format(creationDate.getTime()));
+        editInitialDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Dialog dialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                        creationDate.set(year, month, day);
+                        editInitialDate.setText(df.format(creationDate.getTime()));
+                    }
+                }, creationDate.get(Calendar.YEAR), creationDate.get(Calendar.MONTH), creationDate.get(Calendar.DAY_OF_MONTH));
+                dialog.show();
+            }
+        });
+
+        final EditText lastDayEditText = dialog.findViewById(R.id.lastDayEditText);
+        final GregorianCalendar endDate = new GregorianCalendar();
+        endDate.setTime(new Date());
+        lastDayEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Dialog dialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                        endDate.set(year, month, day);
+                        lastDayEditText.setText(df.format(endDate.getTime()));
+                    }
+                }, endDate.get(Calendar.YEAR), endDate.get(Calendar.MONTH), endDate.get(Calendar.DAY_OF_MONTH));
+                dialog.show();
+            }
+        });
+
+        final EditText quantityOfRepetitionsEditText = dialog.findViewById(R.id.quantityOfRepetitionsEditText);
+        quantityOfRepetitionsEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (!b && editTextQuantityOf.getText().toString().isEmpty()) {
+                    editTextQuantityOf.setText("1");
+                }
+            }
+        });
+
+        RadioGroup endOptions = dialog.findViewById(R.id.radioGroupFinalDate);
+        lastDayEditText.setEnabled(false);
+        quantityOfRepetitionsEditText.setEnabled(false);
+        endOptions.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                if (i == 1) {
+                    lastDayEditText.setEnabled(false);
+                    quantityOfRepetitionsEditText.setEnabled(false);
+                } else if (i == 2) {
+                    lastDayEditText.setEnabled(true);
+                    quantityOfRepetitionsEditText.setEnabled(false);
+                } else if (i == 3) {
+                    lastDayEditText.setEnabled(false);
+                    quantityOfRepetitionsEditText.setEnabled(true);
+                }
+            }
+        });
+
+        MaterialButton buttonApplyPeriodicity = dialog.findViewById(R.id.buttonApplyPeriodicity);
+        buttonApplyPeriodicity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        ImageButton buttonCancel = dialog.findViewById(R.id.buttonCancel);
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
 
         dialog.show();
     }

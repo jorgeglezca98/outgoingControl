@@ -35,6 +35,18 @@
             android:textColor="@color/primary0"
             android:textSize="18sp"
             android:textStyle="bold" />
+
+        <android.support.design.button.MaterialButton
+            android:id="@+id/buttonApplyPeriodicity"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:elevation="0dp"
+            android:text="@string/apply_title"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            app:backgroundTint="@color/complement0" />
     </LinearLayout>
 
     <LinearLayout
@@ -64,15 +76,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:hint="X">
+            android:layout_weight="1">
 
             <EditText
                 android:id="@+id/editTextQuantityOf"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="numberDecimal"
+                android:gravity="end"
+                android:inputType="number"
                 android:padding="12dp" />
 
         </android.support.design.widget.TextInputLayout>
@@ -82,15 +94,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:hint="días">
+            android:layout_weight="1">
 
             <EditText
                 android:id="@+id/editTextPeriodicityType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
+                android:focusable="false"
+                android:focusableInTouchMode="true"
                 android:inputType="numberDecimal"
+                android:longClickable="false"
                 android:padding="12dp" />
 
         </android.support.design.widget.TextInputLayout>
@@ -103,6 +117,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:orientation="vertical"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/periodicityTypeInformation">
@@ -178,13 +193,14 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:layout_weight="1"
-            android:hint="@string/value_title">
+            android:hint="Start date">
 
             <EditText
                 android:id="@+id/editInitialDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
+                android:focusable="false"
                 android:inputType="date"
                 android:padding="12dp" />
 
@@ -192,7 +208,7 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/endInformation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -203,6 +219,7 @@
         app:layout_constraintTop_toBottomOf="@id/beginInformation">
 
         <TextView
+            android:id="@+id/endDateHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="serif"
@@ -210,17 +227,27 @@
             android:paddingEnd="10dp"
             android:paddingStart="10dp"
             android:text="Termina"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <RadioGroup
             android:id="@+id/radioGroupFinalDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp">
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_below="@+id/endDateHeader"
+            android:layout_marginTop="10dp"
+            android:weightSum="3"
+            app:layout_constraintBottom_toBottomOf="@+id/radioGroupEditTexts"
+            app:layout_constraintEnd_toStartOf="@id/radioGroupEditTexts"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/radioGroupEditTexts">
 
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:fontFamily="serif"
                 android:text="Nunca"
                 android:textSize="14sp" />
@@ -228,6 +255,7 @@
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:fontFamily="serif"
                 android:text="El día"
                 android:textSize="14sp" />
@@ -235,11 +263,76 @@
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:fontFamily="serif"
-                android:text="Después de repetirlo "
+                android:text="Tras repetirlo "
                 android:textSize="14sp" />
         </RadioGroup>
 
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/radioGroupEditTexts"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:weightSum="3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/radioGroupFinalDate"
+            app:layout_constraintTop_toBottomOf="@+id/endDateHeader">
+
+            <android.support.design.widget.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="End date"
+                android:visibility="invisible">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="date"
+                    android:padding="12dp" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="End date">
+
+                <EditText
+                    android:id="@+id/lastDayEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:focusable="false"
+                    android:inputType="date"
+                    android:padding="12dp" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="x times">
+
+                <EditText
+                    android:id="@+id/quantityOfRepetitionsEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="number"
+                    android:padding="12dp" />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+    </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>
