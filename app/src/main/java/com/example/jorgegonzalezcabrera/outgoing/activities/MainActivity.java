@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,8 +47,6 @@ import io.realm.RealmList;
 import io.realm.RealmResults;
 
 import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newEntryDialog;
-import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newPeriodicEntryDialog;
-import static com.example.jorgegonzalezcabrera.outgoing.utilities.utils.dpToPixels;
 
 public class MainActivity extends AppCompatActivity implements localUtils.OnEntriesChangeInterface
         , localUtils.OnCategoriesChangeInterface
@@ -57,18 +54,11 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         , editIncomeCategoryInterface {
 
     private ViewPager viewPager;
-    private FragmentStatePagerAdapter viewPagerAdapter;
     private actionsFragment actionsFragment;
     private mainFragment mainFragment;
     private settingFragment settingFragment;
     private Realm database;
     private localUtils.OnEntriesChangeInterface onEntriesChangeInterface;
-    private boolean floatingMenuOpen;
-    private FloatingActionButton fabMenu;
-    private FloatingActionButton fabAddEntry;
-    private FloatingActionButton fabAddPeriodicEntry;
-    private CardView labelAddEntry;
-    private CardView labelAddPeriodicEntry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         fragments.add(actionsFragment);
         settingFragment = new settingFragment();
         fragments.add(settingFragment);
-        viewPagerAdapter = new FragmentStatePagerAdapter(getSupportFragmentManager()) {
+        FragmentStatePagerAdapter viewPagerAdapter = new FragmentStatePagerAdapter(getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int i) {
                 return fragments.get(i);
@@ -129,37 +119,12 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
 
         onEntriesChangeInterface = this;
 
-        floatingMenuOpen = false;
-        fabMenu = findViewById(R.id.fab);
-        fabAddEntry = findViewById(R.id.fabAddEntry);
-        fabAddPeriodicEntry = findViewById(R.id.fabAddPeriodicEntry);
-        labelAddEntry = findViewById(R.id.labelAddEntry);
-        labelAddPeriodicEntry = findViewById(R.id.labelAddPeriodicEntry);
-
-        fabMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (floatingMenuOpen) {
-                    closeFloatingMenu();
-                } else {
-                    openFloatingMenu();
-                }
-            }
-        });
+        FloatingActionButton fabAddEntry = findViewById(R.id.fab);
 
         fabAddEntry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 newEntryDialog(MainActivity.this, onEntriesChangeInterface);
-                closeFloatingMenu();
-            }
-        });
-
-        fabAddPeriodicEntry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                newPeriodicEntryDialog(MainActivity.this);
-                closeFloatingMenu();
             }
         });
 
@@ -198,34 +163,6 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
                 return super.onOptionsItemSelected(item);
 
         }
-    }
-
-    private void closeFloatingMenu() {
-        fabMenu.animate().rotation(0);
-
-        fabAddEntry.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
-        labelAddEntry.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
-        labelAddEntry.animate().alpha(0.0f).setDuration(300);
-
-        fabAddPeriodicEntry.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
-        labelAddPeriodicEntry.animate().translationY(dpToPixels(MainActivity.this, 0.0f));
-        labelAddPeriodicEntry.animate().alpha(0.0f).setDuration(300);
-
-        floatingMenuOpen = false;
-    }
-
-    private void openFloatingMenu() {
-        fabMenu.animate().rotation(180);
-
-        fabAddEntry.animate().translationY(dpToPixels(MainActivity.this, -56.0f));
-        labelAddEntry.animate().translationY(dpToPixels(MainActivity.this, -56.0f));
-        labelAddEntry.animate().alpha(1.0f).setDuration(150);
-
-        fabAddPeriodicEntry.animate().translationY(dpToPixels(MainActivity.this, -101.0f));
-        labelAddPeriodicEntry.animate().translationY(dpToPixels(MainActivity.this, -101.0f));
-        labelAddPeriodicEntry.animate().alpha(1.0f).setDuration(300);
-
-        floatingMenuOpen = true;
     }
 
     @Override

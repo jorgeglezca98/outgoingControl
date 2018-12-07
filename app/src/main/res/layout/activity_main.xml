@@ -51,78 +51,6 @@
         app:layout_constraintTop_toBottomOf="@id/toolBar" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabAddEntry"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:backgroundTint="@color/complement0"
-        app:fabSize="mini"
-        app:layout_constraintBottom_toBottomOf="@+id/fab"
-        app:layout_constraintEnd_toEndOf="@+id/fab"
-        app:layout_constraintStart_toStartOf="@+id/fab"
-        app:layout_constraintTop_toTopOf="@+id/fab"
-        app:srcCompat="@drawable/add" />
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/labelAddEntry"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:alpha="0"
-        app:cardCornerRadius="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/fabAddEntry"
-        app:layout_constraintEnd_toStartOf="@+id/fabAddEntry"
-        app:layout_constraintTop_toTopOf="@+id/fabAddEntry">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_marginEnd="10dp"
-            android:text="@string/new_entry"
-            android:textColor="@color/primary1"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/fabAddEntry"
-            app:layout_constraintEnd_toStartOf="@+id/fabAddEntry"
-            app:layout_constraintTop_toTopOf="@+id/fabAddEntry" />
-    </android.support.v7.widget.CardView>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabAddPeriodicEntry"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:backgroundTint="@color/complement0"
-        app:fabSize="mini"
-        app:layout_constraintBottom_toBottomOf="@+id/fab"
-        app:layout_constraintEnd_toEndOf="@+id/fab"
-        app:layout_constraintStart_toStartOf="@+id/fab"
-        app:layout_constraintTop_toTopOf="@+id/fab"
-        app:srcCompat="@drawable/periodicity" />
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/labelAddPeriodicEntry"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:alpha="0"
-        app:cardCornerRadius="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/fabAddPeriodicEntry"
-        app:layout_constraintEnd_toStartOf="@+id/fabAddPeriodicEntry"
-        app:layout_constraintTop_toTopOf="@+id/fabAddPeriodicEntry">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_marginEnd="10dp"
-            android:text="@string/New_periodic_entry"
-            android:textColor="@color/primary1"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/fabAddPeriodicEntry"
-            app:layout_constraintEnd_toStartOf="@+id/fabAddPeriodicEntry"
-            app:layout_constraintTop_toTopOf="@+id/fabAddPeriodicEntry" />
-    </android.support.v7.widget.CardView>
-
-    <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -132,6 +60,6 @@
         app:fabSize="normal"
         app:layout_constraintBottom_toTopOf="@id/tabLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/up_pointing_arrow" />
+        app:srcCompat="@drawable/add" />
 
 </android.support.constraint.ConstraintLayout>
