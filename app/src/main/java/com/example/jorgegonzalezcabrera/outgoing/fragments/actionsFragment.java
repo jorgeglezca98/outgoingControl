@@ -16,6 +16,7 @@ import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.allEntriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSelectionAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
+import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 import com.example.jorgegonzalezcabrera.outgoing.others.HeaderItemDecoration;
 import com.example.jorgegonzalezcabrera.outgoing.others.HeaderItemDecoration.StickyHeaderInterface;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
@@ -83,6 +84,11 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
 
                 @Override
                 public void editEntry(@NonNull entry nextVersion) {
+
+                }
+
+                @Override
+                public void addPeriodicEntry(periodicEntry periodicEntry) {
 
                 }
             };

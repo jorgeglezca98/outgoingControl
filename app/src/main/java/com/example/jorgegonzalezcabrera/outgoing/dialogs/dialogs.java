@@ -26,13 +26,16 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSelectionAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.customizeCheckboxesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.actionsFragment;
+import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
+import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 import com.example.jorgegonzalezcabrera.outgoing.views.editTextWithButton;
 
@@ -45,11 +48,18 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
+import io.realm.Realm;
+import io.realm.RealmList;
+
 import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getFunctioningIncomeCategories;
 import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getFunctioningOutgoingCategories;
 import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getTypeFromOrdinal;
 
 public class dialogs {
+
+    private interface onPeriodicitySet {
+        void periodicitySet(periodicEntry periodicEntrySet);
+    }
 
     public static void newEntryDialog(final Context context, final localUtils.OnEntriesChangeInterface onEntriesChange) {
         final Dialog dialog = new Dialog(new ContextThemeWrapper(context, R.style.AppTheme_TransparentActivity));
@@ -59,6 +69,8 @@ public class dialogs {
         dialog.setContentView(R.layout.new_entry_dialog);
         dialog.getWindow().getAttributes().width = WindowManager.LayoutParams.MATCH_PARENT;
         dialog.getWindow().getAttributes().height = WindowManager.LayoutParams.MATCH_PARENT;
+
+        final periodicEntry periodicEntry = new periodicEntry();
 
         final EditText valueEditText = dialog.findViewById(R.id.editTextValueNewEntry);
         final EditText categorySelectionEditText = dialog.findViewById(R.id.editTextCategorySelection);
@@ -118,27 +130,7 @@ public class dialogs {
             }
         });
 
-        applyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!valueEditText.getText().toString().isEmpty() && !categorySelectionEditText.getText().toString().isEmpty()) {
-                    int typeOfCategory;
-                    if (outgoingCategories.contains(categorySelectionEditText.getText().toString()))
-                        typeOfCategory = type.OUTGOING.ordinal();
-                    else
-                        typeOfCategory = type.INCOME.ordinal();
-
-                    String subcategory = categorySelectionEditText.getText().toString();
-                    String description = descriptionEditText.getText().toString();
-                    double value = Double.valueOf(valueEditText.getText().toString());
-
-                    onEntriesChange.addEntry(new entry(value, getTypeFromOrdinal(typeOfCategory), subcategory, description, creationDate.getTime()));
-                    dialog.dismiss();
-                }
-            }
-        });
-
-        Switch switchPeriodicity = dialog.findViewById(R.id.switchPeriodicity);
+        final Switch switchPeriodicity = dialog.findViewById(R.id.switchPeriodicity);
         switchPeriodicity.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -148,7 +140,17 @@ public class dialogs {
                     datePickerEditText.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            editEntryPeriodicityDialog(context);
+                            editEntryPeriodicityDialog(context, new onPeriodicitySet() {
+                                @Override
+                                public void periodicitySet(periodicEntry periodicEntrySet) {
+                                    periodicEntry.setAskBefore(periodicEntrySet.isAskBefore());
+                                    periodicEntry.setDaysOfRepetition(periodicEntrySet.getDaysOfRepetition());
+                                    periodicEntry.setEndDate(periodicEntrySet.getEndDate());
+                                    periodicEntry.setStartDate(periodicEntrySet.getStartDate());
+                                    periodicEntry.setFrequency(periodicEntrySet.getFrequency().ordinal());
+                                    periodicEntry.setQuantityOf(periodicEntrySet.getQuantityOf());
+                                }
+                            });
                         }
                     });
                 } else {
@@ -171,10 +173,38 @@ public class dialogs {
             }
         });
 
+        applyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!valueEditText.getText().toString().isEmpty() && !categorySelectionEditText.getText().toString().isEmpty()) {
+                    int typeOfCategory;
+                    if (outgoingCategories.contains(categorySelectionEditText.getText().toString()))
+                        typeOfCategory = type.OUTGOING.ordinal();
+                    else
+                        typeOfCategory = type.INCOME.ordinal();
+
+                    String subcategory = categorySelectionEditText.getText().toString();
+                    String description = descriptionEditText.getText().toString();
+                    double value = Double.valueOf(valueEditText.getText().toString());
+
+                    if (switchPeriodicity.isChecked()) {
+                        periodicEntry.setValue(value);
+                        periodicEntry.setDescription(description);
+                        periodicEntry.setCategoryId(Realm.getDefaultInstance().where(category.class).equalTo("name", subcategory).and().equalTo("type", category.OUTGOING).findFirst().getId());
+                        onEntriesChange.addPeriodicEntry(periodicEntry);
+                    } else {
+                        onEntriesChange.addEntry(new entry(value, getTypeFromOrdinal(typeOfCategory), subcategory, description, creationDate.getTime()));
+                    }
+
+                    dialog.dismiss();
+                }
+            }
+        });
+
         dialog.show();
     }
 
-    private static void editEntryPeriodicityDialog(final Context context) {
+    private static void editEntryPeriodicityDialog(final Context context, final onPeriodicitySet onPeriodicitySet) {
         final Dialog dialog = new Dialog(new ContextThemeWrapper(context, R.style.AppTheme_TransparentActivity));
         dialog.getWindow().setWindowAnimations(R.style.DialogAnimationFromRight);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -196,7 +226,7 @@ public class dialogs {
         weekLabels.add("D");
         final customizeCheckboxesAdapter weekAdapter = new customizeCheckboxesAdapter(weekLabels);
         Vector<String> monthLabels = new Vector<>();
-        for (int i = 1; i <= 31; i++) {
+        for (int i = 1; i <= 28; i++) {
             monthLabels.add(String.valueOf(i));
         }
         final customizeCheckboxesAdapter monthAdapter = new customizeCheckboxesAdapter(monthLabels);
@@ -245,20 +275,24 @@ public class dialogs {
         });
 
         final EditText editInitialDate = dialog.findViewById(R.id.editInitialDate);
-        final GregorianCalendar creationDate = new GregorianCalendar();
-        creationDate.setTime(new Date());
+        final GregorianCalendar startDate = new GregorianCalendar();
+        startDate.setTime(new Date());
+        startDate.set(Calendar.HOUR_OF_DAY, 0);
+        startDate.set(Calendar.MINUTE, 0);
+        startDate.set(Calendar.SECOND, 0);
+        startDate.set(Calendar.MILLISECOND, 0);
         final DateFormat df = new SimpleDateFormat("dd/MM/yyyy", new Locale("es", "ES"));
-        editInitialDate.setText(df.format(creationDate.getTime()));
+        editInitialDate.setText(df.format(startDate.getTime()));
         editInitialDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Dialog dialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                        creationDate.set(year, month, day);
-                        editInitialDate.setText(df.format(creationDate.getTime()));
+                        startDate.set(year, month, day);
+                        editInitialDate.setText(df.format(startDate.getTime()));
                     }
-                }, creationDate.get(Calendar.YEAR), creationDate.get(Calendar.MONTH), creationDate.get(Calendar.DAY_OF_MONTH));
+                }, startDate.get(Calendar.YEAR), startDate.get(Calendar.MONTH), startDate.get(Calendar.DAY_OF_MONTH));
                 dialog.show();
             }
         });
@@ -266,6 +300,10 @@ public class dialogs {
         final EditText lastDayEditText = dialog.findViewById(R.id.lastDayEditText);
         final GregorianCalendar endDate = new GregorianCalendar();
         endDate.setTime(new Date());
+        endDate.set(Calendar.HOUR_OF_DAY, 0);
+        endDate.set(Calendar.MINUTE, 0);
+        endDate.set(Calendar.SECOND, 0);
+        endDate.set(Calendar.MILLISECOND, 0);
         lastDayEditText.setText(df.format(endDate.getTime()));
         lastDayEditText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -292,7 +330,7 @@ public class dialogs {
             }
         });
 
-        RadioGroup endOptions = dialog.findViewById(R.id.radioGroupFinalDate);
+        final RadioGroup endOptions = dialog.findViewById(R.id.radioGroupFinalDate);
         endOptions.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
@@ -310,11 +348,88 @@ public class dialogs {
         });
         endOptions.check(R.id.radioButtonNever);
 
-        MaterialButton buttonApplyPeriodicity = dialog.findViewById(R.id.buttonApplyPeriodicity);
+        final Switch askBeforeSwitch = dialog.findViewById(R.id.askFirst);
+
+        Button buttonApplyPeriodicity = dialog.findViewById(R.id.buttonApplyPeriodicity);
         buttonApplyPeriodicity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!editTextQuantityOf.getText().toString().isEmpty()) {
+                    String periodicityType = editTextPeriodicityType.getText().toString();
+                    if ((periodicityType.equals("weeks") && weekAdapter.isSomeoneSelected()) ||
+                            (periodicityType.equals("months") && monthAdapter.isSomeoneSelected()) ||
+                            periodicityType.equals("days") || periodicityType.equals("years")) {
+                        if ((endOptions.getCheckedRadioButtonId() == R.id.radioButtonAfterXRepetitions && !quantityOfRepetitionsEditText.getText().toString().isEmpty()) ||
+                                endOptions.getCheckedRadioButtonId() == R.id.radioButtonNever ||
+                                (endOptions.getCheckedRadioButtonId() == R.id.radioButtonByDay && startDate.before(endDate))) {
 
+                            periodicEntry.periodicType frequency;
+                            RealmList<Integer> formattedDaysOfRepetition = new RealmList<>();
+                            if (periodicityType.equals("weeks")) {
+                                frequency = periodicEntry.periodicType.WEEKLY;
+                                Vector<String> daysOfRepetition = new Vector<>(weekAdapter.getCheckedItems());
+                                for (int i = 0; i < daysOfRepetition.size(); i++) {
+                                    switch (daysOfRepetition.get(i)) {
+                                        case "L":
+                                            formattedDaysOfRepetition.add(Calendar.MONDAY);
+                                            break;
+                                        case "M":
+                                            formattedDaysOfRepetition.add(Calendar.TUESDAY);
+                                            break;
+                                        case "X":
+                                            formattedDaysOfRepetition.add(Calendar.WEDNESDAY);
+                                            break;
+                                        case "J":
+                                            formattedDaysOfRepetition.add(Calendar.THURSDAY);
+                                            break;
+                                        case "V":
+                                            formattedDaysOfRepetition.add(Calendar.FRIDAY);
+                                            break;
+                                        case "S":
+                                            formattedDaysOfRepetition.add(Calendar.SATURDAY);
+                                            break;
+                                        case "D":
+                                            formattedDaysOfRepetition.add(Calendar.SUNDAY);
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+                            } else if (periodicityType.equals("days")) {
+                                frequency = periodicEntry.periodicType.DAILY;
+                            } else if (periodicityType.equals("months")) {
+                                frequency = periodicEntry.periodicType.MONTHLY;
+                                Vector<String> daysOfRepetition = new Vector<>(monthAdapter.getCheckedItems());
+                                for (int i = 0; i < daysOfRepetition.size(); i++) {
+                                    formattedDaysOfRepetition.add(Integer.parseInt(daysOfRepetition.get(i)));
+                                }
+                            } else {
+                                frequency = periodicEntry.periodicType.ANNUAL;
+                            }
+
+                            GregorianCalendar formattedEndDate;
+                            if (endOptions.getCheckedRadioButtonId() == R.id.radioButtonNever) {
+                                formattedEndDate = null;
+                            } else if (endOptions.getCheckedRadioButtonId() == R.id.radioButtonByDay) {
+                                formattedEndDate = endDate;
+                            } else {
+                                if (periodicityType.equals("weeks") || (periodicityType.equals("months"))) {
+                                    formattedEndDate = periodicEntry.setLastDayByTimes(Integer.parseInt(editTextQuantityOf.getText().toString()), Integer.parseInt(quantityOfRepetitionsEditText.getText().toString()), frequency, startDate, formattedDaysOfRepetition);
+                                } else {
+                                    formattedEndDate = periodicEntry.setLastDayByTimes(Integer.parseInt(editTextQuantityOf.getText().toString()), Integer.parseInt(quantityOfRepetitionsEditText.getText().toString()), frequency, startDate);
+                                }
+                            }
+                            onPeriodicitySet.periodicitySet(new periodicEntry(0, -1, null, Integer.parseInt(editTextQuantityOf.getText().toString()), frequency, startDate.getTime(), formattedEndDate != null ? formattedEndDate.getTime() : null, formattedDaysOfRepetition, askBeforeSwitch.isChecked()));
+                            dialog.dismiss();
+                        } else {
+                            Toast.makeText(context, "The end date must be set and it can't be before the start date.", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        Toast.makeText(context, "You have to select at least one day of repetition.", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(context, "Set number of " + editTextPeriodicityType.getText() + "between repetitions", Toast.LENGTH_LONG).show();
+                }
             }
         });
 

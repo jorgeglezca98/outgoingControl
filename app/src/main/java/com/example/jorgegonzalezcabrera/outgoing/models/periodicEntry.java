@@ -9,7 +9,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Vector;
 
 import javax.annotation.Nonnull;
 
@@ -25,7 +24,7 @@ public class periodicEntry extends RealmObject {
     @PrimaryKey
     private long id;
     private double value;
-    private int categoryId;
+    private long categoryId;
     private String description;
 
     private int quantityOf;
@@ -38,7 +37,7 @@ public class periodicEntry extends RealmObject {
     private Date lastChange;
 
     public periodicEntry() {
-        this.id = -1;
+        this.id = myApplication.periodicEntryId.incrementAndGet();
         this.value = 0;
         this.categoryId = -1;
         this.description = "Not described";
@@ -55,7 +54,7 @@ public class periodicEntry extends RealmObject {
 
     public periodicEntry(double value, int categoryId, String description, int quantityOf,
                          @Nonnull periodicType frequency, Date startDate, Date endDate,
-                         RealmList<Integer> daysOfRepetition) {
+                         RealmList<Integer> daysOfRepetition, boolean askBefore) {
         this.id = myApplication.periodicEntryId.incrementAndGet();
         this.value = value;
         this.categoryId = categoryId;
@@ -67,7 +66,7 @@ public class periodicEntry extends RealmObject {
         Collections.sort(this.daysOfRepetition);
         this.startDate = startDate;
         this.endDate = endDate;
-        this.askBefore = false;
+        this.askBefore = askBefore;
 
         this.lastChange = startDate;
     }
@@ -80,7 +79,7 @@ public class periodicEntry extends RealmObject {
         return value;
     }
 
-    public int getCategoryId() {
+    public long getCategoryId() {
         return categoryId;
     }
 
@@ -116,7 +115,7 @@ public class periodicEntry extends RealmObject {
         this.value = value;
     }
 
-    public void setCategoryId(int categoryId) {
+    public void setCategoryId(long categoryId) {
         this.categoryId = categoryId;
     }
 
@@ -163,6 +162,87 @@ public class periodicEntry extends RealmObject {
         } else {
             return periodicType.ANNUAL;
         }
+    }
+
+    public static GregorianCalendar setLastDayByTimes(int each, int times, periodicType frequency, GregorianCalendar startDate) {
+        GregorianCalendar lastDate = new GregorianCalendar();
+        lastDate.setTime(startDate.getTime());
+
+        int typeOfFrequency;
+        if (frequency == periodicType.DAILY) {
+            typeOfFrequency = Calendar.DATE;
+        } else if (frequency == periodicType.ANNUAL) {
+            if (lastDate.get(Calendar.MONTH) == Calendar.FEBRUARY && lastDate.get(Calendar.DAY_OF_MONTH) == 29 && each != 4) {
+                return null;
+            }
+            typeOfFrequency = Calendar.YEAR;
+        } else {
+            return null;
+        }
+
+        for (int i = 0; i < times; i++) {
+            lastDate.add(typeOfFrequency, each);
+        }
+
+        return lastDate;
+    }
+
+    public static GregorianCalendar setLastDayByTimes(int each, int times, periodicType frequency, GregorianCalendar startDate, RealmList<Integer> daysOfRepetition) {
+        GregorianCalendar lastDate = new GregorianCalendar();
+        lastDate.setTime(startDate.getTime());
+        if (frequency == periodicType.WEEKLY) {
+            if (daysOfRepetition.isEmpty() || (Collections.max(daysOfRepetition) > 6)) {
+                return null;
+            }
+            int pendingRepetitions = times;
+            if (daysOfRepetition.contains(lastDate.get(Calendar.DAY_OF_WEEK))) {
+                pendingRepetitions--;
+            }
+            while (pendingRepetitions % daysOfRepetition.size() != 0) {
+                if (lastDate.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+                    lastDate.add(Calendar.WEEK_OF_YEAR, each);
+                    lastDate.add(Calendar.DATE, -6);
+                    pendingRepetitions -= daysOfRepetition.size();
+                } else {
+                    lastDate.add(Calendar.DATE, 1);
+                }
+                if (daysOfRepetition.contains(lastDate.get(Calendar.DAY_OF_WEEK))) {
+                    pendingRepetitions--;
+                }
+            }
+            while (pendingRepetitions >= daysOfRepetition.size()) {
+                lastDate.add(Calendar.WEEK_OF_YEAR, each);
+                pendingRepetitions -= daysOfRepetition.size();
+            }
+        } else if (frequency == periodicType.MONTHLY) {
+            if (daysOfRepetition.isEmpty() || (Collections.max(daysOfRepetition) > 28)) {
+                return null;
+            }
+            int pendingRepetitions = times;
+            if (daysOfRepetition.contains(lastDate.get(Calendar.DAY_OF_MONTH))) {
+                pendingRepetitions--;
+            }
+            while (pendingRepetitions % daysOfRepetition.size() != 0) {
+                if (lastDate.get(Calendar.DAY_OF_MONTH) >= 28) {
+                    lastDate.add(Calendar.MONTH, each);
+                    lastDate.add(Calendar.DATE, (1 - lastDate.get(Calendar.DAY_OF_MONTH)));
+                    pendingRepetitions -= daysOfRepetition.size();
+                } else {
+                    lastDate.add(Calendar.DATE, 1);
+                }
+                if (daysOfRepetition.contains(lastDate.get(Calendar.DAY_OF_MONTH))) {
+                    pendingRepetitions--;
+                }
+            }
+            while (pendingRepetitions >= daysOfRepetition.size()) {
+                lastDate.add(Calendar.MONTH, each);
+                pendingRepetitions -= daysOfRepetition.size();
+            }
+        } else {
+            return null;
+        }
+
+        return lastDate;
     }
 
     public entry getEntry() {

@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
@@ -18,7 +19,7 @@ public class customizeCheckboxesAdapter extends RecyclerView.Adapter<customizeCh
         public String name;
         public boolean selected;
 
-        public elementCheckbox(@NonNull String name, boolean selected) {
+        elementCheckbox(@NonNull String name, boolean selected) {
             this.name = name;
             this.selected = selected;
         }
@@ -26,6 +27,7 @@ public class customizeCheckboxesAdapter extends RecyclerView.Adapter<customizeCh
 
     private int layout;
     private Vector<elementCheckbox> items;
+    private int numberOfSelectedItems;
 
     public customizeCheckboxesAdapter(Vector<String> items) {
         this.layout = R.layout.labeled_checkbox_item;
@@ -33,6 +35,7 @@ public class customizeCheckboxesAdapter extends RecyclerView.Adapter<customizeCh
         for (int i = 0; i < items.size(); i++) {
             this.items.add(new elementCheckbox(items.get(i), false));
         }
+        this.numberOfSelectedItems = 0;
     }
 
     @NonNull
@@ -47,6 +50,20 @@ public class customizeCheckboxesAdapter extends RecyclerView.Adapter<customizeCh
         viewHolder.bind(items.get(i));
     }
 
+    public boolean isSomeoneSelected() {
+        return numberOfSelectedItems > 0;
+    }
+
+    public Vector<String> getCheckedItems() {
+        Vector<String> result = new Vector<>();
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).selected) {
+                result.add(items.get(i).name);
+            }
+        }
+        return result;
+    }
+
     @Override
     public int getItemCount() {
         return items.size();
@@ -57,7 +74,7 @@ public class customizeCheckboxesAdapter extends RecyclerView.Adapter<customizeCh
         private CheckBox checkBox;
         private TextView textView;
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             checkBox = itemView.findViewById(R.id.checkbox);
@@ -66,6 +83,14 @@ public class customizeCheckboxesAdapter extends RecyclerView.Adapter<customizeCh
 
         public void bind(elementCheckbox element) {
             checkBox.setChecked(element.selected);
+            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    items.get(getAdapterPosition()).selected = b;
+                    if (b) numberOfSelectedItems++;
+                    else numberOfSelectedItems--;
+                }
+            });
             textView.setText(element.name);
         }
     }

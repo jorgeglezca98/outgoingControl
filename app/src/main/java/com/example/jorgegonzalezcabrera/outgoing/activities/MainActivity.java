@@ -323,6 +323,16 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     }
 
     @Override
+    public void addPeriodicEntry(final periodicEntry periodicEntry) {
+        database.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(@NonNull Realm realm) {
+                database.copyToRealm(periodicEntry);
+            }
+        });
+    }
+
+    @Override
     public void removeAndReplaceCategory(@NonNull final category removedCategory, @NonNull String newSubcategory) {
         actionsFragment.removeCategoryInFilters(removedCategory.getName());
         RealmList<entry> entries = new RealmList<>();

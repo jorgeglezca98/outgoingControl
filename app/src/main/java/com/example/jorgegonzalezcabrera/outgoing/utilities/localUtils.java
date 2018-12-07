@@ -6,6 +6,7 @@ import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
 import com.example.jorgegonzalezcabrera.outgoing.models.moneyController;
+import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 
 import java.util.Vector;
 
@@ -20,6 +21,8 @@ public class localUtils {
         void removeEntry(@NonNull entry removedEntry);
 
         void editEntry(@NonNull entry nextVersion);
+
+        void addPeriodicEntry(periodicEntry periodicEntry);
     }
 
     public interface OnCategoriesChangeInterface {
