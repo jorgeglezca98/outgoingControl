@@ -1,11 +1,11 @@
 package com.example.jorgegonzalezcabrera.outgoing.adapters;
 
 import android.support.annotation.NonNull;
+import android.support.design.chip.Chip;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
@@ -123,24 +123,24 @@ public class categoriesSelectionAdapter extends RecyclerView.Adapter<categoriesS
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        public CheckBox checkboxCategory;
+        public Chip chipCategory;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            checkboxCategory = itemView.findViewById(R.id.checkboxCategory);
+            chipCategory = itemView.findViewById(R.id.chip);
         }
 
         void bind(final categoryCheckBox category) {
             final int categoryPosition = getAdapterPosition();
-            checkboxCategory.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            chipCategory.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                     categories.get(categoryPosition).selected = b;
                     onItemsChangedInterface.onItemChange(categories.get(categoryPosition));
                 }
             });
-            checkboxCategory.setChecked(category.selected);
-            checkboxCategory.setText(category.name);
+            chipCategory.setChecked(category.selected);
+            chipCategory.setText(category.name);
         }
     }
 }
