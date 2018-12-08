@@ -67,7 +67,7 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
         subcategoriesAdapter = new categoriesSelectionAdapter(categoriesSelectionAdapter.FUNCTIONING_OUTGOING_CATEGORIES);
         subcategoriesAdapter.markAsChecked(subcategories);
         recyclerViewSubcategories.setAdapter(subcategoriesAdapter);
-        recyclerViewSubcategories.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewSubcategories.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         ConstraintLayout constraintLayout = findViewById(R.id.layoutEditableOutgoingCategory);
         constraintLayout.setTransitionName(containerTransitionName);
