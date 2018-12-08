@@ -2,7 +2,6 @@ package com.example.jorgegonzalezcabrera.outgoing.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -71,7 +70,6 @@ public class newMoneyControllersAdapter extends RecyclerView.Adapter<newMoneyCon
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        private ConstraintLayout layoutEditableOutgoingCategory;
         private RecyclerView subcategoriesRecyclerView;
         private EditText name;
         private EditText max;
@@ -81,7 +79,6 @@ public class newMoneyControllersAdapter extends RecyclerView.Adapter<newMoneyCon
         ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            layoutEditableOutgoingCategory = itemView.findViewById(R.id.layoutEditableOutgoingCategory);
             subcategoriesRecyclerView = itemView.findViewById(R.id.recyclerViewSubcategories);
             subcategoriesAdapter = new categoriesSelectionAdapter(new Vector<categoriesSelectionAdapter.categoryCheckBox>());
             subcategoriesRecyclerView.setAdapter(subcategoriesAdapter);
@@ -92,19 +89,7 @@ public class newMoneyControllersAdapter extends RecyclerView.Adapter<newMoneyCon
         }
 
         void bind(final moneyController category) {
-            View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View view, boolean b) {
-                    if (b) {
-                        layoutEditableOutgoingCategory.setTranslationZ(10);
-                    } else {
-                        layoutEditableOutgoingCategory.setTranslationZ(0);
-                    }
-                }
-            };
-
             name.setText(category.getName());
-            name.setOnFocusChangeListener(focusChangeListener);
             name.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -123,7 +108,6 @@ public class newMoneyControllersAdapter extends RecyclerView.Adapter<newMoneyCon
             });
 
             max.setText(category.getMaximum() == 0 ? "" : String.valueOf(category.getMaximum()));
-            max.setOnFocusChangeListener(focusChangeListener);
             max.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -174,7 +158,7 @@ public class newMoneyControllersAdapter extends RecyclerView.Adapter<newMoneyCon
                     }
                 }
             });
-            subcategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(context)); //TODO: as much as possibles columns
+            subcategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
 
             removeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
