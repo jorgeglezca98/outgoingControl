@@ -152,6 +152,40 @@
             app:layout_constraintStart_toStartOf="@id/moneyControllersHeader"
             app:layout_constraintTop_toBottomOf="@id/moneyControllersHeader" />
 
+        <TextView
+            android:id="@+id/periodicEntriesHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginStart="14dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/white"
+            android:drawableTop="@drawable/periodicity"
+            android:elevation="5dp"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="@string/periodic_entries"
+            android:textColor="@color/primary3"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@id/recyclerViewEditableIncomeCategories"
+            app:layout_constraintStart_toStartOf="@id/recyclerViewEditableIncomeCategories"
+            app:layout_constraintTop_toBottomOf="@id/recyclerViewMoneyControllers" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerViewPeriodicEntries"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@android:color/white"
+            android:clipToPadding="false"
+            android:elevation="2dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/periodicEntriesHeader"
+            app:layout_constraintStart_toStartOf="@id/periodicEntriesHeader"
+            app:layout_constraintTop_toBottomOf="@id/periodicEntriesHeader" />
+
     </android.support.constraint.ConstraintLayout>
 
 </android.support.v4.widget.NestedScrollView>
