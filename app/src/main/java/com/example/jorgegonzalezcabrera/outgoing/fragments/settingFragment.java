@@ -14,7 +14,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
@@ -24,8 +23,6 @@ import com.example.jorgegonzalezcabrera.outgoing.adapters.editableOutgoingCatego
 import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.moneyController;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
-
-import java.util.Vector;
 
 public class settingFragment extends Fragment {
 
@@ -72,10 +69,6 @@ public class settingFragment extends Fragment {
 
                 }
 
-                @Override
-                public void changeMoneyControllerSubcategories(@NonNull moneyController moneyControllers, @NonNull Vector<String> newCategories) {
-
-                }
             };
         }
 
@@ -84,7 +77,7 @@ public class settingFragment extends Fragment {
         } catch (Exception e) {
             editOutgoingCategoryInterface = new editableOutgoingCategoriesAdapter.editOutgoingCategoryInterface() {
                 @Override
-                public void edit(moneyController moneyController, ConstraintLayout container, EditText categoryName, EditText categoryMaximum) {
+                public void editMoneyController(moneyController moneyController, ConstraintLayout container, int requestCode) {
 
                 }
             };
@@ -120,8 +113,7 @@ public class settingFragment extends Fragment {
         recyclerViewEditableIncomeCategories.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
 
         recyclerViewMoneyControllers = view.findViewById(R.id.recyclerViewMoneyControllers);
-        moneyControllersAdapter = new editableOutgoingCategoriesAdapter(getContext(), onCategoriesChangeInterface, editOutgoingCategoryInterface);
-        moneyControllersAdapter.addOnEditCategoryFieldInterface(editIncomeCategoryInterface);
+        moneyControllersAdapter = new editableOutgoingCategoriesAdapter(onCategoriesChangeInterface, editOutgoingCategoryInterface);
         recyclerViewMoneyControllers.setAdapter(moneyControllersAdapter);
         recyclerViewMoneyControllers.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewMoneyControllers.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));

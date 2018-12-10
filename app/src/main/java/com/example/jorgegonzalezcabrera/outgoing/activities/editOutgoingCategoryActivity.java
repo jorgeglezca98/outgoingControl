@@ -24,6 +24,7 @@ import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.CATEGORY_NAME_TRANSITION_NAME_KEY;
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.CATEGORY_SUBCATEGORIES_KEY;
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.CONTAINER_TRANSITION_NAME_KEY;
+import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.CONTROLLER_ID_KEY;
 
 public class editOutgoingCategoryActivity extends AppCompatActivity {
 
@@ -43,7 +44,8 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
         setFinishOnTouchOutside(false);
         supportPostponeEnterTransition();
 
-        Bundle extras = getIntent().getExtras();
+        final Bundle extras = getIntent().getExtras();
+        final Long id = extras.getLong(CONTROLLER_ID_KEY);
         String containerTransitionName = extras.getString(CONTAINER_TRANSITION_NAME_KEY);
         String categoryNameTransitionName = extras.getString(CATEGORY_NAME_TRANSITION_NAME_KEY);
         String categoryMaxTransitionName = extras.getString(CATEGORY_MAXIMUM_TRANSITION_NAME_KEY);
@@ -99,6 +101,7 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
                     returnIntent.putExtra(CATEGORY_NAME_KEY, editTextCategoryName.getText().toString());
                     returnIntent.putExtra(CATEGORY_MAXIMUM_KEY, Double.valueOf(editTextMaxValue.getText().toString()));
                     returnIntent.putStringArrayListExtra(CATEGORY_SUBCATEGORIES_KEY, finalSubcategories);
+                    returnIntent.putExtra(CONTROLLER_ID_KEY, id);
                     setResult(Activity.RESULT_OK, returnIntent);
                     supportFinishAfterTransition();
                 }

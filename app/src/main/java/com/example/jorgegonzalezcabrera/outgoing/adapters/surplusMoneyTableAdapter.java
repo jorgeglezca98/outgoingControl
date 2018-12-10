@@ -62,30 +62,24 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
                     items.get(i).surplusMoney += value;
                 }
                 notifyItemChanged(i);
-                return;
             }
         }
     }
 
     public void modifyData(entry currentEntry, entry nextEntry, Date dateOfLastUpdate) {
-        boolean included = !utils.areFromTheSameMonth(dateOfLastUpdate, nextEntry.getCreationDate());
-        boolean deleted = !utils.areFromTheSameMonth(dateOfLastUpdate, currentEntry.getCreationDate());
-
-        for (int i = 0; i < items.size() && !(included && deleted); i++) {
+        for (int i = 0; i < items.size(); i++) {
             RealmList<category> subcategories = items.get(i).category.getSubcategories();
             if (subcategories.where().equalTo("name", currentEntry.getCategory()).findFirst() != null) {
                 if (utils.areFromTheSameMonth(dateOfLastUpdate, currentEntry.getCreationDate())) {
                     items.get(i).surplusMoney += currentEntry.getValor();
                     notifyItemChanged(i);
                 }
-                deleted = true;
             }
             if (subcategories.where().equalTo("name", nextEntry.getCategory()).findFirst() != null) {
                 if (utils.areFromTheSameMonth(dateOfLastUpdate, nextEntry.getCreationDate())) {
                     items.get(i).surplusMoney -= nextEntry.getValor();
                     notifyItemChanged(i);
                 }
-                included = true;
             }
         }
     }
@@ -100,25 +94,7 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
         }
     }
 
-    public void updateCategoryMaximum(moneyController modifiedMoneyController) {
-        for (int i = 0; i < items.size(); i++) {
-            if (modifiedMoneyController.getId() == items.get(i).category.getId()) {
-                items.get(i).category = modifiedMoneyController;
-                Date date = utils.firstDateOfTheMonth(new Date());
-                RealmResults<entry> entries = Realm.getDefaultInstance().where(entry.class).greaterThanOrEqualTo("creationDate", date).findAll();
-                double outgoingsByCategory = 0;
-                for (int j = 0; j < modifiedMoneyController.getSubcategories().size(); j++) {
-                    String subcategoryName = modifiedMoneyController.getSubcategories().get(j).getName();
-                    outgoingsByCategory += entries.where().equalTo("category", subcategoryName).sum("valor").doubleValue();
-                }
-                items.get(i).surplusMoney = modifiedMoneyController.getMaximum() - outgoingsByCategory;
-                notifyItemChanged(i);
-                return;
-            }
-        }
-    }
-
-    public void updateSubcategories(moneyController modifiedMoneyController) {
+    public void updateItem(moneyController modifiedMoneyController) {
         for (int i = 0; i < items.size(); i++) {
             if (modifiedMoneyController.getId() == items.get(i).category.getId()) {
                 items.get(i).category = modifiedMoneyController;

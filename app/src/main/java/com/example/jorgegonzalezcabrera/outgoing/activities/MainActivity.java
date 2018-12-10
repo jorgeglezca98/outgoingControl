@@ -19,7 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -99,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         };
         viewPager.setAdapter(viewPagerAdapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        viewPager.setOffscreenPageLimit(3);
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -141,12 +141,9 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refreshMenuItem:
-                View menuItem = findViewById(R.id.refreshMenuItem);
                 Animation rotation = AnimationUtils.loadAnimation(this, R.anim.rotate);
                 rotation.setRepeatCount(Animation.INFINITE);
-                menuItem.startAnimation(rotation);
                 updateData();
-                menuItem.clearAnimation();
                 Toast.makeText(this, "Updated", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.filters:
@@ -310,24 +307,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         });
     }
 
-    @Override
-    public void changeMoneyControllerSubcategories(@NonNull final moneyController moneyControllers, @NonNull final Vector<String> newCategories) {
-        mainFragment.updateCategorySubcategoriesChanged(moneyControllers);
-        settingFragment.modifyOutgoingCategory(moneyControllers);
-        database.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                moneyControllers.getSubcategories().clear();
-                for (int i = 0; i < newCategories.size(); i++) {
-                    category newCategory = database.where(category.class).contains("name", newCategories.get(i)).findFirst();
-                    moneyControllers.getSubcategories().add(newCategory);
-                }
-                database.copyToRealmOrUpdate(moneyControllers);
-            }
-        });
-
-    }
-
+    public static final String CONTROLLER_ID_KEY = "controllerID";
     public final static String CATEGORY_NAME_KEY = "categoryName";
     public final static String CATEGORY_MAXIMUM_KEY = "categoryMax";
     public final static String CATEGORY_SUBCATEGORIES_KEY = "categorySubcategories";
@@ -339,34 +319,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     public static final int REQUEST_ADD_INCOME_CATEGORY = 2;
     public static final int REQUEST_ADD_MONEY_CONTROLLER = 3;
     public static final int REQUEST_EDIT_CATEGORY = 4;
-    public static final int REQUEST_EDIT_MONEY_CONTROLLER_MAXIMUM = 5;
-    public static final int REQUEST_EDIT_OUTGOING_CATEGORY_NAME = 6;
-    public static final int REQUEST_EDIT_SUBCATEGORY = 7;
-
-    @Override
-    public void edit(moneyController moneyController, ConstraintLayout container, EditText categoryName, EditText categoryMaximum) {
-        Intent intent = new Intent(this, editOutgoingCategoryActivity.class);
-
-        List<String> subcategories = new ArrayList<>();
-        for (int i = 0; i < moneyController.getSubcategories().size(); i++) {
-            subcategories.add(moneyController.getSubcategories().get(i).getName());
-        }
-
-        intent.putExtra(CONTAINER_TRANSITION_NAME_KEY, container.getTransitionName());
-        intent.putExtra(CATEGORY_NAME_TRANSITION_NAME_KEY, categoryName.getTransitionName());
-        intent.putExtra(CATEGORY_MAXIMUM_TRANSITION_NAME_KEY, categoryMaximum.getTransitionName());
-        intent.putExtra(CATEGORY_NAME_KEY, moneyController.getName());
-        intent.putExtra(CATEGORY_MAXIMUM_KEY, moneyController.getMaximum());
-        intent.putStringArrayListExtra(CATEGORY_SUBCATEGORIES_KEY, (ArrayList<String>) subcategories);
-
-        Pair<View, String> p1 = Pair.create((View) categoryName, categoryName.getTransitionName());
-        Pair<View, String> p2 = Pair.create((View) categoryMaximum, categoryMaximum.getTransitionName());
-        Pair<View, String> p3 = Pair.create((View) container, container.getTransitionName());
-
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2, p3);
-
-        startActivityForResult(intent, REQUEST_ADD_MONEY_CONTROLLER, options.toBundle());
-    }
+    public static final int REQUEST_EDIT_MONEY_CONTROLLER = 5;
 
     public static final String FIELD_TRANSITION_NAME_KEY = "fieldTransitionName";
     public static final String INITIAL_VALUE_KEY = "initialValueT";
@@ -374,6 +327,29 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     public static final String HINT_KEY = "hint";
     public static final String ID_KEY = "id";
     public static final String REQUEST_CODE_KEY = "requestCode";
+
+
+    @Override
+    public void editMoneyController(moneyController moneyController, ConstraintLayout container, int requestCode) {
+        Intent intent = new Intent(this, editOutgoingCategoryActivity.class);
+
+        List<String> subcategories = new ArrayList<>();
+        for (int i = 0; i < moneyController.getSubcategories().size(); i++) {
+            subcategories.add(moneyController.getSubcategories().get(i).getName());
+        }
+
+        intent.putExtra(CONTROLLER_ID_KEY, moneyController.getId());
+        intent.putExtra(CONTAINER_TRANSITION_NAME_KEY, container.getTransitionName());
+        intent.putExtra(CATEGORY_NAME_KEY, moneyController.getName());
+        intent.putExtra(CATEGORY_MAXIMUM_KEY, moneyController.getMaximum());
+        intent.putStringArrayListExtra(CATEGORY_SUBCATEGORIES_KEY, (ArrayList<String>) subcategories);
+        intent.putExtra(REQUEST_CODE_KEY, requestCode);
+
+        ActivityOptionsCompat options = ActivityOptionsCompat.
+                makeSceneTransitionAnimation(this, container, container.getTransitionName());
+
+        startActivityForResult(intent, requestCode, options.toBundle());
+    }
 
     @Override
     public void editCategoryField(String initialValue, ConstraintLayout container, TextView field, String hint, int requestCode, long id) {
@@ -425,6 +401,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
                         nextVersion.setId(entry.getId());
                         onEntriesChangeInterface.editEntry(nextVersion);
                     }
+                    mainFragment.updateData();
                 }
             }
         } else if (requestCode == REQUEST_ADD_OUTGOING_CATEGORY) {
@@ -473,7 +450,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
                 ArrayList<String> subcategories = extras.getStringArrayList(CATEGORY_SUBCATEGORIES_KEY);
                 RealmList<category> formattedSubcategories = new RealmList<>();
                 for (int i = 0; i < subcategories.size(); i++) {
-                    formattedSubcategories.add(new category(subcategories.get(i), category.OUTGOING));
+                    formattedSubcategories.add(database.where(category.class).contains("name", subcategories.get(i)).findFirst());
                 }
                 final moneyController newMoneyController = new moneyController(formattedSubcategories, max, name);
                 database.executeTransaction(new Realm.Transaction() {
@@ -488,40 +465,34 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
             } else {
                 settingFragment.newMoneyControllerCanceled();
             }
-        } else if (requestCode == REQUEST_EDIT_OUTGOING_CATEGORY_NAME) {
+        } else if (requestCode == REQUEST_EDIT_MONEY_CONTROLLER) {
             if (resultCode == RESULT_OK) {
                 Bundle extras = data.getExtras();
-                final String newName = extras.getString(FINAL_VALUE_KEY);
-                long id = extras.getLong(ID_KEY);
-                final moneyController modifiedMoneyController = database.where(moneyController.class).equalTo("id", id).findFirst();
-                final String oldName = modifiedMoneyController.getName();
-                if (!newName.equals(oldName)) {
-                    database.executeTransaction(new Realm.Transaction() {
-                        public void execute(Realm realm) {
-                            modifiedMoneyController.setName(newName);
-                            realm.copyToRealmOrUpdate(modifiedMoneyController);
-                        }
-                    });
-                    mainFragment.updateCategoryNameChanged(modifiedMoneyController);
-                    settingFragment.modifyOutgoingCategory(modifiedMoneyController);
+
+                Long id = extras.getLong(CONTROLLER_ID_KEY);
+                final String name = extras.getString(CATEGORY_NAME_KEY);
+                final Double max = extras.getDouble(CATEGORY_MAXIMUM_KEY);
+                ArrayList<String> subcategories = extras.getStringArrayList(CATEGORY_SUBCATEGORIES_KEY);
+                final RealmList<category> formattedSubcategories = new RealmList<>();
+                for (int i = 0; i < subcategories.size(); i++) {
+                    formattedSubcategories.add(database.where(category.class).contains("name", subcategories.get(i)).findFirst());
                 }
-            }
-        } else if (requestCode == REQUEST_EDIT_MONEY_CONTROLLER_MAXIMUM) {
-            if (resultCode == RESULT_OK) {
-                Bundle extras = data.getExtras();
-                final Double newMaximum = extras.getDouble(FINAL_VALUE_KEY);
-                long id = extras.getLong(ID_KEY);
-                final moneyController modifiedMoneyController = database.where(moneyController.class).equalTo("id", id).findFirst();
-                if (newMaximum != modifiedMoneyController.getMaximum()) {
-                    database.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            modifiedMoneyController.setMaximum(newMaximum);
-                            database.copyToRealmOrUpdate(modifiedMoneyController);
-                        }
-                    });
-                    mainFragment.updateCategoryMaximumChanged(modifiedMoneyController);
-                    settingFragment.modifyOutgoingCategory(modifiedMoneyController);
+
+                final moneyController oldMoneyController = database.where(moneyController.class).equalTo("id", id).findFirst();
+                String oldName = oldMoneyController.getName();
+                database.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(@NonNull Realm realm) {
+                        oldMoneyController.setName(name);
+                        oldMoneyController.setMaximum(max);
+                        oldMoneyController.setSubcategories(formattedSubcategories);
+                    }
+                });
+
+                moneyController storedMoneyController = database.where(moneyController.class).equalTo("id", id).findFirst();
+                mainFragment.updateCategoryItem(storedMoneyController);
+                if (!oldName.equals(name)) {
+                    settingFragment.modifyOutgoingCategory(storedMoneyController);
                 }
             }
         } else {

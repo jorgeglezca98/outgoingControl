@@ -225,11 +225,7 @@ public class mainFragment extends Fragment {
         surplusMoneyAdapter.updateCategoryName(modifiedMoneyController);
     }
 
-    public void updateCategoryMaximumChanged(moneyController modifiedMoneyController) {
-        surplusMoneyAdapter.updateCategoryMaximum(modifiedMoneyController);
-    }
-
-    public void updateCategorySubcategoriesChanged(moneyController modifiedMoneyController) {
-        surplusMoneyAdapter.updateSubcategories(modifiedMoneyController);
+    public void updateCategoryItem(moneyController modifiedMoneyController) {
+        surplusMoneyAdapter.updateItem(modifiedMoneyController);
     }
 }
