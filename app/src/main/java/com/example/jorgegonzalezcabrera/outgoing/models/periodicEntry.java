@@ -258,19 +258,22 @@ public class periodicEntry extends RealmObject {
         formattedCurrentDate.setTime(currentDate);
         GregorianCalendar formattedLastChange = new GregorianCalendar();
         formattedLastChange.setTime(lastChange);
-        if (currentDate.before(endDate)) {
+        Realm database = Realm.getDefaultInstance();
+        if (endDate == null || currentDate.before(endDate)) {
             if (startDate.before(currentDate)) {
                 if (frequency == periodicType.DAILY.ordinal()) {
                     formattedLastChange.add(Calendar.DATE, quantityOf);
                     while (formattedLastChange.before(formattedCurrentDate)) {
-                        createEntry(entryAddedInterface, formattedCurrentDate);
+                        createEntry(entryAddedInterface, formattedLastChange);
+                        database.beginTransaction();
                         lastChange = formattedLastChange.getTime();
+                        database.commitTransaction();
                         formattedLastChange.add(Calendar.DATE, quantityOf);
                     }
                 } else if (frequency == periodicType.WEEKLY.ordinal()) {
                     if (formattedLastChange.get(Calendar.DAY_OF_WEEK) < daysOfRepetition.last()) {
                         int i = 0;
-                        while (i < daysOfRepetition.size() && formattedLastChange.get(Calendar.DAY_OF_WEEK) <= daysOfRepetition.get(i)) {
+                        while (i < daysOfRepetition.size() && formattedLastChange.get(Calendar.DAY_OF_WEEK) >= daysOfRepetition.get(i)) {
                             i++;
                         }
                         formattedLastChange.set(Calendar.DAY_OF_WEEK, daysOfRepetition.get(i));
@@ -279,11 +282,13 @@ public class periodicEntry extends RealmObject {
                         formattedLastChange.add(Calendar.DATE, 7);
                     }
                     while (formattedLastChange.before(formattedCurrentDate)) {
-                        createEntry(entryAddedInterface, formattedCurrentDate);
+                        createEntry(entryAddedInterface, formattedLastChange);
+                        database.beginTransaction();
                         lastChange = formattedLastChange.getTime();
+                        database.commitTransaction();
                         if (formattedLastChange.get(Calendar.DAY_OF_WEEK) < daysOfRepetition.last()) {
                             int i = 0;
-                            while (i < daysOfRepetition.size() && formattedLastChange.get(Calendar.DAY_OF_WEEK) <= daysOfRepetition.get(i)) {
+                            while (i < daysOfRepetition.size() && formattedLastChange.get(Calendar.DAY_OF_WEEK) >= daysOfRepetition.get(i)) {
                                 i++;
                             }
                             formattedLastChange.set(Calendar.DAY_OF_WEEK, daysOfRepetition.get(i));
@@ -295,7 +300,7 @@ public class periodicEntry extends RealmObject {
                 } else if (frequency == periodicType.MONTHLY.ordinal()) {
                     if (formattedLastChange.get(Calendar.DAY_OF_MONTH) < daysOfRepetition.last()) {
                         int i = 0;
-                        while (i < daysOfRepetition.size() && formattedLastChange.get(Calendar.DAY_OF_MONTH) <= daysOfRepetition.get(i)) {
+                        while (i < daysOfRepetition.size() && formattedLastChange.get(Calendar.DAY_OF_MONTH) >= daysOfRepetition.get(i)) {
                             i++;
                         }
                         formattedLastChange.set(Calendar.DAY_OF_MONTH, daysOfRepetition.get(i));
@@ -304,11 +309,13 @@ public class periodicEntry extends RealmObject {
                         formattedLastChange.add(Calendar.MONTH, 1);
                     }
                     while (formattedLastChange.before(formattedCurrentDate)) {
-                        createEntry(entryAddedInterface, formattedCurrentDate);
+                        createEntry(entryAddedInterface, formattedLastChange);
+                        database.beginTransaction();
                         lastChange = formattedLastChange.getTime();
+                        database.commitTransaction();
                         if (formattedLastChange.get(Calendar.DAY_OF_MONTH) < daysOfRepetition.last()) {
                             int i = 0;
-                            while (i < daysOfRepetition.size() && formattedLastChange.get(Calendar.DAY_OF_MONTH) <= daysOfRepetition.get(i)) {
+                            while (i < daysOfRepetition.size() && formattedLastChange.get(Calendar.DAY_OF_MONTH) >= daysOfRepetition.get(i)) {
                                 i++;
                             }
                             formattedLastChange.set(Calendar.DAY_OF_MONTH, daysOfRepetition.get(i));
@@ -320,8 +327,10 @@ public class periodicEntry extends RealmObject {
                 } else if (frequency == periodicType.ANNUAL.ordinal()) {
                     formattedLastChange.add(Calendar.YEAR, quantityOf); //Todo: comprobar que no hay problemas con bisiestos
                     while (formattedLastChange.before(formattedCurrentDate)) {
-                        createEntry(entryAddedInterface, formattedCurrentDate);
+                        createEntry(entryAddedInterface, formattedLastChange);
+                        database.beginTransaction();
                         lastChange = formattedLastChange.getTime();
+                        database.commitTransaction();
                         formattedLastChange.add(Calendar.YEAR, quantityOf);
                     }
                 }
@@ -338,12 +347,12 @@ public class periodicEntry extends RealmObject {
         currentDate.set(Calendar.MINUTE, 0);
         currentDate.set(Calendar.SECOND, 0);
         currentDate.set(Calendar.MILLISECOND, 0);
-        setLastChange(currentDate.getTime());
 
         final Realm database = Realm.getDefaultInstance();
         database.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(@NonNull Realm realm) {
+                setLastChange(currentDate.getTime());
                 database.copyToRealmOrUpdate(periodicEntry.this);
             }
         });

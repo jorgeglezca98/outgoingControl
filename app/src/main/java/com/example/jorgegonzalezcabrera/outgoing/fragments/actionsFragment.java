@@ -180,11 +180,13 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
     }
 
     public void updateDataAdded(entry newEntry) {
-        adapter.newEntryAdded(newEntry); //TODO: check filters first
+        if (getView() != null)
+            adapter.newEntryAdded(newEntry); //TODO: check filters first
     }
 
     public void updateDataModified(entry nextVersion) {
-        adapter.entryModified(nextVersion);
+        if (getView() != null)
+            adapter.entryModified(nextVersion);
     }
 
     public Vector<categoriesSelectionAdapter.categoryCheckBox> getCategories() {

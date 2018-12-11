@@ -20,8 +20,10 @@ import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.activities.editFieldActivity.editIncomeCategoryInterface;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.editableCategoriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.editableOutgoingCategoriesAdapter;
+import com.example.jorgegonzalezcabrera.outgoing.adapters.editablePeriodicEntriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.moneyController;
+import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 public class settingFragment extends Fragment {
@@ -29,9 +31,11 @@ public class settingFragment extends Fragment {
     private Context context;
     private localUtils.OnCategoriesChangeInterface onCategoriesChangeInterface;
     private editableOutgoingCategoriesAdapter.editOutgoingCategoryInterface editOutgoingCategoryInterface;
+    private localUtils.changePeriodicEntriesInterface changePeriodicEntriesInterface;
     private editIncomeCategoryInterface editIncomeCategoryInterface;
     private editableCategoriesAdapter outgoingCategoriesAdapter;
     private editableCategoriesAdapter incomeCategoriesAdapter;
+    private editablePeriodicEntriesAdapter periodicEntriesAdapter;
     private editableOutgoingCategoriesAdapter moneyControllersAdapter;
     private RecyclerView recyclerViewMoneyControllers;
     private RecyclerView recyclerViewEditableOutgoingCategories;
@@ -95,6 +99,22 @@ public class settingFragment extends Fragment {
                 }
             };
         }
+
+        try {
+            changePeriodicEntriesInterface = (localUtils.changePeriodicEntriesInterface) context;
+        } catch (Exception e) {
+            changePeriodicEntriesInterface = new localUtils.changePeriodicEntriesInterface() {
+                @Override
+                public void edit(periodicEntry periodicEntry, ConstraintLayout container) {
+
+                }
+
+                @Override
+                public void remove(periodicEntry periodicEntry) {
+
+                }
+            };
+        }
     }
 
     @Nullable
@@ -121,8 +141,10 @@ public class settingFragment extends Fragment {
         recyclerViewMoneyControllers.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
 
         recyclerViewPeriodicEntries = view.findViewById(R.id.recyclerViewPeriodicEntries);
-        recyclerViewMoneyControllers.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerViewMoneyControllers.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
+        periodicEntriesAdapter = new editablePeriodicEntriesAdapter(changePeriodicEntriesInterface);
+        recyclerViewPeriodicEntries.setAdapter(periodicEntriesAdapter);
+        recyclerViewPeriodicEntries.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerViewPeriodicEntries.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
 
         scrollViewSettingFragment = view.findViewById(R.id.scrollViewSettingFragment);
         outgoingCategoriesHeader = view.findViewById(R.id.outgoingsCategoriesHeader);
@@ -296,5 +318,9 @@ public class settingFragment extends Fragment {
 
     public void modifyOutgoingCategory(moneyController modifiedMoneyController) {
         moneyControllersAdapter.modify(modifiedMoneyController);
+    }
+
+    public void addPeriodicEntry(periodicEntry addedPeriodicEntry) {
+        periodicEntriesAdapter.add(addedPeriodicEntry);
     }
 }

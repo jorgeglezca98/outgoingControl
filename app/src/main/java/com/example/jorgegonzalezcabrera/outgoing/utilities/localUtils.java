@@ -1,6 +1,7 @@
 package com.example.jorgegonzalezcabrera.outgoing.utilities;
 
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 
 import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
@@ -31,6 +32,12 @@ public class localUtils {
         void removeAndKeepCategory(@NonNull category removedCategory);
 
         void removeMoneyController(@NonNull moneyController removedCategory);
+    }
+
+    public interface changePeriodicEntriesInterface {
+        void edit(periodicEntry periodicEntry, ConstraintLayout container);
+
+        void remove(periodicEntry periodicEntry);
     }
 
     public static type getTypeFromOrdinal(int ordinal) {

@@ -50,7 +50,8 @@ import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newEntry
 public class MainActivity extends AppCompatActivity implements localUtils.OnEntriesChangeInterface
         , localUtils.OnCategoriesChangeInterface
         , editableOutgoingCategoriesAdapter.editOutgoingCategoryInterface
-        , editIncomeCategoryInterface {
+        , editIncomeCategoryInterface
+        , localUtils.changePeriodicEntriesInterface {
 
     private ViewPager viewPager;
     private actionsFragment actionsFragment;
@@ -264,6 +265,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
                 database.copyToRealm(periodicEntry);
             }
         });
+        settingFragment.addPeriodicEntry(database.where(periodicEntry.class).equalTo("id",periodicEntry.getId()).findFirst());
     }
 
     @Override
@@ -307,6 +309,16 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         });
     }
 
+    @Override
+    public void remove(final periodicEntry periodicEntry) {
+        database.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                periodicEntry.deleteFromRealm();
+            }
+        });
+    }
+
     public static final String CONTROLLER_ID_KEY = "controllerID";
     public final static String CATEGORY_NAME_KEY = "categoryName";
     public final static String CATEGORY_MAXIMUM_KEY = "categoryMax";
@@ -320,9 +332,10 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     public static final int REQUEST_ADD_MONEY_CONTROLLER = 3;
     public static final int REQUEST_EDIT_CATEGORY = 4;
     public static final int REQUEST_EDIT_MONEY_CONTROLLER = 5;
+    public static final int REQUEST_EDIT_PERIODIC_ENTRY = 6;
 
     public static final String FIELD_TRANSITION_NAME_KEY = "fieldTransitionName";
-    public static final String INITIAL_VALUE_KEY = "initialValueT";
+    public static final String INITIAL_VALUE_KEY = "initialValue";
     public static final String FINAL_VALUE_KEY = "finalValue";
     public static final String HINT_KEY = "hint";
     public static final String ID_KEY = "id";
@@ -368,6 +381,39 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2);
 
         startActivityForResult(intent, requestCode, options.toBundle());
+    }
+
+    public static final String PERIODIC_ENTRY_VALUE_KEY = "periodicEntryValue";
+    public static final String PERIODIC_ENTRY_CATEGORY_KEY = "periodicEntryCategory";
+    public static final String PERIODIC_ENTRY_DESCRIPTION_KEY = "periodicEntryDescription";
+    public static final String PERIODIC_ENTRY_QUANTITY_KEY = "periodicEntryQuantity";
+    public static final String PERIODIC_ENTRY_FREQUENCY_KEY = "periodicEntryFrequency";
+    public static final String PERIODIC_ENTRY_REPETITIONS_KEY = "periodicEntryRepetitions";
+    public static final String PERIODIC_ENTRY_START_KEY = "periodicEntryStart";
+    public static final String PERIODIC_ENTRY_END_KEY = "periodicEntryEnd";
+    public static final String PERIODIC_ENTRY_ASK_KEY = "periodicEntryAsk";
+    public static final String PERIODIC_ENTRY_LAST_KEY = "periodicEntryLast";
+
+    @Override
+    public void edit(periodicEntry periodicEntry, ConstraintLayout container) {
+        Intent intent = new Intent(this, editPeriodicEntryActivity.class);
+
+        intent.putExtra(ID_KEY, periodicEntry.getId());
+        intent.putExtra(PERIODIC_ENTRY_VALUE_KEY, periodicEntry.getValue());
+        intent.putExtra(PERIODIC_ENTRY_CATEGORY_KEY, periodicEntry.getCategoryId());
+        intent.putExtra(PERIODIC_ENTRY_DESCRIPTION_KEY, periodicEntry.getDescription());
+        intent.putExtra(PERIODIC_ENTRY_QUANTITY_KEY, periodicEntry.getQuantityOf());
+        intent.putExtra(PERIODIC_ENTRY_FREQUENCY_KEY, periodicEntry.getFrequency());
+        intent.putIntegerArrayListExtra(PERIODIC_ENTRY_REPETITIONS_KEY, new ArrayList<>(periodicEntry.getDaysOfRepetition()));
+        intent.putExtra(PERIODIC_ENTRY_START_KEY, periodicEntry.getStartDate());
+        intent.putExtra(PERIODIC_ENTRY_END_KEY, periodicEntry.getEndDate());
+        intent.putExtra(PERIODIC_ENTRY_ASK_KEY, periodicEntry.isAskBefore());
+        intent.putExtra(PERIODIC_ENTRY_LAST_KEY, periodicEntry.getLastChange());
+
+        ActivityOptionsCompat options = ActivityOptionsCompat.
+                makeSceneTransitionAnimation(this, container, container.getTransitionName());
+
+        startActivityForResult(intent, REQUEST_EDIT_PERIODIC_ENTRY, options.toBundle());
     }
 
     @Override
@@ -495,6 +541,8 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
                     settingFragment.modifyOutgoingCategory(storedMoneyController);
                 }
             }
+        } else if (requestCode == REQUEST_EDIT_PERIODIC_ENTRY) {
+
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
