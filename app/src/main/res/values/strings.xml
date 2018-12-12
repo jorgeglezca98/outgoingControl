@@ -59,6 +59,8 @@
     <string name="money_controllers">Money controllers</string>
     <string name="close_dialog">Close dialog</string>
     <string name="edit_periodic_entry">Edit periodic entry</string>
+    <string name="outgoing">Outgoing</string>
+    <string name="income">Income</string>
 
     <string-array name="periodic_types">
         <item>Annual</item>

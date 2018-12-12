@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
@@ -25,67 +26,46 @@ public class secondPageInitialConfiguration extends Fragment {
 
     private erasableItemsAdapter outgoingCategoriesAdapter;
     private LinearLayoutManager outgoingCategoriesLayoutManager;
-    private erasableItemsAdapter incomeCategoriesAdapter;
-    private LinearLayoutManager incomeCategoriesLayoutManager;
-    private int typeOfCategory;
-    private RealmList<category> outgoingCategories;
-    private RealmList<category> incomeCategories;
+    private RealmList<category> categories;
     private RecyclerView recyclerViewOutgoingCategories;
+    private ScrollView scrollViewContainer;
 
     public secondPageInitialConfiguration() {
-        outgoingCategories = new RealmList<>();
-        incomeCategories = new RealmList<>();
+        categories = new RealmList<>();
         outgoingCategoriesAdapter = new erasableItemsAdapter("Outgoing category", new erasableItemsAdapter.onItemsChange() {
             @Override
-            public void onItemModified(int position, @NonNull String item) {
-                outgoingCategories.get(position).setName(item);
+            public void onCategoryChanged(int position, @NonNull int type) {
+                categories.get(position).setType(type);
+            }
+
+            @Override
+            public void onNameChanged(int position, @NonNull String newName) {
+                categories.get(position).setName(newName);
             }
 
             @Override
             public void onItemRemoved(int position) {
-                outgoingCategories.remove(position);
+                categories.remove(position);
             }
 
             @Override
             public void onItemAdded(int position) {
                 category categoryAdded = new category("", category.OUTGOING);
-                outgoingCategories.add(position, categoryAdded);
+                categories.add(position, categoryAdded);
+                if (scrollViewContainer != null)
+                    scrollViewContainer.post(new Runnable() {
+                        public void run() {
+                            scrollViewContainer.fullScroll(View.FOCUS_DOWN);
+                        }
+                    });
             }
 
             @Override
-            public void onItemsChanged(@NonNull Vector<String> newItems) {
-                outgoingCategories.clear();
-                for (int i = 0; i < newItems.size(); i++) {
-                    outgoingCategories.add(new category(newItems.get(i), category.OUTGOING));
-                }
+            public void onItemsChanged(@NonNull Vector<category> newItems) {
+                categories.clear();
+                categories.addAll(newItems);
             }
         }, null);
-        incomeCategoriesAdapter = new erasableItemsAdapter("Income category", new erasableItemsAdapter.onItemsChange() {
-            @Override
-            public void onItemModified(int position, @NonNull String item) {
-                incomeCategories.get(position).setName(item);
-            }
-
-            @Override
-            public void onItemRemoved(int position) {
-                incomeCategories.remove(position);
-            }
-
-            @Override
-            public void onItemAdded(int position) {
-                category categoryAdded = new category("", category.INCOME);
-                incomeCategories.add(position, categoryAdded);
-            }
-
-            @Override
-            public void onItemsChanged(@NonNull Vector<String> newItems) {
-                incomeCategories.clear();
-                for (int i = 0; i < newItems.size(); i++) {
-                    incomeCategories.add(new category(newItems.get(i), category.INCOME));
-                }
-            }
-        }, null);
-        typeOfCategory = category.OUTGOING;
     }
 
     @Nullable
@@ -108,45 +88,19 @@ public class secondPageInitialConfiguration extends Fragment {
         recyclerViewOutgoingCategories.setLayoutManager(outgoingCategoriesLayoutManager);
         recyclerViewOutgoingCategories.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
 
-        RecyclerView incomeCategoriesRecyclerView = view.findViewById(R.id.recyclerViewIncomeCategoriesRequest);
-        incomeCategoriesRecyclerView.setAdapter(incomeCategoriesAdapter);
-        incomeCategoriesLayoutManager = new LinearLayoutManager(getContext());
-        incomeCategoriesRecyclerView.setLayoutManager(incomeCategoriesLayoutManager);
-        incomeCategoriesRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        scrollViewContainer = view.findViewById(R.id.scrollViewContainer);
 
         return view;
     }
 
     public void addOne() {
-        if (typeOfCategory == category.OUTGOING) {
-            outgoingCategoriesAdapter.addOne();
-            outgoingCategoriesLayoutManager.scrollToPosition(outgoingCategoriesAdapter.getItemCount() - 1);
-        } else if (typeOfCategory == category.INCOME) {
-            incomeCategoriesAdapter.addOne();
-            incomeCategoriesLayoutManager.scrollToPosition(incomeCategoriesAdapter.getItemCount() - 1);
-        }
+        outgoingCategoriesAdapter.addOne();
     }
 
-    public int getTypeOfCategory() {
-        return typeOfCategory;
-    }
-
-    public boolean checkOutgoingCategories() {
+    public boolean checkCategories() {
         int i = 0;
-        while (i < outgoingCategories.size()) {
-            if (outgoingCategories.get(i) == null || !outgoingCategories.get(i).check()) {
-                return false;
-            }
-            i++;
-        }
-        return true;
-    }
-
-    public boolean checkIncomeCategories() {
-        Vector<String> adapterItems = incomeCategoriesAdapter.getItems();
-        int i = 0;
-        while (i < adapterItems.size()) {
-            if (adapterItems.get(i).isEmpty()) {
+        while (i < categories.size()) {
+            if (categories.get(i) == null || !categories.get(i).check()) {
                 return false;
             }
             i++;
@@ -155,37 +109,25 @@ public class secondPageInitialConfiguration extends Fragment {
     }
 
     public RealmList<category> getData() {
-        RealmList<category> data = new RealmList<>();
-        data.addAll(outgoingCategories);
-        data.addAll(incomeCategories);
-        return data;
+        return categories;
     }
 
     public RealmList<category> getIncomeCategoriesCategories() {
+        RealmList<category> incomeCategories = new RealmList<>();
+        for (int i = 0; i < categories.size(); i++) {
+            if (categories.get(i).getType() == category.INCOME)
+                incomeCategories.add(categories.get(i));
+        }
         return incomeCategories;
     }
 
-    public RealmList<category> getOutgoingCategories() {
+    public RealmList<category> getCategories() {
+        RealmList<category> outgoingCategories = new RealmList<>();
+        for (int i = 0; i < categories.size(); i++) {
+            if (categories.get(i).getType() == category.OUTGOING)
+                outgoingCategories.add(categories.get(i));
+        }
         return outgoingCategories;
     }
 
-    public boolean goOn() {
-        if (typeOfCategory == category.INCOME) {
-            return false;
-        } else {
-            typeOfCategory = category.INCOME;
-            recyclerViewOutgoingCategories.setVisibility(View.GONE);
-            return true;
-        }
-    }
-
-    public boolean goBack() {
-        if (typeOfCategory == category.OUTGOING) {
-            return false;
-        } else {
-            typeOfCategory = category.OUTGOING;
-            recyclerViewOutgoingCategories.setVisibility(View.VISIBLE);
-            return true;
-        }
-    }
 }

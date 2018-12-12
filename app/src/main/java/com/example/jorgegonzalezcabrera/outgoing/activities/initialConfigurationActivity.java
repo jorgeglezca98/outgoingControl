@@ -70,7 +70,7 @@ public class initialConfigurationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 int selectedTabPosition = configurationTabLayout.getSelectedTabPosition();
-                if ((selectedTabPosition == 1 && !secondFragment.goBack()) || (selectedTabPosition > 1)) {
+                if (selectedTabPosition > 0) {
                     TabLayout.Tab newSelectedTab = configurationTabLayout.getTabAt(selectedTabPosition - 1);
                     if (newSelectedTab != null) {
                         newSelectedTab.select();
@@ -103,23 +103,8 @@ public class initialConfigurationActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(initialConfigurationActivity.this, "Complete all fields first", Toast.LENGTH_SHORT).show();
                     }
-                } else if (selectedTabPosition == 1) {
-                    if (secondFragment.getTypeOfCategory() == category.INCOME)
-                        if (secondFragment.checkIncomeCategories()) {
-                            TabLayout.Tab newSelectedTab = configurationTabLayout.getTabAt(selectedTabPosition + 1);
-                            if (newSelectedTab != null) {
-                                newSelectedTab.select();
-                            }
-                        } else {
-                            Toast.makeText(initialConfigurationActivity.this, "Complete all fields first", Toast.LENGTH_SHORT).show();
-                        }
-                    else if (secondFragment.checkOutgoingCategories()) {
-                        secondFragment.goOn();
-                    } else {
-                        Toast.makeText(initialConfigurationActivity.this, "Complete all fields first", Toast.LENGTH_SHORT).show();
-                    }
                 } else {
-                    if (firstFragment.checkData()) {
+                    if (selectedTabPosition == 1 ? secondFragment.checkCategories() : firstFragment.checkData()) {
                         TabLayout.Tab newSelectedTab = configurationTabLayout.getTabAt(selectedTabPosition + 1);
                         if (newSelectedTab != null) {
                             newSelectedTab.select();
@@ -160,7 +145,7 @@ public class initialConfigurationActivity extends AppCompatActivity {
                     forwardButton.setImageResource(R.drawable.check);
                     forwardButton.animate().rotation(0).start();
 
-                    fourthFragment.setCategories(secondFragment.getOutgoingCategories());
+                    fourthFragment.setCategories(secondFragment.getCategories());
                 }
             }
 

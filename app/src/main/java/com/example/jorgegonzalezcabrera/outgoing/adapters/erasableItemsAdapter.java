@@ -10,15 +10,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RadioGroup;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.models.category;
 
 import java.util.Vector;
 
 public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdapter.ViewHolder> {
 
     private int layout;
-    private Vector<String> items;
+    private Vector<category> items;
     private Vector<String> errorByItem;
     private String hint;
     private onItemsChange onItemsChange;
@@ -26,21 +28,12 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
 
     private static final String ERROR_MESSAGE = "Mandatory field";
 
-    public erasableItemsAdapter(@NonNull String hint) {
-        this.layout = R.layout.editable_item;
-        this.items = new Vector<>();
-        this.items.add("");
-        this.errorByItem = new Vector<>();
-        this.errorByItem.add(null);
-        this.hint = hint;
-        this.onItemsChange = null;
-        this.customizeViewInterface = null;
-    }
-
     public erasableItemsAdapter(String hint, erasableItemsAdapter.onItemsChange onItemsChange, customizeView customizeViewInterface) {
         this.layout = R.layout.editable_item;
         this.items = new Vector<>();
-        this.items.add("");
+        category firstCategory = new category();
+        firstCategory.setValidId();
+        this.items.add(firstCategory);
         this.errorByItem = new Vector<>();
         this.errorByItem.add(null);
         this.hint = hint;
@@ -50,7 +43,9 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
     }
 
     public void addOne() {
-        items.add("");
+        category firstCategory = new category();
+        firstCategory.setValidId();
+        this.items.add(firstCategory);
         errorByItem.add(null);
         notifyItemInserted(getItemCount() - 1);
         if (onItemsChange != null) {
@@ -58,8 +53,8 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
         }
     }
 
-    public void deleteItemAt(int position) {
-        if (getItemCount() > 0 && position < getItemCount()) {
+    private void deleteItemAt(int position) {
+        if (position >= 0 && position < getItemCount()) {
             items.remove(position);
             errorByItem.remove(position);
             notifyItemRemoved(position);
@@ -69,26 +64,17 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
         }
     }
 
-    public boolean checkData() {
-        for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).isEmpty()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public Vector<String> getItems() {
+    public Vector<category> getItems() {
         return items;
     }
 
     public void showErrorMessage() {
         for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).isEmpty() && errorByItem.get(i) == null) {
+            if (items.get(i).getName().isEmpty() && errorByItem.get(i) == null) {
                 errorByItem.remove(i);
                 errorByItem.add(i, ERROR_MESSAGE);
                 notifyItemChanged(i);
-            } else if (!items.get(i).isEmpty() && errorByItem.get(i) != null) {
+            } else if (!items.get(i).getName().isEmpty() && errorByItem.get(i) != null) {
                 errorByItem.remove(i);
                 errorByItem.add(i, null);
                 notifyItemChanged(i);
@@ -111,13 +97,15 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
     }
 
     public interface onItemsChange {
-        void onItemModified(int position, @NonNull String item);
+        void onCategoryChanged(int position, @NonNull int type);
+
+        void onNameChanged(int position, @NonNull String newName);
 
         void onItemRemoved(int position);
 
         void onItemAdded(int position);
 
-        void onItemsChanged(@NonNull Vector<String> newItems);
+        void onItemsChanged(@NonNull Vector<category> newItems);
     }
 
     public interface customizeView {
@@ -137,7 +125,7 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
 
     @Override
     public void onBindViewHolder(@NonNull erasableItemsAdapter.ViewHolder viewHolder, int i) {
-        viewHolder.bind();
+        viewHolder.bind(items.get(i));
     }
 
     @Override
@@ -145,7 +133,7 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
         return items.size();
     }
 
-    public void updateItems(Vector<String> newItems) {
+    public void updateItems(Vector<category> newItems) {
         items = newItems;
         errorByItem = new Vector<>();
         for (int i = 0; i < items.size(); i++) {
@@ -161,6 +149,7 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
 
         public TextInputLayout container;
         public EditText name;
+        RadioGroup type;
         ImageButton deleteItemButton;
 
         ViewHolder(@NonNull View itemView) {
@@ -176,10 +165,9 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
 
                 @Override
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    items.remove(getAdapterPosition());
-                    items.add(getAdapterPosition(), charSequence.toString());
+                    items.get(getAdapterPosition()).setName(charSequence.toString());
                     if (onItemsChange != null) {
-                        onItemsChange.onItemModified(getAdapterPosition(), charSequence.toString());
+                        onItemsChange.onNameChanged(getAdapterPosition(), charSequence.toString());
                     }
                 }
 
@@ -188,13 +176,26 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
 
                 }
             });
+            type = itemView.findViewById(R.id.radioGroupType);
+            type.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    if (R.id.radioButtonOutgoing == checkedId) {
+                        items.get(getAdapterPosition()).setType(category.OUTGOING);
+                        onItemsChange.onCategoryChanged(getAdapterPosition(), category.OUTGOING);
+                    } else {
+                        items.get(getAdapterPosition()).setType(category.INCOME);
+                        onItemsChange.onCategoryChanged(getAdapterPosition(), category.INCOME);
+                    }
+                }
+            });
         }
 
-        void bind() {
+        void bind(category categoryToBind) {
             container.setError(errorByItem.get(getAdapterPosition()));
-            name.setText(items.get(getAdapterPosition()));
+            name.setText(categoryToBind.getName());
             if (onItemsChange != null) {
-                onItemsChange.onItemModified(getAdapterPosition(), items.get(getAdapterPosition()));
+                onItemsChange.onNameChanged(getAdapterPosition(), items.get(getAdapterPosition()).getName());
             }
             container.setHint(hint);
             deleteItemButton.setOnClickListener(new View.OnClickListener() {
@@ -203,6 +204,7 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
                     deleteItemAt(getAdapterPosition());
                 }
             });
+            type.check(categoryToBind.getType() == category.OUTGOING ? R.id.radioButtonOutgoing : R.id.radioButtonIncome);
             if (customizeViewInterface != null) {
                 customizeViewInterface.custom(this);
             }
