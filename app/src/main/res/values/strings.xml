@@ -28,7 +28,7 @@
     <string name="default_erasable_hint">Name</string>
     <string name="current_money_title">Current money</string>
     <string name="information">Information</string>
-    <string name="first_configuration_information">We need to know your current money in order to apply the changes with a base number. Remember to include all your money, not just the money in the bank.</string>
+    <string name="first_configuration_information">To get started, let us know how much money you currently have.</string>
     <string name="outgoings_title">Outgoings</string>
     <string name="incomes_title">Incomes</string>
     <string name="category_title">Category</string>

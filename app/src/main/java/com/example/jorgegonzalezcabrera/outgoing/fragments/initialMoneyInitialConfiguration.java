@@ -16,7 +16,6 @@ import com.example.jorgegonzalezcabrera.outgoing.R;
 public class initialMoneyInitialConfiguration extends Fragment {
 
     private EditText editTextInitialMoney;
-    private TextView informationTextView;
 
     @Nullable
     @Override
@@ -24,14 +23,6 @@ public class initialMoneyInitialConfiguration extends Fragment {
         View view = inflater.inflate(R.layout.first_fragment_initial_configuration, container, false);
 
         editTextInitialMoney = view.findViewById(R.id.editTextCurrentMoney);
-        informationTextView = view.findViewById(R.id.currentMoneyDescription);
-        ImageButton informationButton = view.findViewById(R.id.buttonInformation);
-        informationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                informationTextView.setVisibility(informationTextView.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE);
-            }
-        });
 
         return view;
     }
