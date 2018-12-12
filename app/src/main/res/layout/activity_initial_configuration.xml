@@ -38,7 +38,7 @@
         <android.support.design.widget.TabLayout
             android:id="@+id/tabLayoutInitialConfiguration"
             android:layout_width="match_parent"
-            android:layout_height="25dp"
+            android:layout_height="60dp"
             android:layout_gravity="bottom"
             android:background="@color/transparent"
             app:tabBackground="@drawable/tab_selector"
@@ -51,6 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/add"
+            android:tint="@android:color/white"
             app:backgroundTint="@color/complement0"
             app:fabSize="normal"
             app:layout_anchor="@id/bar" />
@@ -65,6 +66,7 @@
             android:scaleX="0.5"
             android:scaleY="0.5"
             android:src="@drawable/up_pointing_arrow"
+            android:tint="@color/complement0"
             android:visibility="invisible"
             app:backgroundTint="@color/transparent" />
 
@@ -78,6 +80,7 @@
             android:scaleX="0.5"
             android:scaleY="0.5"
             android:src="@drawable/up_pointing_arrow"
+            android:tint="@color/complement0"
             app:backgroundTint="@color/transparent" />
 
     </android.support.design.widget.CoordinatorLayout>

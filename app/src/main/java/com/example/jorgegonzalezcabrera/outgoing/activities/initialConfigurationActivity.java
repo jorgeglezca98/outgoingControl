@@ -3,6 +3,7 @@ package com.example.jorgegonzalezcabrera.outgoing.activities;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -10,6 +11,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -21,6 +23,7 @@ import com.example.jorgegonzalezcabrera.outgoing.fragments.secondPageInitialConf
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
 import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.moneyController;
+import com.example.jorgegonzalezcabrera.outgoing.utilities.utils;
 import com.example.jorgegonzalezcabrera.outgoing.views.customViewPager;
 
 import java.util.Vector;
@@ -137,6 +140,9 @@ public class initialConfigurationActivity extends AppCompatActivity {
                 if (tab.getPosition() == 0) {
                     backButton.setVisibility(View.GONE);
                     fabAddSomething.hide();
+                    ViewGroup.LayoutParams layoutParams = configurationTabLayout.getLayoutParams();
+                    layoutParams.height = utils.dpToPixels(initialConfigurationActivity.this, 60);
+                    configurationTabLayout.setLayoutParams(layoutParams);
                 } else {
                     fabAddSomething.show();
                 }
@@ -157,6 +163,9 @@ public class initialConfigurationActivity extends AppCompatActivity {
                 }
                 if (tab.getPosition() == 0) {
                     backButton.setVisibility(View.VISIBLE);
+                    ViewGroup.LayoutParams layoutParams = configurationTabLayout.getLayoutParams();
+                    layoutParams.height = utils.dpToPixels(initialConfigurationActivity.this, 25);
+                    configurationTabLayout.setLayoutParams(layoutParams);
                 }
             }
 
