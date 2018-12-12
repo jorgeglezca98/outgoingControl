@@ -265,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
                 database.copyToRealm(periodicEntry);
             }
         });
-        settingFragment.addPeriodicEntry(database.where(periodicEntry.class).equalTo("id",periodicEntry.getId()).findFirst());
+        settingFragment.addPeriodicEntry(database.where(periodicEntry.class).equalTo("id", periodicEntry.getId()).findFirst());
     }
 
     @Override
@@ -392,7 +392,6 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     public static final String PERIODIC_ENTRY_START_KEY = "periodicEntryStart";
     public static final String PERIODIC_ENTRY_END_KEY = "periodicEntryEnd";
     public static final String PERIODIC_ENTRY_ASK_KEY = "periodicEntryAsk";
-    public static final String PERIODIC_ENTRY_LAST_KEY = "periodicEntryLast";
 
     @Override
     public void edit(periodicEntry periodicEntry, ConstraintLayout container) {
@@ -403,12 +402,11 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         intent.putExtra(PERIODIC_ENTRY_CATEGORY_KEY, periodicEntry.getCategoryId());
         intent.putExtra(PERIODIC_ENTRY_DESCRIPTION_KEY, periodicEntry.getDescription());
         intent.putExtra(PERIODIC_ENTRY_QUANTITY_KEY, periodicEntry.getQuantityOf());
-        intent.putExtra(PERIODIC_ENTRY_FREQUENCY_KEY, periodicEntry.getFrequency());
+        intent.putExtra(PERIODIC_ENTRY_FREQUENCY_KEY, periodicEntry.getFrequency().ordinal());
         intent.putIntegerArrayListExtra(PERIODIC_ENTRY_REPETITIONS_KEY, new ArrayList<>(periodicEntry.getDaysOfRepetition()));
         intent.putExtra(PERIODIC_ENTRY_START_KEY, periodicEntry.getStartDate());
         intent.putExtra(PERIODIC_ENTRY_END_KEY, periodicEntry.getEndDate());
         intent.putExtra(PERIODIC_ENTRY_ASK_KEY, periodicEntry.isAskBefore());
-        intent.putExtra(PERIODIC_ENTRY_LAST_KEY, periodicEntry.getLastChange());
 
         ActivityOptionsCompat options = ActivityOptionsCompat.
                 makeSceneTransitionAnimation(this, container, container.getTransitionName());
@@ -542,7 +540,39 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
                 }
             }
         } else if (requestCode == REQUEST_EDIT_PERIODIC_ENTRY) {
+            if (resultCode == RESULT_OK) {
+                Bundle extras = data.getExtras();
+                long id = extras.getLong(ID_KEY);
+                final double value = extras.getDouble(PERIODIC_ENTRY_VALUE_KEY);
+                final long categoryId = extras.getLong(PERIODIC_ENTRY_CATEGORY_KEY);
+                final String description = extras.getString(PERIODIC_ENTRY_DESCRIPTION_KEY);
+                final int quantity = extras.getInt(PERIODIC_ENTRY_QUANTITY_KEY);
+                final int frequency = extras.getInt(PERIODIC_ENTRY_FREQUENCY_KEY);
+                final ArrayList<Integer> repetitions = extras.getIntegerArrayList(PERIODIC_ENTRY_REPETITIONS_KEY);
+                final Date start = (Date) extras.get(PERIODIC_ENTRY_START_KEY);
+                final Date end = (Date) extras.get(PERIODIC_ENTRY_END_KEY);
+                final boolean ask = extras.getBoolean(PERIODIC_ENTRY_ASK_KEY);
 
+                final periodicEntry changedPeriodicEntry = database.where(periodicEntry.class).equalTo("id", id).findFirst();
+                database.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(@NonNull Realm realm) {
+                        changedPeriodicEntry.setValue(value);
+                        changedPeriodicEntry.setCategoryId(categoryId);
+                        changedPeriodicEntry.setDescription(description);
+                        changedPeriodicEntry.setQuantityOf(quantity);
+                        changedPeriodicEntry.setFrequency(frequency);
+                        RealmList<Integer> daysOfRepetitions = new RealmList<>();
+                        daysOfRepetitions.addAll(repetitions);
+                        changedPeriodicEntry.setDaysOfRepetition(daysOfRepetitions);
+                        changedPeriodicEntry.setStartDate(start);
+                        changedPeriodicEntry.setEndDate(end);
+                        changedPeriodicEntry.setAskBefore(ask);
+                    }
+                });
+
+                settingFragment.modifyPeriodicEntry(changedPeriodicEntry);
+            }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }

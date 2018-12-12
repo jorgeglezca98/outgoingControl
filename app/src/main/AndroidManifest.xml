@@ -36,7 +36,9 @@
             android:name=".activities.editFieldActivity"
             android:excludeFromRecents="true"
             android:theme="@style/AppTheme.TransparentActivity" />
-        <activity android:name=".activities.editPeriodicEntryActivity" />
+        <activity
+            android:name=".activities.editPeriodicEntryActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

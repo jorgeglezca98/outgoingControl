@@ -323,4 +323,8 @@ public class settingFragment extends Fragment {
     public void addPeriodicEntry(periodicEntry addedPeriodicEntry) {
         periodicEntriesAdapter.add(addedPeriodicEntry);
     }
+
+    public void modifyPeriodicEntry(periodicEntry newPeriodicEntry) {
+        periodicEntriesAdapter.modify(newPeriodicEntry);
+    }
 }

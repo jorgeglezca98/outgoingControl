@@ -57,6 +57,8 @@
     <string name="complete_the_field">Complete the field</string>
     <string name="periodic_entries">Periodic entries</string>
     <string name="money_controllers">Money controllers</string>
+    <string name="close_dialog">Close dialog</string>
+    <string name="edit_periodic_entry">Edit periodic entry</string>
 
     <string-array name="periodic_types">
         <item>Annual</item>

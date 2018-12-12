@@ -3,7 +3,70 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/white"
+        android:elevation="3dp"
+        android:paddingEnd="10dp"
+        android:paddingStart="10dp"
+        app:contentInsetStart="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/closeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@color/transparent"
+                android:contentDescription="@string/close_dialog"
+                android:src="@drawable/clear"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="16dp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="start|center_vertical"
+                android:minHeight="30dp"
+                android:paddingEnd="15dp"
+                android:paddingStart="15dp"
+                android:text="@string/edit_periodic_entry"
+                android:textColor="@color/primary0"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/buttonApply"
+                app:layout_constraintStart_toEndOf="@+id/closeButton"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <android.support.design.button.MaterialButton
+                android:id="@+id/buttonApply"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/apply_title"
+                android:textAllCaps="true"
+                android:textColor="@color/primary0"
+                app:backgroundTint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.Toolbar>
 
     <ScrollView
         android:layout_width="0dp"
@@ -11,27 +74,39 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp"
+            android:paddingEnd="20dp"
+            android:paddingStart="15dp">
 
             <LinearLayout
                 android:id="@+id/entryInputContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
+                android:elevation="5dp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="serif"
+                    android:gravity="center_vertical"
+                    android:text="Datos de la entrada"
+                    android:textSize="16sp" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="5dp"
                     android:layout_marginTop="8dp"
                     android:baselineAligned="false"
                     android:orientation="horizontal">
@@ -41,7 +116,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
-                        android:layout_weight="1"
+                        android:layout_weight="2"
                         android:hint="@string/value_title">
 
                         <EditText
@@ -55,58 +130,34 @@
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
+                        android:id="@+id/categorySelectionContainer"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
-                        android:hint="@string/date_title">
+                        android:hint="@string/category_title">
 
                         <EditText
-                            android:id="@+id/editTextEntryDate"
+                            android:id="@+id/editTextCategorySelection"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:ems="10"
                             android:focusable="false"
                             android:focusableInTouchMode="false"
                             android:inputType="text|textNoSuggestions"
                             android:longClickable="false"
-                            android:padding="12dp"
-                            tools:ignore="TextFields" />
+                            android:padding="12dp" />
 
                     </android.support.design.widget.TextInputLayout>
 
                 </LinearLayout>
 
                 <android.support.design.widget.TextInputLayout
-                    android:id="@+id/categorySelectionContainer"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="8dp"
-                    android:hint="@string/category_title">
-
-                    <EditText
-                        android:id="@+id/editTextCategorySelection"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        android:inputType="text|textNoSuggestions"
-                        android:longClickable="false"
-                        android:padding="12dp" />
-
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="5dp"
                     android:layout_marginTop="8dp"
                     android:hint="@string/description_title">
 
@@ -124,6 +175,34 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/askFirstInformation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/entryInputContainer">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="serif"
+                    android:gravity="center_vertical"
+                    android:paddingEnd="20dp"
+                    android:paddingStart="0dp"
+                    android:text="Ask before apply"
+                    android:textSize="16sp" />
+
+                <Switch
+                    android:id="@+id/askFirst"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/periodicityTypeInformation"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -131,7 +210,7 @@
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/entryInputContainer">
+                app:layout_constraintTop_toBottomOf="@+id/askFirstInformation">
 
                 <TextView
                     android:id="@+id/textViewRepeat"
@@ -141,7 +220,6 @@
                     android:fontFamily="serif"
                     android:gravity="center_vertical"
                     android:paddingEnd="8dp"
-                    android:paddingStart="8dp"
                     android:text="Repetir cada"
                     android:textSize="16sp" />
 
@@ -189,7 +267,7 @@
                 android:id="@+id/repetitionInformation"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -202,7 +280,6 @@
                     android:fontFamily="serif"
                     android:gravity="center_vertical"
                     android:paddingEnd="10dp"
-                    android:paddingStart="10dp"
                     android:text="Se repite el"
                     android:textSize="16sp" />
 
@@ -210,36 +287,9 @@
                     android:id="@+id/daysOfExecution"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
                     android:layout_marginTop="10dp"
                     android:overScrollMode="never" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/askFirstInformation"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/repetitionInformation">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="serif"
-                    android:gravity="center_vertical"
-                    android:paddingEnd="10dp"
-                    android:paddingStart="10dp"
-                    android:text="Ask before apply"
-                    android:textSize="16sp" />
-
-                <Switch
-                    android:id="@+id/askFirst"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
             </LinearLayout>
 
             <LinearLayout
@@ -250,7 +300,7 @@
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/askFirstInformation">
+                app:layout_constraintTop_toBottomOf="@id/repetitionInformation">
 
                 <TextView
                     android:layout_width="0dp"
@@ -258,7 +308,6 @@
                     android:layout_weight="1"
                     android:fontFamily="serif"
                     android:gravity="center_vertical"
-                    android:paddingStart="10dp"
                     android:text="Empezar el"
                     android:textSize="16sp" />
 
@@ -299,8 +348,6 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="serif"
                     android:gravity="center_vertical"
-                    android:paddingEnd="10dp"
-                    android:paddingStart="10dp"
                     android:text="Termina"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -312,6 +359,7 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_below="@+id/endDateHeader"
+                    android:layout_marginStart="5dp"
                     android:layout_marginTop="10dp"
                     android:weightSum="3"
                     app:layout_constraintBottom_toBottomOf="@+id/radioGroupEditTexts"

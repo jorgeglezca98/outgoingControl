@@ -10,7 +10,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
-import com.example.jorgegonzalezcabrera.outgoing.models.moneyController;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
@@ -47,9 +46,9 @@ public class editablePeriodicEntriesAdapter extends RecyclerView.Adapter<editabl
         return periodicEntries.size();
     }
 
-    public void modify(moneyController modifiedMoneyController) {
+    public void modify(periodicEntry changedPeriodicEntry) {
         for (int i = 0; i < periodicEntries.size(); i++) {
-            if (modifiedMoneyController.getId() == periodicEntries.get(i).getId()) {
+            if (changedPeriodicEntry.getId() == periodicEntries.get(i).getId()) {
                 notifyItemChanged(i);
                 return;
             }

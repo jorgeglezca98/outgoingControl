@@ -64,6 +64,13 @@ public class customizeCheckboxesAdapter extends RecyclerView.Adapter<customizeCh
         return result;
     }
 
+    public void changeItem(int pos) {
+        if (!items.get(pos).selected) {
+            items.get(pos).selected = true;
+            numberOfSelectedItems++;
+        }
+    }
+
     @Override
     public int getItemCount() {
         return items.size();
