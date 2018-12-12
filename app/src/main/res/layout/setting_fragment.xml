@@ -169,6 +169,7 @@
             android:textColor="@color/primary3"
             android:textSize="16sp"
             android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/recyclerViewPeriodicEntries"
             app:layout_constraintEnd_toEndOf="@id/recyclerViewEditableIncomeCategories"
             app:layout_constraintStart_toStartOf="@id/recyclerViewEditableIncomeCategories"
             app:layout_constraintTop_toBottomOf="@id/recyclerViewMoneyControllers" />
@@ -182,6 +183,7 @@
             android:clipToPadding="false"
             android:elevation="2dp"
             android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/periodicEntriesHeader"
             app:layout_constraintStart_toStartOf="@id/periodicEntriesHeader"
             app:layout_constraintTop_toBottomOf="@id/periodicEntriesHeader" />
