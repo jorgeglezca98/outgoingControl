@@ -37,9 +37,9 @@
     <string name="category_name">Category name</string>
     <string name="add_item">Add item</string>
     <string name="income_categories_title">Income categories</string>
-    <string name="third_configuration_information">It is also possible to customize income categories. You have to add one at least now but it is possible to change them later.</string>
+    <string name="third_configuration_information">Control the money you spend every month.</string>
     <string name="outgoing_categories_title">Outgoing categories</string>
-    <string name="second_configuration_information">We allows that you customize the categories of your outgoings and we request the maximum money you want to spend per month to improve your money management. You can also set subcategories to specify even more in what you spend the money but the borderline would be apply to the category in general. You have to add one at least now but it is possible to change them later.</string>
+    <string name="second_configuration_information">Organize your income and outgoings by categories.</string>
     <string name="add_new_category">Add new category</string>
     <string name="reset_current_money_title">Reset current money</string>
     <string name="right_current_money">Right current money</string>
