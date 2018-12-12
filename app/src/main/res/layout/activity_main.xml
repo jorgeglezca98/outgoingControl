@@ -12,8 +12,9 @@
         android:id="@+id/toolBar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:elevation="10dp"
-        android:theme="@style/AppTheme"
+        android:background="@android:color/white"
+        android:elevation="3dp"
+        app:contentInsetStart="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -22,6 +23,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/app_name"
+            android:scaleX="0.80"
+            android:scaleY="0.80"
             android:src="@drawable/logo_horizontal" />
 
     </android.support.v7.widget.Toolbar>
@@ -44,6 +47,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_below="@+id/tabLayout"
+        android:layout_marginTop="10dp"
         android:background="@color/transparent"
         app:layout_constraintBottom_toTopOf="@id/tabLayout"
         app:layout_constraintEnd_toEndOf="parent"
