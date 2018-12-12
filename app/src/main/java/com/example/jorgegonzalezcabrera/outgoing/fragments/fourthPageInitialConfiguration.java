@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.newMoneyControllersAdapter;
@@ -24,6 +25,7 @@ public class fourthPageInitialConfiguration extends Fragment {
     private newMoneyControllersAdapter moneyControllerAdapter;
     private LinearLayoutManager moneyControllerLayoutManager;
     private RealmList<category> categories;
+    private ScrollView scrollViewContainer;
 
     public fourthPageInitialConfiguration() {
         categories = new RealmList<>();
@@ -39,6 +41,9 @@ public class fourthPageInitialConfiguration extends Fragment {
         moneyControllerRecyclerView.setAdapter(moneyControllerAdapter);
         moneyControllerLayoutManager = new LinearLayoutManager(getContext());
         moneyControllerRecyclerView.setLayoutManager(moneyControllerLayoutManager);
+
+        scrollViewContainer = view.findViewById(R.id.scrollViewContainer);
+
         return view;
     }
 
@@ -49,7 +54,12 @@ public class fourthPageInitialConfiguration extends Fragment {
 
     public void addOne() {
         moneyControllerAdapter.addOne();
-        moneyControllerLayoutManager.scrollToPosition(moneyControllerAdapter.getItemCount() - 1);
+        if (scrollViewContainer != null)
+            scrollViewContainer.post(new Runnable() {
+                public void run() {
+                    scrollViewContainer.fullScroll(View.FOCUS_DOWN);
+                }
+            });
     }
 
     public boolean checkData() {
