@@ -27,6 +27,8 @@ import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.
 
 public class editFieldActivity extends AppCompatActivity {
 
+    private LinearLayout container;
+
     public interface editIncomeCategoryInterface {
         void editCategoryField(String initialValue, ConstraintLayout container, TextView field, String hint, int requestCode, long id);
     }
@@ -48,7 +50,7 @@ public class editFieldActivity extends AppCompatActivity {
         String fieldHint = extras.getString(HINT_KEY);
         final long id = extras.getLong(ID_KEY);
 
-        LinearLayout container = findViewById(R.id.container);
+        container = findViewById(R.id.container);
         container.setTransitionName(containerTransitionName);
 
         final EditText fieldEditText = findViewById(R.id.editTextField);
@@ -64,6 +66,7 @@ public class editFieldActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent returnIntent = new Intent();
                 setResult(Activity.RESULT_CANCELED, returnIntent);
+                container.animate().alpha(0).setDuration(500);
                 supportFinishAfterTransition();
             }
         });
@@ -79,6 +82,7 @@ public class editFieldActivity extends AppCompatActivity {
                         returnIntent.putExtra(FINAL_VALUE_KEY, fieldEditText.getText().toString());
                         returnIntent.putExtra(ID_KEY, id);
                         setResult(Activity.RESULT_OK, returnIntent);
+                        container.animate().alpha(0).setDuration(500);
                         supportFinishAfterTransition();
                     } else {
                         textInputLayoutField.setError(ERROR_MESSAGE_REPEATED_NAME);
@@ -96,6 +100,7 @@ public class editFieldActivity extends AppCompatActivity {
     public void onBackPressed() {
         Intent returnIntent = new Intent();
         setResult(Activity.RESULT_CANCELED, returnIntent);
+        container.animate().alpha(0).setDuration(500);
         supportFinishAfterTransition();
     }
 }

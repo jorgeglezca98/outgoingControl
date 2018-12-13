@@ -1,138 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:layout_margin="15dp"
-    android:background="@android:color/white"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <TextView
+    <LinearLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:gravity="start|center_vertical"
-        android:minHeight="30dp"
-        android:text="@string/complete_the_field"
-        android:textColor="@color/primary0"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:layout_gravity="center"
+        android:layout_margin="15dp"
+        android:background="@android:color/white"
+        android:gravity="center"
+        android:orientation="vertical">
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/layoutEditableOutgoingCategory"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="24dp"
-        android:orientation="horizontal">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:gravity="start|center_vertical"
+            android:minHeight="30dp"
+            android:text="@string/complete_the_field"
+            android:textColor="@color/primary0"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/layoutEditableOutgoingCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="24dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/linearLayoutMainData"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/categoryNameContainer"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="2"
+                    android:hint="@string/category_name"
+                    app:errorEnabled="true">
+
+                    <EditText
+                        android:id="@+id/editTextCategoryName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:inputType="textNoSuggestions"
+                        android:maxLines="1"
+                        android:padding="12dp"
+                        android:textSize="16sp" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/categoryMaxContainer"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:hint="@string/maximum_hint"
+                    app:errorEnabled="true">
+
+                    <EditText
+                        android:id="@+id/editTextMaxValue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1"
+                        android:padding="12dp"
+                        android:textSize="16sp" />
+                </android.support.design.widget.TextInputLayout>
+
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerViewSubcategories"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:requiresFadingEdge="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayoutMainData" />
+
+        </android.support.constraint.ConstraintLayout>
 
         <LinearLayout
-            android:id="@+id/linearLayoutMainData"
-            android:layout_width="0dp"
+            android:id="@+id/linearLayout2"
+            style="?android:attr/buttonBarStyle"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:baselineAligned="false"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:gravity="end"
             android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintVertical_bias="1.0">
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/categoryNameContainer"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+            <android.support.design.button.MaterialButton
+                android:id="@+id/buttonCancel"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="2"
-                android:hint="@string/category_name"
-                app:errorEnabled="true">
+                android:layout_marginEnd="4dp"
+                android:elevation="0dp"
+                android:text="@string/cancel_title"
+                android:textAllCaps="false"
+                android:textColor="@color/complement0"
+                app:backgroundTint="@android:color/white" />
 
-                <EditText
-                    android:id="@+id/editTextCategoryName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="textNoSuggestions"
-                    android:maxLines="1"
-                    android:padding="12dp"
-                    android:textSize="16sp" />
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/categoryMaxContainer"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+            <android.support.design.button.MaterialButton
+                android:id="@+id/buttonApply"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:hint="@string/maximum_hint"
-                app:errorEnabled="true">
-
-                <EditText
-                    android:id="@+id/editTextMaxValue"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="numberDecimal"
-                    android:maxLines="1"
-                    android:padding="12dp"
-                    android:textSize="16sp" />
-            </android.support.design.widget.TextInputLayout>
+                android:layout_marginStart="4dp"
+                android:text="@string/apply_title"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                app:backgroundTint="@color/complement0" />
 
         </LinearLayout>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerViewSubcategories"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:requiresFadingEdge="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayoutMainData" />
-
-    </android.support.constraint.ConstraintLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        style="?android:attr/buttonBarStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:gravity="end"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="1.0">
-
-        <android.support.design.button.MaterialButton
-            android:id="@+id/buttonCancel"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            android:elevation="0dp"
-            android:text="@string/cancel_title"
-            android:textAllCaps="false"
-            android:textColor="@color/complement0"
-            app:backgroundTint="@android:color/white" />
-
-        <android.support.design.button.MaterialButton
-            android:id="@+id/buttonApply"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:text="@string/apply_title"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            app:backgroundTint="@color/complement0" />
-
     </LinearLayout>
 
-</LinearLayout>
+</ScrollView>

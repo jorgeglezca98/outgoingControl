@@ -40,6 +40,7 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
 
     private final static String ERROR_MESSAGE_EMPTY_FIELD = "Mandatory field";
     private final static String ERROR_MESSAGE_REPEATED_NAME = "Repeated name";
+    private ConstraintLayout container;
 
 
     @Override
@@ -76,8 +77,8 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
         recyclerViewSubcategories.setAdapter(subcategoriesAdapter);
         recyclerViewSubcategories.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
-        ConstraintLayout constraintLayout = findViewById(R.id.layoutEditableOutgoingCategory);
-        constraintLayout.setTransitionName(containerTransitionName);
+        container = findViewById(R.id.layoutEditableOutgoingCategory);
+        container.setTransitionName(containerTransitionName);
 
         Button buttonCancel = findViewById(R.id.buttonCancel);
         buttonCancel.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +86,7 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent returnIntent = new Intent();
                 setResult(Activity.RESULT_CANCELED, returnIntent);
+                container.animate().alpha(0).setDuration(500);
                 supportFinishAfterTransition();
             }
         });
@@ -108,6 +110,7 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
                     returnIntent.putStringArrayListExtra(CATEGORY_SUBCATEGORIES_KEY, finalSubcategories);
                     returnIntent.putExtra(CONTROLLER_ID_KEY, id);
                     setResult(Activity.RESULT_OK, returnIntent);
+                    container.animate().alpha(0).setDuration(500);
                     supportFinishAfterTransition();
                 }
             }
@@ -146,6 +149,7 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
     public void onBackPressed() {
         Intent returnIntent = new Intent();
         setResult(Activity.RESULT_CANCELED, returnIntent);
+        container.animate().alpha(0).setDuration(500);
         supportFinishAfterTransition();
     }
 }

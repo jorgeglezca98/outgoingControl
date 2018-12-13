@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.button.MaterialButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -41,6 +42,7 @@ import java.util.Vector;
 import io.realm.Realm;
 import io.realm.RealmList;
 
+import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.CONTAINER_TRANSITION_NAME_KEY;
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.ID_KEY;
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.PERIODIC_ENTRY_ASK_KEY;
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.PERIODIC_ENTRY_CATEGORY_KEY;
@@ -55,6 +57,8 @@ import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.get
 import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getFunctioningOutgoingCategories;
 
 public class editPeriodicEntryActivity extends AppCompatActivity {
+
+    private ConstraintLayout container;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,6 +78,10 @@ public class editPeriodicEntryActivity extends AppCompatActivity {
         Date start = (Date) extras.get(PERIODIC_ENTRY_START_KEY);
         Date end = (Date) extras.get(PERIODIC_ENTRY_END_KEY);
         boolean ask = extras.getBoolean(PERIODIC_ENTRY_ASK_KEY);
+        String containerTransitionName = extras.getString(CONTAINER_TRANSITION_NAME_KEY);
+
+        container = findViewById(R.id.container);
+        container.setTransitionName(containerTransitionName);
 
         final DateFormat df = new SimpleDateFormat("dd/MM/yyyy", new Locale("es", "ES"));
 
@@ -275,6 +283,7 @@ public class editPeriodicEntryActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent returnIntent = new Intent();
                 setResult(Activity.RESULT_CANCELED, returnIntent);
+                container.animate().alpha(0).setDuration(800);
                 supportFinishAfterTransition();
             }
         });
@@ -364,6 +373,7 @@ public class editPeriodicEntryActivity extends AppCompatActivity {
                                 returnIntent.putExtra(PERIODIC_ENTRY_END_KEY, formattedEndDate != null ? formattedEndDate.getTime() : null);
                                 returnIntent.putExtra(PERIODIC_ENTRY_ASK_KEY, askBeforeSwitch.isChecked());
                                 setResult(Activity.RESULT_OK, returnIntent);
+                                container.animate().alpha(0).setDuration(800);
                                 supportFinishAfterTransition();
                             } else {
                                 Toast.makeText(editPeriodicEntryActivity.this, "The end date must be set and it can't be before the start date.", Toast.LENGTH_LONG).show();
@@ -387,6 +397,7 @@ public class editPeriodicEntryActivity extends AppCompatActivity {
     public void onBackPressed() {
         Intent returnIntent = new Intent();
         setResult(Activity.RESULT_CANCELED, returnIntent);
+        container.animate().alpha(0).setDuration(800);
         supportFinishAfterTransition();
     }
 }

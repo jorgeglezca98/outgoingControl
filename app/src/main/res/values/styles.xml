@@ -22,7 +22,7 @@
     </style>
 
     <style name="AppTheme.TransparentActivity" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:windowBackground">@color/dialogBackground</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="colorPrimary">@color/primary0</item>

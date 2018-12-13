@@ -407,6 +407,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         intent.putExtra(PERIODIC_ENTRY_START_KEY, periodicEntry.getStartDate());
         intent.putExtra(PERIODIC_ENTRY_END_KEY, periodicEntry.getEndDate());
         intent.putExtra(PERIODIC_ENTRY_ASK_KEY, periodicEntry.isAskBefore());
+        intent.putExtra(CONTAINER_TRANSITION_NAME_KEY, container.getTransitionName());
 
         ActivityOptionsCompat options = ActivityOptionsCompat.
                 makeSceneTransitionAnimation(this, container, container.getTransitionName());
