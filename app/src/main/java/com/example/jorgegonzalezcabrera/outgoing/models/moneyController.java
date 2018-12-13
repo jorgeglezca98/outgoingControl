@@ -4,6 +4,7 @@ import com.example.jorgegonzalezcabrera.outgoing.applications.myApplication;
 
 import javax.annotation.Nonnull;
 
+import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -73,7 +74,8 @@ public class moneyController extends RealmObject {
     }
 
     public boolean check() {
-        return id >= 0 && subcategories != null && subcategories.size() != 0 && maximum > 0 && !name.isEmpty();
+        moneyController moneyControllerWithSameName = Realm.getDefaultInstance().where(moneyController.class).equalTo("name",name).findFirst();
+        return id >= 0 && subcategories != null && subcategories.size() != 0 && maximum > 0 && !name.isEmpty() && (moneyControllerWithSameName == null || moneyControllerWithSameName.getId() == id);
     }
 
 }

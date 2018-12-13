@@ -16,6 +16,8 @@ import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.erasableItemsAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.models.category;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import io.realm.RealmList;
@@ -88,8 +90,9 @@ public class secondPageInitialConfiguration extends Fragment {
 
     public boolean checkCategories() {
         int i = 0;
+        Set<String> noDuplicatedCategories = new HashSet<>();
         while (i < categories.size()) {
-            if (categories.get(i) == null || !categories.get(i).check()) {
+            if (categories.get(i) == null || !categories.get(i).check() || !noDuplicatedCategories.add(categories.get(i).getName())) {
                 return false;
             }
             i++;

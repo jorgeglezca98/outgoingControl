@@ -15,8 +15,11 @@ import android.widget.EditText;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSelectionAdapter;
+import com.example.jorgegonzalezcabrera.outgoing.models.moneyController;
 
 import java.util.ArrayList;
+
+import io.realm.Realm;
 
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.CATEGORY_MAXIMUM_KEY;
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.CATEGORY_MAXIMUM_TRANSITION_NAME_KEY;
@@ -35,7 +38,9 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
     private TextInputLayout categoryNameContainer;
     private TextInputLayout categoryMaxContainer;
 
-    private static final String ERROR_MESSAGE = "Mandatory field";
+    private final static String ERROR_MESSAGE_EMPTY_FIELD = "Mandatory field";
+    private final static String ERROR_MESSAGE_REPEATED_NAME = "Repeated name";
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -88,7 +93,7 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
         buttonApply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (checkDataAndShowErrors()) {
+                if (checkDataAndShowErrors(id)) {
                     Intent returnIntent = new Intent();
 
                     ArrayList<String> finalSubcategories = new ArrayList<>();
@@ -111,18 +116,24 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
         supportStartPostponedEnterTransition();
     }
 
-    private boolean checkDataAndShowErrors() {
+    private boolean checkDataAndShowErrors(Long id) {
         boolean result = true;
 
         if (editTextCategoryName.getText().toString().isEmpty()) {
-            categoryNameContainer.setError(ERROR_MESSAGE);
+            categoryNameContainer.setError(ERROR_MESSAGE_EMPTY_FIELD);
             result = false;
         } else {
-            categoryNameContainer.setError(null);
+            moneyController controllerWithSameName = Realm.getDefaultInstance().where(moneyController.class).equalTo("name", editTextCategoryName.getText().toString()).findFirst();
+            if (controllerWithSameName == null || controllerWithSameName.getId() == id) {
+                categoryNameContainer.setError(null);
+            } else {
+                categoryNameContainer.setError(ERROR_MESSAGE_REPEATED_NAME);
+                result = false;
+            }
         }
 
         if (editTextMaxValue.getText().toString().isEmpty()) {
-            categoryMaxContainer.setError(ERROR_MESSAGE);
+            categoryMaxContainer.setError(ERROR_MESSAGE_EMPTY_FIELD);
             result = false;
         } else {
             categoryMaxContainer.setError(null);

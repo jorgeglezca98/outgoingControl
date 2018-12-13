@@ -188,15 +188,18 @@ public class dialogs {
                     double value = Double.valueOf(valueEditText.getText().toString());
 
                     if (switchPeriodicity.isChecked()) {
-                        periodicEntry.setValue(value);
-                        periodicEntry.setDescription(description);
-                        periodicEntry.setCategoryId(Realm.getDefaultInstance().where(category.class).equalTo("name", subcategory).and().equalTo("type", category.OUTGOING).findFirst().getId());
-                        onEntriesChange.addPeriodicEntry(periodicEntry);
+                        periodicEntry periodicEntryWithSameDescription = Realm.getDefaultInstance().where(periodicEntry.getClass()).equalTo("description", description).findFirst();
+                        if (!description.isEmpty() && periodicEntryWithSameDescription == null) {
+                            periodicEntry.setValue(value);
+                            periodicEntry.setDescription(description);
+                            periodicEntry.setCategoryId(Realm.getDefaultInstance().where(category.class).equalTo("name", subcategory).and().equalTo("type", category.OUTGOING).findFirst().getId());
+                            onEntriesChange.addPeriodicEntry(periodicEntry);
+                            dialog.dismiss();
+                        }
                     } else {
                         onEntriesChange.addEntry(new entry(value, getTypeFromOrdinal(typeOfCategory), subcategory, description, creationDate.getTime()));
+                        dialog.dismiss();
                     }
-
-                    dialog.dismiss();
                 }
             }
         });

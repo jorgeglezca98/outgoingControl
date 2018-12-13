@@ -14,6 +14,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.models.category;
+
+import io.realm.Realm;
 
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.CONTAINER_TRANSITION_NAME_KEY;
 import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.FIELD_TRANSITION_NAME_KEY;
@@ -28,7 +31,8 @@ public class editFieldActivity extends AppCompatActivity {
         void editCategoryField(String initialValue, ConstraintLayout container, TextView field, String hint, int requestCode, long id);
     }
 
-    private final static String ERROR_MESSAGE = "Mandatory field";
+    private final static String ERROR_MESSAGE_EMPTY_FIELD = "Mandatory field";
+    private final static String ERROR_MESSAGE_REPEATED_NAME = "Category name already used";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,13 +73,18 @@ public class editFieldActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!fieldEditText.getText().toString().isEmpty()) {
-                    Intent returnIntent = new Intent();
-                    returnIntent.putExtra(FINAL_VALUE_KEY, fieldEditText.getText().toString());
-                    returnIntent.putExtra(ID_KEY, id);
-                    setResult(Activity.RESULT_OK, returnIntent);
-                    supportFinishAfterTransition();
+                    category categoryWithSameName = Realm.getDefaultInstance().where(category.class).equalTo("name",fieldEditText.getText().toString()).findFirst();
+                    if(categoryWithSameName == null || categoryWithSameName.getId() == id) {
+                        Intent returnIntent = new Intent();
+                        returnIntent.putExtra(FINAL_VALUE_KEY, fieldEditText.getText().toString());
+                        returnIntent.putExtra(ID_KEY, id);
+                        setResult(Activity.RESULT_OK, returnIntent);
+                        supportFinishAfterTransition();
+                    } else {
+                        textInputLayoutField.setError(ERROR_MESSAGE_REPEATED_NAME);
+                    }
                 } else {
-                    textInputLayoutField.setError(ERROR_MESSAGE);
+                    textInputLayoutField.setError(ERROR_MESSAGE_EMPTY_FIELD);
                 }
             }
         });

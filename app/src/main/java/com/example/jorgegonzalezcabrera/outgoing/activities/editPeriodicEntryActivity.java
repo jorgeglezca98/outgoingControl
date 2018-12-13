@@ -283,9 +283,10 @@ public class editPeriodicEntryActivity extends AppCompatActivity {
         buttonApply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                periodicEntry periodicEntryWithSameDescription = Realm.getDefaultInstance().where(periodicEntry.class).equalTo("description", descriptionEditText.getText().toString()).findFirst();
                 if (!valueEditText.getText().toString().isEmpty() &&
                         !categorySelectionEditText.getText().toString().isEmpty() &&
-                        !descriptionEditText.getText().toString().isEmpty()) {
+                        !descriptionEditText.getText().toString().isEmpty() && (periodicEntryWithSameDescription == null || periodicEntryWithSameDescription.getId() == id)) {
                     if (!editTextQuantityOf.getText().toString().isEmpty()) {
                         String periodicityType = editTextPeriodicityType.getText().toString();
                         if ((periodicityType.equals("weeks") && weekAdapter.isSomeoneSelected()) ||
@@ -380,10 +381,6 @@ public class editPeriodicEntryActivity extends AppCompatActivity {
         });
 
         supportStartPostponedEnterTransition();
-    }
-
-    private boolean checkDataAndShowErrors() {
-        return false;
     }
 
     @Override
