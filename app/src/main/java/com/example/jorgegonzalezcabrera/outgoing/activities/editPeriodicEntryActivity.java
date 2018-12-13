@@ -169,17 +169,21 @@ public class editPeriodicEntryActivity extends AppCompatActivity {
             editTextPeriodicityType.setText("years");
         }
         final PopupMenu popup = new PopupMenu(this, editTextPeriodicityType);
+        final View divider = findViewById(R.id.thirdDivider);
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 if (menuItem.getTitle().equals("weeks")) {
                     repetitionInformation.setVisibility(View.VISIBLE);
                     daysOfExecution.setAdapter(weekAdapter);
+                    divider.setVisibility(View.VISIBLE);
                 } else if (menuItem.getTitle().equals("months")) {
                     repetitionInformation.setVisibility(View.VISIBLE);
                     daysOfExecution.setAdapter(monthAdapter);
+                    divider.setVisibility(View.VISIBLE);
                 } else {
                     repetitionInformation.setVisibility(View.GONE);
+                    divider.setVisibility(View.GONE);
                 }
                 editTextPeriodicityType.setText(menuItem.getTitle());
                 return true;

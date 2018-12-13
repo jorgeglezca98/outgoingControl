@@ -11,10 +11,10 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@android:color/white"
+        android:background="@color/primary0"
         android:elevation="3dp"
-        android:paddingEnd="10dp"
-        android:paddingStart="10dp"
+        android:paddingEnd="8dp"
+        android:paddingStart="16dp"
         app:contentInsetStart="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,26 +27,30 @@
 
             <ImageButton
                 android:id="@+id/closeButton"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:background="@color/transparent"
                 android:contentDescription="@string/close_dialog"
                 android:src="@drawable/clear"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/toolBarTitle"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/toolBarTitle"
                 tools:layout_editor_absoluteX="16dp" />
 
             <TextView
+                android:id="@+id/toolBarTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="12dp"
                 android:gravity="start|center_vertical"
                 android:minHeight="30dp"
                 android:paddingEnd="15dp"
-                android:paddingStart="15dp"
-                android:text="@string/edit_periodic_entry"
-                android:textColor="@color/primary0"
-                android:textSize="20sp"
+                android:paddingStart="32dp"
+                android:text="@string/periodic_entries"
+                android:textColor="@android:color/white"
+                android:textSize="21sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/buttonApply"
@@ -57,12 +61,15 @@
                 android:id="@+id/buttonApply"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginBottom="8dp"
                 android:layout_marginStart="4dp"
+                android:layout_marginTop="12dp"
                 android:text="@string/apply_title"
                 android:textAllCaps="true"
-                android:textColor="@color/primary0"
-                app:backgroundTint="@android:color/white"
+                android:textColor="@android:color/white"
+                android:textSize="15sp"
+                app:backgroundTint="@android:color/transparent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -80,14 +87,14 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="10dp"
-            android:paddingEnd="20dp"
-            android:paddingStart="15dp">
+            android:paddingBottom="10dp">
 
             <LinearLayout
                 android:id="@+id/entryInputContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="15dp"
                 android:elevation="5dp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -175,15 +182,27 @@
 
             </LinearLayout>
 
+            <View
+                android:id="@+id/firstDivider"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="#1F000000"
+                app:layout_constraintBottom_toTopOf="@+id/askFirstInformation"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/entryInputContainer" />
+
             <LinearLayout
                 android:id="@+id/askFirstInformation"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/entryInputContainer">
+                app:layout_constraintTop_toBottomOf="@id/firstDivider">
 
                 <TextView
                     android:layout_width="0dp"
@@ -203,15 +222,28 @@
 
             </LinearLayout>
 
+            <View
+                android:id="@+id/secondDivider"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                android:background="#1F000000"
+                app:layout_constraintBottom_toTopOf="@+id/periodicityTypeInformation"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/askFirstInformation" />
+
             <LinearLayout
                 android:id="@+id/periodicityTypeInformation"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/askFirstInformation">
+                app:layout_constraintTop_toBottomOf="@+id/secondDivider">
 
                 <TextView
                     android:id="@+id/textViewRepeat"
@@ -264,16 +296,29 @@
 
             </LinearLayout>
 
+            <View
+                android:id="@+id/thirdDivider"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                android:background="#1F000000"
+                app:layout_constraintBottom_toTopOf="@+id/repetitionInformation"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/periodicityTypeInformation" />
+
             <LinearLayout
                 android:id="@+id/repetitionInformation"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/periodicityTypeInformation">
+                app:layout_constraintTop_toBottomOf="@id/thirdDivider">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -293,15 +338,28 @@
                     android:overScrollMode="never" />
             </LinearLayout>
 
+            <View
+                android:id="@+id/fourthDivider"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                android:background="#1F000000"
+                app:layout_constraintBottom_toTopOf="@+id/beginInformation"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/repetitionInformation" />
+
             <LinearLayout
                 android:id="@+id/beginInformation"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/repetitionInformation">
+                app:layout_constraintTop_toBottomOf="@id/fourthDivider">
 
                 <TextView
                     android:layout_width="0dp"
@@ -333,15 +391,28 @@
 
             </LinearLayout>
 
+            <View
+                android:id="@+id/fifthDivider"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                android:background="#1F000000"
+                app:layout_constraintBottom_toTopOf="@+id/endInformation"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/beginInformation" />
+
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/endInformation"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/beginInformation">
+                app:layout_constraintTop_toBottomOf="@id/fifthDivider">
 
                 <TextView
                     android:id="@+id/endDateHeader"
