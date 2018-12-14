@@ -181,6 +181,20 @@
             app:layout_constraintStart_toStartOf="@id/recyclerViewEditableIncomeCategories"
             app:layout_constraintTop_toBottomOf="@id/recyclerViewMoneyControllers" />
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/addPeriodicEntry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:tint="@android:color/white"
+            android:visibility="gone"
+            app:backgroundTint="@color/complement0"
+            app:fabSize="mini"
+            app:layout_constraintBottom_toBottomOf="@+id/periodicEntriesHeader"
+            app:layout_constraintEnd_toEndOf="@+id/periodicEntriesHeader"
+            app:layout_constraintTop_toBottomOf="@+id/periodicEntriesHeader"
+            app:srcCompat="@drawable/add" />
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerViewPeriodicEntries"
             android:layout_width="0dp"

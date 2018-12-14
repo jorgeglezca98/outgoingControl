@@ -86,11 +86,6 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
                 public void editEntry(@NonNull entry nextVersion) {
 
                 }
-
-                @Override
-                public void addPeriodicEntry(periodicEntry periodicEntry) {
-
-                }
             };
         }
 

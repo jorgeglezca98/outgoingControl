@@ -16,17 +16,25 @@ import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 import io.realm.Realm;
 import io.realm.RealmList;
 
+import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_ADD_MONEY_CONTROLLER;
+import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_EDIT_PERIODIC_ENTRY;
+import static com.example.jorgegonzalezcabrera.outgoing.activities.MainActivity.REQUEST_NEW_PERIODIC_ENTRY;
+
 public class editablePeriodicEntriesAdapter extends RecyclerView.Adapter<editablePeriodicEntriesAdapter.ViewHolder> {
 
     private int layout;
     private RealmList<periodicEntry> periodicEntries;
     private localUtils.changePeriodicEntriesInterface changePeriodicEntriesInterface;
+    private boolean lastIsEmpty;
+    private boolean showingLast;
 
     public editablePeriodicEntriesAdapter(@NonNull localUtils.changePeriodicEntriesInterface changePeriodicEntriesInterface) {
         this.periodicEntries = new RealmList<>();
         this.periodicEntries.addAll(Realm.getDefaultInstance().where(periodicEntry.class).findAll());
         this.layout = R.layout.erasable_item;
         this.changePeriodicEntriesInterface = changePeriodicEntriesInterface;
+        this.lastIsEmpty = false;
+        this.showingLast = false;
     }
 
     @NonNull
@@ -46,6 +54,33 @@ public class editablePeriodicEntriesAdapter extends RecyclerView.Adapter<editabl
         return periodicEntries.size();
     }
 
+    public void addOne() {
+        if (!lastIsEmpty) {
+            periodicEntries.add(new periodicEntry());
+            notifyItemInserted(getItemCount() - 1);
+            lastIsEmpty = true;
+        }
+    }
+
+    public void confirmLast(periodicEntry addedPeriodicEntry) {
+        if (lastIsEmpty) {
+            periodicEntries.remove(getItemCount() - 1);
+            periodicEntries.add(addedPeriodicEntry);
+            notifyItemChanged(getItemCount() - 1);
+            lastIsEmpty = false;
+            showingLast = false;
+        }
+    }
+
+    public void cancelNewCategory() {
+        if (lastIsEmpty) {
+            periodicEntries.remove(getItemCount() - 1);
+            notifyItemRemoved(getItemCount());
+            lastIsEmpty = false;
+            showingLast = false;
+        }
+    }
+
     public void modify(periodicEntry changedPeriodicEntry) {
         for (int i = 0; i < periodicEntries.size(); i++) {
             if (changedPeriodicEntry.getId() == periodicEntries.get(i).getId()) {
@@ -58,6 +93,15 @@ public class editablePeriodicEntriesAdapter extends RecyclerView.Adapter<editabl
     public void add(periodicEntry addedPeriodicEntry) {
         periodicEntries.add(addedPeriodicEntry);
         notifyItemInserted(periodicEntries.size() - 1);
+    }
+
+    @Override
+    public void onViewAttachedToWindow(@NonNull editablePeriodicEntriesAdapter.ViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+        if ((holder.getAdapterPosition() == (getItemCount() - 1)) && lastIsEmpty && !showingLast) {
+            changePeriodicEntriesInterface.edit(periodicEntries.get(holder.getAdapterPosition()), holder.container, REQUEST_NEW_PERIODIC_ENTRY);
+            showingLast = true;
+        }
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -87,7 +131,7 @@ public class editablePeriodicEntriesAdapter extends RecyclerView.Adapter<editabl
             description.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    changePeriodicEntriesInterface.edit(periodicEntryToBind, container);
+                    changePeriodicEntriesInterface.edit(periodicEntryToBind, container, REQUEST_EDIT_PERIODIC_ENTRY);
                 }
             });
 

@@ -86,7 +86,7 @@ public class editPeriodicEntryActivity extends AppCompatActivity {
         final DateFormat df = new SimpleDateFormat("dd/MM/yyyy", new Locale("es", "ES"));
 
         final EditText valueEditText = findViewById(R.id.editTextValueNewEntry);
-        valueEditText.setText(String.valueOf(value));
+        if (value != 0) valueEditText.setText(String.valueOf(value));
 
         final EditText categorySelectionEditText = findViewById(R.id.editTextCategorySelection);
         final PopupMenu categoriesPopup = new PopupMenu(this, categorySelectionEditText);
@@ -112,7 +112,9 @@ public class editPeriodicEntryActivity extends AppCompatActivity {
                 categoriesPopup.show();
             }
         });
-        categorySelectionEditText.setText(Realm.getDefaultInstance().where(category.class).equalTo("id", categoryId).findFirst().getName());
+        category categoryUsed = Realm.getDefaultInstance().where(category.class).equalTo("id", categoryId).findFirst();
+        if (categoryUsed != null)
+            categorySelectionEditText.setText(categoryUsed.getName());
 
         final EditText descriptionEditText = findViewById(R.id.editTextConceptNewEntry);
         descriptionEditText.setText(description);
@@ -138,7 +140,7 @@ public class editPeriodicEntryActivity extends AppCompatActivity {
         daysOfExecution.setLayoutManager(new GridLayoutManager(this, 7, LinearLayoutManager.VERTICAL, false));
 
         final EditText editTextQuantityOf = findViewById(R.id.editTextQuantityOf);
-        editTextQuantityOf.setText(String.valueOf(quantity));
+        editTextQuantityOf.setText(String.valueOf(quantity == -1 ? 1 : quantity));
         editTextQuantityOf.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -148,9 +150,11 @@ public class editPeriodicEntryActivity extends AppCompatActivity {
             }
         });
 
+        final View divider = findViewById(R.id.thirdDivider);
         final EditText editTextPeriodicityType = findViewById(R.id.editTextPeriodicityType);
-        if (frequency == periodicEntry.periodicType.DAILY.ordinal()) {
+        if (frequency == -1 || frequency == periodicEntry.periodicType.DAILY.ordinal()) {
             editTextPeriodicityType.setText("days");
+            divider.setVisibility(View.GONE);
         } else if (frequency == periodicEntry.periodicType.WEEKLY.ordinal()) {
             editTextPeriodicityType.setText("weeks");
             for (int i = 0; i < repetitions.size(); i++) {
@@ -158,6 +162,7 @@ public class editPeriodicEntryActivity extends AppCompatActivity {
             }
             repetitionInformation.setVisibility(View.VISIBLE);
             daysOfExecution.setAdapter(weekAdapter);
+            divider.setVisibility(View.VISIBLE);
         } else if (frequency == periodicEntry.periodicType.MONTHLY.ordinal()) {
             editTextPeriodicityType.setText("months");
             for (int i = 0; i < repetitions.size(); i++) {
@@ -165,11 +170,12 @@ public class editPeriodicEntryActivity extends AppCompatActivity {
             }
             repetitionInformation.setVisibility(View.VISIBLE);
             daysOfExecution.setAdapter(monthAdapter);
+            divider.setVisibility(View.VISIBLE);
         } else if (frequency == periodicEntry.periodicType.ANNUAL.ordinal()) {
             editTextPeriodicityType.setText("years");
+            divider.setVisibility(View.GONE);
         }
         final PopupMenu popup = new PopupMenu(this, editTextPeriodicityType);
-        final View divider = findViewById(R.id.thirdDivider);
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
@@ -202,7 +208,7 @@ public class editPeriodicEntryActivity extends AppCompatActivity {
 
         final EditText editInitialDate = findViewById(R.id.editInitialDate);
         final GregorianCalendar startDate = new GregorianCalendar();
-        startDate.setTime(start);
+        startDate.setTime(start == null ? new Date() : start);
         startDate.set(Calendar.HOUR_OF_DAY, 0);
         startDate.set(Calendar.MINUTE, 0);
         startDate.set(Calendar.SECOND, 0);
@@ -224,8 +230,7 @@ public class editPeriodicEntryActivity extends AppCompatActivity {
 
         final EditText lastDayEditText = findViewById(R.id.lastDayEditText);
         final GregorianCalendar endDate = new GregorianCalendar();
-        if (end != null) endDate.setTime(end);
-        endDate.setTime(new Date());
+        endDate.setTime(end == null ? new Date() : end);
         endDate.set(Calendar.HOUR_OF_DAY, 0);
         endDate.set(Calendar.MINUTE, 0);
         endDate.set(Calendar.SECOND, 0);
@@ -389,7 +394,7 @@ public class editPeriodicEntryActivity extends AppCompatActivity {
                         Toast.makeText(editPeriodicEntryActivity.this, "Set number of " + editTextPeriodicityType.getText() + "between repetitions", Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    Toast.makeText(editPeriodicEntryActivity.this, "Set main data of entries.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(editPeriodicEntryActivity.this, "Set main data of entries. Description can't be repeated.", Toast.LENGTH_LONG).show();
                 }
             }
         });

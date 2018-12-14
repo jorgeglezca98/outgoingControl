@@ -40,7 +40,7 @@ public class periodicEntry extends RealmObject {
         this.id = myApplication.periodicEntryId.incrementAndGet();
         this.value = 0;
         this.categoryId = -1;
-        this.description = "Not described";
+        this.description = "";
 
         this.quantityOf = 0;
         this.frequency = periodicType.NONE.ordinal();
@@ -52,7 +52,7 @@ public class periodicEntry extends RealmObject {
         this.lastChange = new Date();
     }
 
-    public periodicEntry(double value, int categoryId, String description, int quantityOf,
+    public periodicEntry(double value, long categoryId, String description, int quantityOf,
                          @Nonnull periodicType frequency, Date startDate, Date endDate,
                          RealmList<Integer> daysOfRepetition, boolean askBefore) {
         this.id = myApplication.periodicEntryId.incrementAndGet();

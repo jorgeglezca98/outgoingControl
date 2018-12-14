@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.design.button.MaterialButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -19,20 +18,12 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.RadioGroup;
-import android.widget.Switch;
-import android.widget.Toast;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSelectionAdapter;
-import com.example.jorgegonzalezcabrera.outgoing.adapters.customizeCheckboxesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.actionsFragment;
-import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
@@ -47,9 +38,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
-
-import io.realm.Realm;
-import io.realm.RealmList;
 
 import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getFunctioningIncomeCategories;
 import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.getFunctioningOutgoingCategories;
@@ -69,8 +57,6 @@ public class dialogs {
         dialog.setContentView(R.layout.new_entry_dialog);
         dialog.getWindow().getAttributes().width = WindowManager.LayoutParams.MATCH_PARENT;
         dialog.getWindow().getAttributes().height = WindowManager.LayoutParams.MATCH_PARENT;
-
-        final periodicEntry periodicEntry = new periodicEntry();
 
         final EditText valueEditText = dialog.findViewById(R.id.editTextValueNewEntry);
         final EditText categorySelectionEditText = dialog.findViewById(R.id.editTextCategorySelection);
@@ -130,49 +116,6 @@ public class dialogs {
             }
         });
 
-        final Switch switchPeriodicity = dialog.findViewById(R.id.switchPeriodicity);
-        switchPeriodicity.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    datePickerEditText.setText("Customize");
-                    datePickerEditText.setFocusable(false);
-                    datePickerEditText.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            editEntryPeriodicityDialog(context, new onPeriodicitySet() {
-                                @Override
-                                public void periodicitySet(periodicEntry periodicEntrySet) {
-                                    periodicEntry.setAskBefore(periodicEntrySet.isAskBefore());
-                                    periodicEntry.setDaysOfRepetition(periodicEntrySet.getDaysOfRepetition());
-                                    periodicEntry.setEndDate(periodicEntrySet.getEndDate());
-                                    periodicEntry.setStartDate(periodicEntrySet.getStartDate());
-                                    periodicEntry.setFrequency(periodicEntrySet.getFrequency().ordinal());
-                                    periodicEntry.setQuantityOf(periodicEntrySet.getQuantityOf());
-                                }
-                            });
-                        }
-                    });
-                } else {
-                    datePickerEditText.setText(initialDate);
-                    datePickerEditText.setFocusable(true);
-                    datePickerEditText.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Dialog dialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
-                                @Override
-                                public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                                    creationDate.set(year, month, day);
-                                    datePickerEditText.setText(df.format(creationDate.getTime()));
-                                }
-                            }, creationDate.get(Calendar.YEAR), creationDate.get(Calendar.MONTH), creationDate.get(Calendar.DAY_OF_MONTH));
-                            dialog.show();
-                        }
-                    });
-                }
-            }
-        });
-
         applyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -187,260 +130,9 @@ public class dialogs {
                     String description = descriptionEditText.getText().toString();
                     double value = Double.valueOf(valueEditText.getText().toString());
 
-                    if (switchPeriodicity.isChecked()) {
-                        periodicEntry periodicEntryWithSameDescription = Realm.getDefaultInstance().where(periodicEntry.getClass()).equalTo("description", description).findFirst();
-                        if (!description.isEmpty() && periodicEntryWithSameDescription == null) {
-                            periodicEntry.setValue(value);
-                            periodicEntry.setDescription(description);
-                            periodicEntry.setCategoryId(Realm.getDefaultInstance().where(category.class).equalTo("name", subcategory).and().equalTo("type", category.OUTGOING).findFirst().getId());
-                            onEntriesChange.addPeriodicEntry(periodicEntry);
-                            dialog.dismiss();
-                        }
-                    } else {
-                        onEntriesChange.addEntry(new entry(value, getTypeFromOrdinal(typeOfCategory), subcategory, description, creationDate.getTime()));
-                        dialog.dismiss();
-                    }
+                    onEntriesChange.addEntry(new entry(value, getTypeFromOrdinal(typeOfCategory), subcategory, description, creationDate.getTime()));
+                    dialog.dismiss();
                 }
-            }
-        });
-
-        dialog.show();
-    }
-
-    private static void editEntryPeriodicityDialog(final Context context, final onPeriodicitySet onPeriodicitySet) {
-        final Dialog dialog = new Dialog(new ContextThemeWrapper(context, R.style.AppTheme_TransparentActivity));
-        dialog.getWindow().setWindowAnimations(R.style.DialogAnimationFromRight);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCancelable(true);
-        dialog.setContentView(R.layout.periodicity_dialog);
-        dialog.getWindow().getAttributes().width = WindowManager.LayoutParams.MATCH_PARENT;
-        dialog.getWindow().getAttributes().height = WindowManager.LayoutParams.MATCH_PARENT;
-
-        final LinearLayout repetitionInformation = dialog.findViewById(R.id.repetitionInformation);
-        repetitionInformation.setVisibility(View.GONE);
-        final RecyclerView daysOfExecution = dialog.findViewById(R.id.daysOfExecution);
-        Vector<String> weekLabels = new Vector<>();
-        weekLabels.add("L");
-        weekLabels.add("M");
-        weekLabels.add("X");
-        weekLabels.add("J");
-        weekLabels.add("V");
-        weekLabels.add("S");
-        weekLabels.add("D");
-        final customizeCheckboxesAdapter weekAdapter = new customizeCheckboxesAdapter(weekLabels);
-        Vector<String> monthLabels = new Vector<>();
-        for (int i = 1; i <= 28; i++) {
-            monthLabels.add(String.valueOf(i));
-        }
-        final customizeCheckboxesAdapter monthAdapter = new customizeCheckboxesAdapter(monthLabels);
-        daysOfExecution.setAdapter(weekAdapter);
-        daysOfExecution.setLayoutManager(new GridLayoutManager(context, 7, LinearLayoutManager.VERTICAL, false));
-
-        final EditText editTextQuantityOf = dialog.findViewById(R.id.editTextQuantityOf);
-        editTextQuantityOf.setText("1");
-        editTextQuantityOf.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if (!b && editTextQuantityOf.getText().toString().isEmpty()) {
-                    editTextQuantityOf.setText("1");
-                }
-            }
-        });
-
-        final EditText editTextPeriodicityType = dialog.findViewById(R.id.editTextPeriodicityType);
-        editTextPeriodicityType.setText("days");
-        final PopupMenu popup = new PopupMenu(context, editTextPeriodicityType);
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                if (menuItem.getTitle().equals("weeks")) {
-                    repetitionInformation.setVisibility(View.VISIBLE);
-                    daysOfExecution.setAdapter(weekAdapter);
-                } else if (menuItem.getTitle().equals("months")) {
-                    repetitionInformation.setVisibility(View.VISIBLE);
-                    daysOfExecution.setAdapter(monthAdapter);
-                } else {
-                    repetitionInformation.setVisibility(View.GONE);
-                }
-                editTextPeriodicityType.setText(menuItem.getTitle());
-                return true;
-            }
-        });
-        popup.getMenu().add("days");
-        popup.getMenu().add("weeks");
-        popup.getMenu().add("months");
-        popup.getMenu().add("years");
-        editTextPeriodicityType.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                popup.show();
-            }
-        });
-
-        final EditText editInitialDate = dialog.findViewById(R.id.editInitialDate);
-        final GregorianCalendar startDate = new GregorianCalendar();
-        startDate.setTime(new Date());
-        startDate.set(Calendar.HOUR_OF_DAY, 0);
-        startDate.set(Calendar.MINUTE, 0);
-        startDate.set(Calendar.SECOND, 0);
-        startDate.set(Calendar.MILLISECOND, 0);
-        final DateFormat df = new SimpleDateFormat("dd/MM/yyyy", new Locale("es", "ES"));
-        editInitialDate.setText(df.format(startDate.getTime()));
-        editInitialDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Dialog dialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                        startDate.set(year, month, day);
-                        editInitialDate.setText(df.format(startDate.getTime()));
-                    }
-                }, startDate.get(Calendar.YEAR), startDate.get(Calendar.MONTH), startDate.get(Calendar.DAY_OF_MONTH));
-                dialog.show();
-            }
-        });
-
-        final EditText lastDayEditText = dialog.findViewById(R.id.lastDayEditText);
-        final GregorianCalendar endDate = new GregorianCalendar();
-        endDate.setTime(new Date());
-        endDate.set(Calendar.HOUR_OF_DAY, 0);
-        endDate.set(Calendar.MINUTE, 0);
-        endDate.set(Calendar.SECOND, 0);
-        endDate.set(Calendar.MILLISECOND, 0);
-        lastDayEditText.setText(df.format(endDate.getTime()));
-        lastDayEditText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Dialog dialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                        endDate.set(year, month, day);
-                        lastDayEditText.setText(df.format(endDate.getTime()));
-                    }
-                }, endDate.get(Calendar.YEAR), endDate.get(Calendar.MONTH), endDate.get(Calendar.DAY_OF_MONTH));
-                dialog.show();
-            }
-        });
-
-        final EditText quantityOfRepetitionsEditText = dialog.findViewById(R.id.quantityOfRepetitionsEditText);
-        quantityOfRepetitionsEditText.setText("1");
-        quantityOfRepetitionsEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if (!b && editTextQuantityOf.getText().toString().isEmpty()) {
-                    editTextQuantityOf.setText("1");
-                }
-            }
-        });
-
-        final RadioGroup endOptions = dialog.findViewById(R.id.radioGroupFinalDate);
-        endOptions.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                if (i == R.id.radioButtonNever) {
-                    lastDayEditText.setEnabled(false);
-                    quantityOfRepetitionsEditText.setEnabled(false);
-                } else if (i == R.id.radioButtonByDay) {
-                    lastDayEditText.setEnabled(true);
-                    quantityOfRepetitionsEditText.setEnabled(false);
-                } else if (i == R.id.radioButtonAfterXRepetitions) {
-                    lastDayEditText.setEnabled(false);
-                    quantityOfRepetitionsEditText.setEnabled(true);
-                }
-            }
-        });
-        endOptions.check(R.id.radioButtonNever);
-
-        final Switch askBeforeSwitch = dialog.findViewById(R.id.askFirst);
-
-        Button buttonApplyPeriodicity = dialog.findViewById(R.id.buttonApplyPeriodicity);
-        buttonApplyPeriodicity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!editTextQuantityOf.getText().toString().isEmpty()) {
-                    String periodicityType = editTextPeriodicityType.getText().toString();
-                    if ((periodicityType.equals("weeks") && weekAdapter.isSomeoneSelected()) ||
-                            (periodicityType.equals("months") && monthAdapter.isSomeoneSelected()) ||
-                            periodicityType.equals("days") || periodicityType.equals("years")) {
-                        if ((endOptions.getCheckedRadioButtonId() == R.id.radioButtonAfterXRepetitions && !quantityOfRepetitionsEditText.getText().toString().isEmpty()) ||
-                                endOptions.getCheckedRadioButtonId() == R.id.radioButtonNever ||
-                                (endOptions.getCheckedRadioButtonId() == R.id.radioButtonByDay && startDate.before(endDate))) {
-
-                            periodicEntry.periodicType frequency;
-                            RealmList<Integer> formattedDaysOfRepetition = new RealmList<>();
-                            if (periodicityType.equals("weeks")) {
-                                frequency = periodicEntry.periodicType.WEEKLY;
-                                Vector<String> daysOfRepetition = new Vector<>(weekAdapter.getCheckedItems());
-                                for (int i = 0; i < daysOfRepetition.size(); i++) {
-                                    switch (daysOfRepetition.get(i)) {
-                                        case "L":
-                                            formattedDaysOfRepetition.add(Calendar.MONDAY);
-                                            break;
-                                        case "M":
-                                            formattedDaysOfRepetition.add(Calendar.TUESDAY);
-                                            break;
-                                        case "X":
-                                            formattedDaysOfRepetition.add(Calendar.WEDNESDAY);
-                                            break;
-                                        case "J":
-                                            formattedDaysOfRepetition.add(Calendar.THURSDAY);
-                                            break;
-                                        case "V":
-                                            formattedDaysOfRepetition.add(Calendar.FRIDAY);
-                                            break;
-                                        case "S":
-                                            formattedDaysOfRepetition.add(Calendar.SATURDAY);
-                                            break;
-                                        case "D":
-                                            formattedDaysOfRepetition.add(Calendar.SUNDAY);
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                }
-                            } else if (periodicityType.equals("days")) {
-                                frequency = periodicEntry.periodicType.DAILY;
-                            } else if (periodicityType.equals("months")) {
-                                frequency = periodicEntry.periodicType.MONTHLY;
-                                Vector<String> daysOfRepetition = new Vector<>(monthAdapter.getCheckedItems());
-                                for (int i = 0; i < daysOfRepetition.size(); i++) {
-                                    formattedDaysOfRepetition.add(Integer.parseInt(daysOfRepetition.get(i)));
-                                }
-                            } else {
-                                frequency = periodicEntry.periodicType.ANNUAL;
-                            }
-
-                            GregorianCalendar formattedEndDate;
-                            if (endOptions.getCheckedRadioButtonId() == R.id.radioButtonNever) {
-                                formattedEndDate = null;
-                            } else if (endOptions.getCheckedRadioButtonId() == R.id.radioButtonByDay) {
-                                formattedEndDate = endDate;
-                            } else {
-                                if (periodicityType.equals("weeks") || (periodicityType.equals("months"))) {
-                                    formattedEndDate = periodicEntry.setLastDayByTimes(Integer.parseInt(editTextQuantityOf.getText().toString()), Integer.parseInt(quantityOfRepetitionsEditText.getText().toString()), frequency, startDate, formattedDaysOfRepetition);
-                                } else {
-                                    formattedEndDate = periodicEntry.setLastDayByTimes(Integer.parseInt(editTextQuantityOf.getText().toString()), Integer.parseInt(quantityOfRepetitionsEditText.getText().toString()), frequency, startDate);
-                                }
-                            }
-                            onPeriodicitySet.periodicitySet(new periodicEntry(0, -1, null, Integer.parseInt(editTextQuantityOf.getText().toString()), frequency, startDate.getTime(), formattedEndDate != null ? formattedEndDate.getTime() : null, formattedDaysOfRepetition, askBeforeSwitch.isChecked()));
-                            dialog.dismiss();
-                        } else {
-                            Toast.makeText(context, "The end date must be set and it can't be before the start date.", Toast.LENGTH_LONG).show();
-                        }
-                    } else {
-                        Toast.makeText(context, "You have to select at least one day of repetition.", Toast.LENGTH_LONG).show();
-                    }
-                } else {
-                    Toast.makeText(context, "Set number of " + editTextPeriodicityType.getText() + "between repetitions", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
-        ImageButton buttonCancel = dialog.findViewById(R.id.buttonCancel);
-        buttonCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.cancel();
             }
         });
 
@@ -543,100 +235,6 @@ public class dialogs {
         });
 
         dialog.show();
-    }
-
-    public static void newPeriodicEntryDialog(final Context context) {
-        /*final Dialog dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCancelable(true);
-        dialog.setContentView(R.layout.new_periodic_entry_dialog);
-
-        final EditText editTextValue = dialog.findViewById(R.id.editTextValueNewEntry);
-        final Spinner spinnerCategories = dialog.findViewById(R.id.spinnerCategorySelection);
-        final EditText editTextDescription = dialog.findViewById(R.id.editTextConceptNewEntry);
-        final Spinner spinnerPeriodicityType = dialog.findViewById(R.id.spinnerPeriodicityType);
-        final Spinner spinnerSelectedDates = dialog.findViewById(R.id.spinnerSelectedDates);
-        final Button buttonAddPeriodicEntry = dialog.findViewById(R.id.buttonApplyNewPeriodicEntry);
-
-        final Realm database = Realm.getDefaultInstance();
-
-        final categoriesSpinnerAdapter categoriesSpinnerAdapter = new categoriesSpinnerAdapter(context);
-        spinnerCategories.setAdapter(categoriesSpinnerAdapter);
-        spinnerCategories.setSelection(1);
-
-        spinnerPeriodicityType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Vector<Integer> selectedDate = new Vector<>();
-                if (spinnerPeriodicityType.getSelectedItemPosition() == 0) {
-                    for (int j = 1; j <= 12; j++) {
-                        selectedDate.add(j);
-                    }
-                } else if (spinnerPeriodicityType.getSelectedItemPosition() == 1) {
-                    for (int j = 1; j <= 28; j++) {
-                        selectedDate.add(j);
-                    }
-                } else if (spinnerPeriodicityType.getSelectedItemPosition() == 2) {
-                    for (int j = 1; j <= 7; j++) {
-                        selectedDate.add(j);
-                    }
-                }
-                spinnerSelectedDates.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, selectedDate));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                spinnerPeriodicityType.setSelection(0);
-            }
-        });
-
-        buttonAddPeriodicEntry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!editTextValue.getText().toString().isEmpty()) {
-                    entry.type type;
-                    if (categoriesSpinnerAdapter.isOutgoingCategory(spinnerCategories.getSelectedItemPosition()))
-                        type = entry.type.OUTGOING;
-                    else
-                        type = entry.type.INCOME;
-
-                    periodicEntry.periodicType frequency;
-                    if (spinnerPeriodicityType.getSelectedItemPosition() == 0) {
-                        frequency = periodicEntry.periodicType.ANNUAL;
-                    } else if (spinnerPeriodicityType.getSelectedItemPosition() == 1) {
-                        frequency = periodicEntry.periodicType.MONTHLY;
-                    } else {
-                        frequency = periodicEntry.periodicType.WEEKLY;
-                    }
-
-                    String category = categoriesSpinnerAdapter.getItem(spinnerCategories.getSelectedItemPosition());
-                    if (category == null) {
-                        Toast.makeText(context, "Error: empty fields", Toast.LENGTH_LONG).show();
-                    } else {
-                        int selectedDate = (Integer) spinnerSelectedDates.getSelectedItem();
-                        int value = Integer.valueOf(editTextValue.getText().toString());
-                        String description = editTextDescription.getText().toString();
-                        periodicEntry newPeriodicEntry = new periodicEntry(value, type, category, description, frequency, selectedDate);
-
-                        database.beginTransaction();
-                        database.copyToRealm(newPeriodicEntry);
-                        database.commitTransaction();
-
-                        editTextValue.setText("");
-                        editTextDescription.setText("");
-                        spinnerPeriodicityType.setSelection(0);
-                        spinnerCategories.setSelection(0);
-                        spinnerSelectedDates.setSelection(0);
-
-                        Toast.makeText(context, "Periodic entry added", Toast.LENGTH_LONG).show();
-                    }
-                    dialog.dismiss();
-                }
-            }
-        });
-
-        dialog.show();
-        */
     }
 
     public static void chooseOptionDialog(Context context, String title, Vector<String> options, DialogInterface.OnClickListener onClickListener) {

@@ -22,8 +22,6 @@ public class localUtils {
         void removeEntry(@NonNull entry removedEntry);
 
         void editEntry(@NonNull entry nextVersion);
-
-        void addPeriodicEntry(periodicEntry periodicEntry);
     }
 
     public interface OnCategoriesChangeInterface {
@@ -35,7 +33,7 @@ public class localUtils {
     }
 
     public interface changePeriodicEntriesInterface {
-        void edit(periodicEntry periodicEntry, ConstraintLayout container);
+        void edit(periodicEntry periodicEntry, ConstraintLayout container, int requestCode);
 
         void remove(periodicEntry periodicEntry);
     }

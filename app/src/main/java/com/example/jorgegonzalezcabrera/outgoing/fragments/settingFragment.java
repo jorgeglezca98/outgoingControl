@@ -49,6 +49,7 @@ public class settingFragment extends Fragment {
     private FloatingActionButton addOutgoingCategory;
     private FloatingActionButton addIncomeCategory;
     private FloatingActionButton addMoneyController;
+    private FloatingActionButton addPeriodicEntry;
 
     @Override
     public void onAttach(Context context) {
@@ -105,7 +106,7 @@ public class settingFragment extends Fragment {
         } catch (Exception e) {
             changePeriodicEntriesInterface = new localUtils.changePeriodicEntriesInterface() {
                 @Override
-                public void edit(periodicEntry periodicEntry, ConstraintLayout container) {
+                public void edit(periodicEntry periodicEntry, ConstraintLayout container, int requestCode) {
 
                 }
 
@@ -173,6 +174,14 @@ public class settingFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 addMoneyController();
+            }
+        });
+
+        addPeriodicEntry = view.findViewById(R.id.addPeriodicEntry);
+        addPeriodicEntry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addPeriodicEntry();
             }
         });
 
@@ -244,12 +253,14 @@ public class settingFragment extends Fragment {
                     outgoingCategoriesHeader.setVisibility(View.VISIBLE);
                     incomeCategoriesHeader.setVisibility(View.VISIBLE);
                     moneyControllersHeader.setVisibility(View.VISIBLE);
+                    addPeriodicEntry.hide();
                 } else if (recyclerViewPeriodicEntries.getVisibility() == View.GONE) {
                     recyclerViewPeriodicEntries.setVisibility(View.VISIBLE);
                     outgoingCategoriesHeader.setVisibility(View.GONE);
                     incomeCategoriesHeader.setVisibility(View.GONE);
                     moneyControllersHeader.setVisibility(View.GONE);
                     scrollViewSettingFragment.fullScroll(View.FOCUS_UP);
+                    addPeriodicEntry.show();
                 }
             }
         });
@@ -299,6 +310,10 @@ public class settingFragment extends Fragment {
         moneyControllersAdapter.cancelNewCategory();
     }
 
+    public void newPeriodicEntryCanceled() {
+        periodicEntriesAdapter.cancelNewCategory();
+    }
+
     public void modifyCategory(category modifiedCategory) {
         if (modifiedCategory.getType() == category.INCOME) {
             incomeCategoriesAdapter.modify(modifiedCategory);
@@ -322,6 +337,19 @@ public class settingFragment extends Fragment {
 
     public void addPeriodicEntry(periodicEntry addedPeriodicEntry) {
         periodicEntriesAdapter.add(addedPeriodicEntry);
+    }
+
+    private void addPeriodicEntry() {
+        if (recyclerViewPeriodicEntries.getVisibility() == View.GONE) {
+            recyclerViewPeriodicEntries.setVisibility(View.VISIBLE);
+        } else {
+            scrollViewSettingFragment.fullScroll(NestedScrollView.FOCUS_DOWN);
+            periodicEntriesAdapter.addOne();
+        }
+    }
+
+    public void confirmPeriodicEntry(periodicEntry periodicEntry) {
+        periodicEntriesAdapter.confirmLast(periodicEntry);
     }
 
     public void modifyPeriodicEntry(periodicEntry newPeriodicEntry) {
