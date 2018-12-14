@@ -27,6 +27,7 @@ import com.example.jorgegonzalezcabrera.outgoing.activities.editFieldActivity.ed
 import com.example.jorgegonzalezcabrera.outgoing.adapters.editableOutgoingCategoriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.actionsFragment;
+import com.example.jorgegonzalezcabrera.outgoing.fragments.chartsFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.mainFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.settingFragment;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     private actionsFragment actionsFragment;
     private mainFragment mainFragment;
     private settingFragment settingFragment;
+    private chartsFragment chartsFragment;
     private Realm database;
     private localUtils.OnEntriesChangeInterface onEntriesChangeInterface;
 
@@ -79,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.primary1));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.home));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.list));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.chart));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.setting));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
@@ -88,6 +91,8 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         fragments.add(mainFragment);
         actionsFragment = new actionsFragment();
         fragments.add(actionsFragment);
+        chartsFragment = new chartsFragment();
+        fragments.add(chartsFragment);
         settingFragment = new settingFragment();
         fragments.add(settingFragment);
         FragmentStatePagerAdapter viewPagerAdapter = new FragmentStatePagerAdapter(getSupportFragmentManager()) {
@@ -103,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         };
         viewPager.setAdapter(viewPagerAdapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        viewPager.setOffscreenPageLimit(3);
+        viewPager.setOffscreenPageLimit(4);
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override

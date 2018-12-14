@@ -19,6 +19,9 @@ android {
     }
     productFlavors {
     }
+    packagingOptions {
+        exclude 'META-INF/proguard/androidx-annotations.pro'
+    }
 }
 
 dependencies {
