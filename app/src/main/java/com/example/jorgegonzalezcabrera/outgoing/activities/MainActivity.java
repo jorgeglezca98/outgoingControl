@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.list));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.chart));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.setting));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.chart));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         viewPager = findViewById(R.id.viewPager);
