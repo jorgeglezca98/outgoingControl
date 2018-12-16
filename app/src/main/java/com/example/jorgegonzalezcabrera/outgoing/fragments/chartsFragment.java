@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
+import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.utils;
 import com.github.mikephil.charting.charts.BarChart;
@@ -61,7 +62,7 @@ public class chartsFragment extends Fragment {
             List<BarEntry> entries = new ArrayList<>();
             float i = 1f;
             do {
-                float valor = database.where(entry.class).equalTo("type", entry.type.OUTGOING.ordinal()).between("creationDate", smallerDate.getTime(), biggerDate.getTime()).sum("valor").floatValue();
+                float valor = database.where(entry.class).equalTo("type", category.typeOfCategory.OUTGOING.ordinal()).between("creationDate", smallerDate.getTime(), biggerDate.getTime()).sum("valor").floatValue();
                 entries.add(new BarEntry(i, valor));
                 i++;
                 smallerDate.add(Calendar.MONTH, 1);

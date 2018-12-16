@@ -24,7 +24,7 @@
     <string name="New_periodic_entry">New periodic entry</string>
     <string name="set_date_title">Set date</string>
     <string name="set">Set</string>
-    <string name="choose_category_to_eliminate">Choose the category to be eliminated</string>
+    <string name="choose_category_to_eliminate">Choose the categoryName to be eliminated</string>
     <string name="default_erasable_hint">Name</string>
     <string name="current_money_title">Current money</string>
     <string name="information">Information</string>
@@ -40,7 +40,7 @@
     <string name="third_configuration_information">Control the money you spend every month.</string>
     <string name="outgoing_categories_title">Outgoing categories</string>
     <string name="second_configuration_information">Organize your income and outgoings by categories.</string>
-    <string name="add_new_category">Add new category</string>
+    <string name="add_new_category">Add new categoryName</string>
     <string name="reset_current_money_title">Reset current money</string>
     <string name="right_current_money">Right current money</string>
     <string name="refresh_title">Refresh</string>
@@ -48,8 +48,8 @@
     <string name="popup_menu">Popup menu</string>
     <string name="subcategories">Subcategories</string>
     <string name="expand">expand</string>
-    <string name="add_outgoing_category">Add outgoing category</string>
-    <string name="add_income_category">Add income category</string>
+    <string name="add_outgoing_category">Add outgoing categoryName</string>
+    <string name="add_income_category">Add income categoryName</string>
     <string name="add_subcategory">Add subcategory</string>
     <string name="money_controllers_title">Money controllers</string>
     <string name="next_window">Next window</string>

@@ -124,13 +124,13 @@ public class settingFragment extends Fragment {
         final View view = inflater.inflate(R.layout.setting_fragment, container, false);
 
         recyclerViewEditableOutgoingCategories = view.findViewById(R.id.recyclerViewEditableOutgoingCategories);
-        outgoingCategoriesAdapter = new editableCategoriesAdapter(getContext(), onCategoriesChangeInterface, editIncomeCategoryInterface, category.OUTGOING);
+        outgoingCategoriesAdapter = new editableCategoriesAdapter(getContext(), onCategoriesChangeInterface, editIncomeCategoryInterface, category.typeOfCategory.OUTGOING.ordinal());
         recyclerViewEditableOutgoingCategories.setAdapter(outgoingCategoriesAdapter);
         recyclerViewEditableOutgoingCategories.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewEditableOutgoingCategories.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
 
         recyclerViewEditableIncomeCategories = view.findViewById(R.id.recyclerViewEditableIncomeCategories);
-        incomeCategoriesAdapter = new editableCategoriesAdapter(getContext(), onCategoriesChangeInterface, editIncomeCategoryInterface, category.INCOME);
+        incomeCategoriesAdapter = new editableCategoriesAdapter(getContext(), onCategoriesChangeInterface, editIncomeCategoryInterface, category.typeOfCategory.INCOME.ordinal());
         recyclerViewEditableIncomeCategories.setAdapter(incomeCategoriesAdapter);
         recyclerViewEditableIncomeCategories.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewEditableIncomeCategories.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
@@ -287,7 +287,7 @@ public class settingFragment extends Fragment {
     }
 
     public void confirmAddedCategory(category storedCategory) {
-        if (storedCategory.getType() == category.INCOME) {
+        if (storedCategory.getType() == category.typeOfCategory.INCOME.ordinal()) {
             incomeCategoriesAdapter.confirmLast(storedCategory);
         } else {
             outgoingCategoriesAdapter.confirmLast(storedCategory);
@@ -315,7 +315,7 @@ public class settingFragment extends Fragment {
     }
 
     public void modifyCategory(category modifiedCategory) {
-        if (modifiedCategory.getType() == category.INCOME) {
+        if (modifiedCategory.getType() == category.typeOfCategory.INCOME.ordinal()) {
             incomeCategoriesAdapter.modify(modifiedCategory);
         } else {
             outgoingCategoriesAdapter.modify(modifiedCategory);

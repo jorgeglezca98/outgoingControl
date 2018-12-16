@@ -3,6 +3,7 @@ package com.example.jorgegonzalezcabrera.outgoing.models;
 import android.support.annotation.NonNull;
 
 import com.example.jorgegonzalezcabrera.outgoing.applications.myApplication;
+import com.example.jorgegonzalezcabrera.outgoing.models.category.typeOfCategory;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.OnEntriesChangeInterface;
 
 import java.util.Calendar;
@@ -155,7 +156,9 @@ public class periodicEntry extends RealmObject {
     }
 
     public periodicType getFrequency() {
-        if (frequency == periodicType.WEEKLY.ordinal()) {
+        if (frequency == periodicType.DAILY.ordinal()) {
+            return periodicType.DAILY;
+        } else if (frequency == periodicType.WEEKLY.ordinal()) {
             return periodicType.WEEKLY;
         } else if (frequency == periodicType.MONTHLY.ordinal()) {
             return periodicType.MONTHLY;
@@ -250,7 +253,7 @@ public class periodicEntry extends RealmObject {
         Realm.getDefaultInstance().beginTransaction();
         category = Realm.getDefaultInstance().where(category.class).equalTo("id", categoryId).findFirst();
         Realm.getDefaultInstance().commitTransaction();
-        return new entry(value, category.getType() == entry.type.OUTGOING.ordinal() ? entry.type.OUTGOING : entry.type.INCOME, category.getName(), description);
+        return new entry(value, category.getType() == typeOfCategory.OUTGOING.ordinal() ? typeOfCategory.OUTGOING : typeOfCategory.INCOME, category.getName(), description);
     }
 
     public void update(Date currentDate, OnEntriesChangeInterface entryAddedInterface) {

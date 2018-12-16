@@ -5,7 +5,6 @@ import android.support.constraint.ConstraintLayout;
 
 import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
-import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
 import com.example.jorgegonzalezcabrera.outgoing.models.moneyController;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 
@@ -38,8 +37,8 @@ public class localUtils {
         void remove(periodicEntry periodicEntry);
     }
 
-    public static type getTypeFromOrdinal(int ordinal) {
-        return (ordinal == type.OUTGOING.ordinal()) ? type.OUTGOING : type.INCOME;
+    public static category.typeOfCategory getTypeFromOrdinal(int ordinal) {
+        return (ordinal == category.typeOfCategory.OUTGOING.ordinal()) ? category.typeOfCategory.OUTGOING : category.typeOfCategory.INCOME;
     }
 
     public static Vector<String> getAllCategories() {
@@ -51,7 +50,7 @@ public class localUtils {
 
     public static Vector<String> getAllOutgoingCategories() {
         Realm database = Realm.getDefaultInstance();
-        RealmResults<category> outgoingCategories = database.where(category.class).equalTo("type", category.OUTGOING).findAll();
+        RealmResults<category> outgoingCategories = database.where(category.class).equalTo("type", category.typeOfCategory.OUTGOING.ordinal()).findAll();
 
         Vector<String> result = new Vector<>();
         for (int i = 0; i < outgoingCategories.size(); i++) {
@@ -65,7 +64,7 @@ public class localUtils {
 
     public static Vector<String> getAllIncomeCategories() {
         Realm database = Realm.getDefaultInstance();
-        RealmResults<category> incomeCategories = database.where(category.class).equalTo("type", category.INCOME).findAll();
+        RealmResults<category> incomeCategories = database.where(category.class).equalTo("type", category.typeOfCategory.INCOME.ordinal()).findAll();
 
         Vector<String> result = new Vector<>();
         for (int i = 0; i < incomeCategories.size(); i++) {
@@ -94,7 +93,7 @@ public class localUtils {
     public static Vector<String> getFunctioningOutgoingCategories() {
         Realm database = Realm.getDefaultInstance();
         RealmResults<category> outgoingCategories;
-        outgoingCategories = database.where(category.class).equalTo("type", category.OUTGOING).equalTo("operative", true).findAll();
+        outgoingCategories = database.where(category.class).equalTo("type", category.typeOfCategory.OUTGOING.ordinal()).equalTo("operative", true).findAll();
 
         Vector<String> result = new Vector<>();
         for (int i = 0; i < outgoingCategories.size(); i++) {
@@ -109,7 +108,7 @@ public class localUtils {
     public static Vector<String> getFunctioningIncomeCategories() {
         Realm database = Realm.getDefaultInstance();
         RealmResults<category> incomeCategories;
-        incomeCategories = database.where(category.class).equalTo("type", category.INCOME).equalTo("operative", true).findAll();
+        incomeCategories = database.where(category.class).equalTo("type", category.typeOfCategory.INCOME.ordinal()).equalTo("operative", true).findAll();
 
         Vector<String> result = new Vector<>();
         for (int i = 0; i < incomeCategories.size(); i++) {
@@ -124,7 +123,7 @@ public class localUtils {
     public static Vector<String> getNonFunctioningOutgoingCategories() {
         Realm database = Realm.getDefaultInstance();
         RealmResults<category> outgoingCategories;
-        outgoingCategories = database.where(category.class).equalTo("type", category.OUTGOING).equalTo("operative", false).findAll();
+        outgoingCategories = database.where(category.class).equalTo("type", category.typeOfCategory.OUTGOING.ordinal()).equalTo("operative", false).findAll();
 
         Vector<String> result = new Vector<>();
         for (int i = 0; i < outgoingCategories.size(); i++) {
@@ -139,7 +138,7 @@ public class localUtils {
     public static Vector<String> getNonFunctioningIncomeCategories() {
         Realm database = Realm.getDefaultInstance();
         RealmResults<category> incomeCategories;
-        incomeCategories = database.where(category.class).equalTo("type", category.INCOME).equalTo("operative", false).findAll();
+        incomeCategories = database.where(category.class).equalTo("type", category.typeOfCategory.INCOME.ordinal()).equalTo("operative", false).findAll();
 
         Vector<String> result = new Vector<>();
         for (int i = 0; i < incomeCategories.size(); i++) {

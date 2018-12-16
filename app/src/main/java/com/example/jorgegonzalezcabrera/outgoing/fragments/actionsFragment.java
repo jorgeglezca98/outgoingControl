@@ -16,7 +16,6 @@ import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.allEntriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSelectionAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
-import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 import com.example.jorgegonzalezcabrera.outgoing.others.HeaderItemDecoration;
 import com.example.jorgegonzalezcabrera.outgoing.others.HeaderItemDecoration.StickyHeaderInterface;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
@@ -152,7 +151,7 @@ public class actionsFragment extends Fragment implements StickyHeaderInterface {
                 setCategories(categories);
                 for (int i = 0; i < categories.size(); i++) {
                     if (!categories.get(i).selected) {
-                        filteredResults.notEqualTo("category", categories.get(i).name);
+                        filteredResults.notEqualTo("categoryName", categories.get(i).name);
                     }
                 }
 

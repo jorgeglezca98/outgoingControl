@@ -14,13 +14,11 @@ import static com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils.get
 
 public class entry extends RealmObject {
 
-    public enum type {OUTGOING, INCOME}
-
     @PrimaryKey
     private long id;
     private double valor;
     private int type;
-    private String category;
+    private String categoryName;
     private Date creationDate;
     private String description;
 
@@ -28,25 +26,25 @@ public class entry extends RealmObject {
         this.id = -1;
         this.valor = 0;
         this.type = -1;
-        this.category = "";
+        this.categoryName = "";
         this.creationDate = new Date();
         this.description = "Not described";
     }
 
-    public entry(double valor, @Nonnull type type, @Nonnull String category, String description) {
+    public entry(double valor, @Nonnull category.typeOfCategory type, @Nonnull String categoryName, String description) {
         this.id = myApplication.entryId.incrementAndGet();
         this.valor = valor;
         this.type = type.ordinal();
-        this.category = category;
+        this.categoryName = categoryName;
         this.creationDate = new Date();
         this.description = description == null ? "Not described" : description;
     }
 
-    public entry(double valor, @Nonnull type type, @Nonnull String category, String description, Date creationDate) {
+    public entry(double valor, @Nonnull category.typeOfCategory type, @Nonnull String categoryName, String description, Date creationDate) {
         this.id = myApplication.entryId.incrementAndGet();
         this.valor = valor;
         this.type = type.ordinal();
-        this.category = category;
+        this.categoryName = categoryName;
         this.creationDate = creationDate;
         this.description = description == null ? "Not described" : description;
     }
@@ -67,20 +65,20 @@ public class entry extends RealmObject {
         this.valor = valor;
     }
 
-    public type getType() {
+    public category.typeOfCategory getType() {
         return getTypeFromOrdinal(type);
     }
 
-    public void setType(@Nonnull type type) {
+    public void setType(@Nonnull category.typeOfCategory type) {
         this.type = type.ordinal();
     }
 
-    public String getCategory() {
-        return category;
+    public String getCategoryName() {
+        return categoryName;
     }
 
-    public void setCategory(@Nonnull String category) {
-        this.category = category;
+    public void setCategoryName(@Nonnull String categoryName) {
+        this.categoryName = categoryName;
     }
 
     public Date getCreationDate() {

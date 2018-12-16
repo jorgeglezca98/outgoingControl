@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
-import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
+import com.example.jorgegonzalezcabrera.outgoing.models.category.typeOfCategory;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 import java.text.DateFormat;
@@ -298,11 +298,11 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         void bind(@Nonnull final entry selectedEntry) {
             DateFormat df = new SimpleDateFormat("dd", new Locale("es", "ES"));
             day.setText(df.format(selectedEntry.getCreationDate()));
-            category.setText(selectedEntry.getCategory());
+            category.setText(selectedEntry.getCategoryName());
             description.setText(selectedEntry.getDescription());
 
             String formattedValue;
-            if (selectedEntry.getType() == type.OUTGOING) {
+            if (selectedEntry.getType() == typeOfCategory.OUTGOING) {
                 formattedValue = "-" + String.format(new Locale("es", "ES"), "%.2f", selectedEntry.getValor()) + "€";
                 value.setText(formattedValue);
                 value.setTextColor(Color.parseColor("#ea9999"));

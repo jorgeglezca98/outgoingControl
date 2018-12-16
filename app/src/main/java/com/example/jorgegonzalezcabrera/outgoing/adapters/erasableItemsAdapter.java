@@ -181,11 +181,11 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                     if (R.id.radioButtonOutgoing == checkedId) {
-                        items.get(getAdapterPosition()).setType(category.OUTGOING);
-                        onItemsChange.onCategoryChanged(getAdapterPosition(), category.OUTGOING);
+                        items.get(getAdapterPosition()).setType(category.typeOfCategory.OUTGOING.ordinal());
+                        onItemsChange.onCategoryChanged(getAdapterPosition(), category.typeOfCategory.OUTGOING.ordinal());
                     } else {
-                        items.get(getAdapterPosition()).setType(category.INCOME);
-                        onItemsChange.onCategoryChanged(getAdapterPosition(), category.INCOME);
+                        items.get(getAdapterPosition()).setType(category.typeOfCategory.INCOME.ordinal());
+                        onItemsChange.onCategoryChanged(getAdapterPosition(), category.typeOfCategory.INCOME.ordinal());
                     }
                 }
             });
@@ -204,7 +204,7 @@ public class erasableItemsAdapter extends RecyclerView.Adapter<erasableItemsAdap
                     deleteItemAt(getAdapterPosition());
                 }
             });
-            type.check(categoryToBind.getType() == category.OUTGOING ? R.id.radioButtonOutgoing : R.id.radioButtonIncome);
+            type.check(categoryToBind.getType() == category.typeOfCategory.OUTGOING.ordinal() ? R.id.radioButtonOutgoing : R.id.radioButtonIncome);
             if (customizeViewInterface != null) {
                 customizeViewInterface.custom(this);
             }

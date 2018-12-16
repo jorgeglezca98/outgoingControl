@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
         if (currentConfiguration != null) {
             database.beginTransaction();
-            if (newEntry.getType() == entry.type.OUTGOING) {
+            if (newEntry.getType() == category.typeOfCategory.OUTGOING) {
                 currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - newEntry.getValor());
             } else {
                 currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + newEntry.getValor());
@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     public void removeEntry(@NonNull final entry removedEntry) {
         final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
         if (currentConfiguration != null) {
-            if (removedEntry.getType() == entry.type.OUTGOING) {
+            if (removedEntry.getType() == category.typeOfCategory.OUTGOING) {
                 database.beginTransaction();
                 currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + removedEntry.getValor());
                 database.commitTransaction();
@@ -240,13 +240,13 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
 
                 final appConfiguration currentConfiguration = database.where(appConfiguration.class).findFirst();
                 if (currentConfiguration != null) {
-                    if (currentVersion.getType() == entry.type.OUTGOING) {
+                    if (currentVersion.getType() == category.typeOfCategory.OUTGOING) {
                         currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + currentVersion.getValor());
                     } else {
                         currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - currentVersion.getValor());
                     }
 
-                    if (nextVersion.getType() == entry.type.OUTGOING) {
+                    if (nextVersion.getType() == category.typeOfCategory.OUTGOING) {
                         currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() - nextVersion.getValor());
                     } else {
                         currentConfiguration.setCurrentMoney(currentConfiguration.getCurrentMoney() + nextVersion.getValor());
@@ -460,7 +460,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
             if (resultCode == RESULT_OK) {
                 Bundle extras = data.getExtras();
                 String name = extras.getString(FINAL_VALUE_KEY);
-                final category newCategory = new category(name, category.OUTGOING);
+                final category newCategory = new category(name, category.typeOfCategory.OUTGOING.ordinal());
 
                 database.executeTransaction(new Realm.Transaction() {
                     @Override
@@ -479,7 +479,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
             if (resultCode == RESULT_OK) {
                 Bundle extras = data.getExtras();
                 String name = extras.getString(FINAL_VALUE_KEY);
-                final category newCategory = new category(name, category.INCOME);
+                final category newCategory = new category(name, category.typeOfCategory.INCOME.ordinal());
 
                 database.executeTransaction(new Realm.Transaction() {
                     @Override

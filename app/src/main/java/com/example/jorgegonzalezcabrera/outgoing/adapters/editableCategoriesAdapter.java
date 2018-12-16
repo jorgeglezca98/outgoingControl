@@ -111,7 +111,7 @@ public class editableCategoriesAdapter extends RecyclerView.Adapter<editableCate
     public void onViewAttachedToWindow(@NonNull ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
         if ((holder.getAdapterPosition() == (getItemCount() - 1)) && lastIsEmpty && !showingLast) {
-            if (categoriesType == category.INCOME) {
+            if (categoriesType == category.typeOfCategory.INCOME.ordinal()) {
                 editIncomeCategoryInterface.editCategoryField("",
                         holder.container, "Income category", REQUEST_ADD_INCOME_CATEGORY, -1);
             } else {
@@ -147,12 +147,12 @@ public class editableCategoriesAdapter extends RecyclerView.Adapter<editableCate
             categoryName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (categoriesType == com.example.jorgegonzalezcabrera.outgoing.models.category.INCOME) {
+                    if (categoriesType == category.typeOfCategory.INCOME.ordinal()) {
                         editIncomeCategoryInterface.editCategoryField(categoryToBind.getName(),
                                 container, "Income category", REQUEST_EDIT_CATEGORY, categoryToBind.getId());
                     } else {
                         editIncomeCategoryInterface.editCategoryField(categoryToBind.getName(),
-                                container,"Outgoing category", REQUEST_EDIT_CATEGORY, categoryToBind.getId());
+                                container, "Outgoing category", REQUEST_EDIT_CATEGORY, categoryToBind.getId());
                     }
                 }
             });
@@ -171,7 +171,7 @@ public class editableCategoriesAdapter extends RecyclerView.Adapter<editableCate
                             if (i == 0) {
 
                                 final int categoryPosition = getAdapterPosition();
-                                final Vector<String> allCategories = (categoriesType == category.OUTGOING ? localUtils.getFunctioningOutgoingCategories() : localUtils.getFunctioningIncomeCategories());
+                                final Vector<String> allCategories = (categoriesType == category.typeOfCategory.OUTGOING.ordinal() ? localUtils.getFunctioningOutgoingCategories() : localUtils.getFunctioningIncomeCategories());
                                 allCategories.remove(categories.get(getAdapterPosition()).getName());
 
                                 dialogs.chooseOptionDialog(context, "Pick a category", allCategories, new DialogInterface.OnClickListener() {

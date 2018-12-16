@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.surplusMoneyTableAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.models.appConfiguration;
+import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.models.moneyController;
 import com.example.jorgegonzalezcabrera.outgoing.others.ItemOffsetDecoration;
@@ -77,17 +78,17 @@ public class mainFragment extends Fragment {
             double outgoingsByCategory = 0;
             for (int j = 0; j < outgoingCategories.get(i).getSubcategories().size(); j++) {
                 String subcategoryName = outgoingCategories.get(i).getSubcategories().get(j).getName();
-                outgoingsByCategory += entriesOfTheMonth.where().equalTo("category", subcategoryName).sum("valor").doubleValue();
+                outgoingsByCategory += entriesOfTheMonth.where().equalTo("categoryName", subcategoryName).sum("valor").doubleValue();
             }
             double surplusMoneyByCategory = outgoingCategories.get(i).getMaximum() - outgoingsByCategory;
             moneyController moneyController = outgoingCategories.get(i);
             surplusMoneyByCategoryVector.add(new surplusMoneyTableAdapter.surplusMoneyByCategory(moneyController, surplusMoneyByCategory));
         }
-        totalOutgoings = entriesOfTheMonth.where().equalTo("type", entry.type.OUTGOING.ordinal()).sum("valor").longValue();
+        totalOutgoings = entriesOfTheMonth.where().equalTo("type", category.typeOfCategory.OUTGOING.ordinal()).sum("valor").longValue();
         String outgoingsOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€";
         textViewOutgoingsOfTheMonth.setText(outgoingsOfTheMonth);
 
-        totalIncomes = entriesOfTheMonth.where().equalTo("type", entry.type.INCOME.ordinal()).sum("valor").longValue();
+        totalIncomes = entriesOfTheMonth.where().equalTo("type", category.typeOfCategory.INCOME.ordinal()).sum("valor").longValue();
         String incomesOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalIncomes) + "€";
         textViewIncomesOfTheMonth.setText(incomesOfTheMonth);
 
@@ -114,17 +115,17 @@ public class mainFragment extends Fragment {
             double outgoingsByCategory = 0;
             for (int j = 0; j < outgoingCategories.get(i).getSubcategories().size(); j++) {
                 String subcategoryName = outgoingCategories.get(i).getSubcategories().get(j).getName();
-                outgoingsByCategory += entriesOfTheMonth.where().equalTo("category", subcategoryName).sum("valor").doubleValue();
+                outgoingsByCategory += entriesOfTheMonth.where().equalTo("categoryName", subcategoryName).sum("valor").doubleValue();
             }
             double surplusMoneyByCategory = outgoingCategories.get(i).getMaximum() - outgoingsByCategory;
             moneyController moneyController = outgoingCategories.get(i);
             surplusMoneyByCategoryVector.add(new surplusMoneyTableAdapter.surplusMoneyByCategory(moneyController, surplusMoneyByCategory));
         }
-        totalOutgoings = entriesOfTheMonth.where().equalTo("type", entry.type.OUTGOING.ordinal()).sum("valor").longValue();
+        totalOutgoings = entriesOfTheMonth.where().equalTo("type", category.typeOfCategory.OUTGOING.ordinal()).sum("valor").longValue();
         String outgoingsOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€";
         textViewOutgoingsOfTheMonth.setText(outgoingsOfTheMonth);
 
-        totalIncomes = entriesOfTheMonth.where().equalTo("type", entry.type.INCOME.ordinal()).sum("valor").longValue();
+        totalIncomes = entriesOfTheMonth.where().equalTo("type", category.typeOfCategory.INCOME.ordinal()).sum("valor").longValue();
         String incomesOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalIncomes) + "€";
         textViewIncomesOfTheMonth.setText(incomesOfTheMonth);
 
@@ -144,11 +145,11 @@ public class mainFragment extends Fragment {
             String currentMoney = String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€";
             textViewCurrentMoney.setText(currentMoney);
             if (utils.areFromTheSameMonth(newEntry.getCreationDate(), dateOfLastUpdate)) {
-                if (newEntry.getType() == entry.type.OUTGOING) {
+                if (newEntry.getType() == category.typeOfCategory.OUTGOING) {
                     totalOutgoings += newEntry.getValor();
                     String outgoingsOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€";
                     textViewOutgoingsOfTheMonth.setText(outgoingsOfTheMonth);
-                    surplusMoneyAdapter.updateData(newEntry.getCategory(), newEntry.getValor(), true);
+                    surplusMoneyAdapter.updateData(newEntry.getCategoryName(), newEntry.getValor(), true);
                 } else {
                     totalIncomes += newEntry.getValor();
                     String incomesOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalIncomes) + "€";
@@ -164,11 +165,11 @@ public class mainFragment extends Fragment {
             String currentMoney = String.format(new Locale("es", "ES"), "%.2f", currentConfiguration.getCurrentMoney()) + "€";
             textViewCurrentMoney.setText(currentMoney);
             if (utils.areFromTheSameMonth(removedEntry.getCreationDate(), dateOfLastUpdate)) {
-                if (removedEntry.getType() == entry.type.OUTGOING) {
+                if (removedEntry.getType() == category.typeOfCategory.OUTGOING) {
                     totalOutgoings -= removedEntry.getValor();
                     String outgoingsOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalOutgoings) + "€";
                     textViewOutgoingsOfTheMonth.setText(outgoingsOfTheMonth);
-                    surplusMoneyAdapter.updateData(removedEntry.getCategory(), removedEntry.getValor(), false);
+                    surplusMoneyAdapter.updateData(removedEntry.getCategoryName(), removedEntry.getValor(), false);
                 } else {
                     totalIncomes -= removedEntry.getValor();
                     String incomesOfTheMonth = String.format(new Locale("es", "ES"), "%.2f", totalIncomes) + "€";
@@ -188,7 +189,7 @@ public class mainFragment extends Fragment {
             boolean isNextVersionFromThisMonth = utils.areFromTheSameMonth(dateOfLastUpdate, nextVersion.getCreationDate());
 
             if (isCurrentVersionFromThisMonth) {
-                if (currentVersion.getType() == entry.type.OUTGOING) {
+                if (currentVersion.getType() == category.typeOfCategory.OUTGOING) {
                     totalOutgoings -= currentVersion.getValor();
                 } else {
                     totalIncomes -= currentVersion.getValor();
@@ -196,7 +197,7 @@ public class mainFragment extends Fragment {
             }
 
             if (isNextVersionFromThisMonth) {
-                if (nextVersion.getType() == entry.type.OUTGOING) {
+                if (nextVersion.getType() == category.typeOfCategory.OUTGOING) {
                     totalOutgoings += nextVersion.getValor();
                 } else {
                     totalIncomes += nextVersion.getValor();

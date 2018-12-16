@@ -9,8 +9,7 @@ import io.realm.annotations.PrimaryKey;
 
 public class category extends RealmObject {
 
-    public static final int INCOME = 0;
-    public static final int OUTGOING = 1;
+    public enum typeOfCategory {OUTGOING, INCOME}
 
     @PrimaryKey
     private long id;
@@ -30,7 +29,7 @@ public class category extends RealmObject {
         this.id = -1;
         this.name = "";
         this.operative = true;
-        this.type = OUTGOING;
+        this.type = typeOfCategory.OUTGOING.ordinal();
     }
 
     public long getId() {
@@ -66,6 +65,6 @@ public class category extends RealmObject {
     }
 
     public boolean check() {
-        return id >= 0 && !name.isEmpty() && (type == INCOME || type == OUTGOING);
+        return id >= 0 && !name.isEmpty() && (type == typeOfCategory.INCOME.ordinal() || type == typeOfCategory.OUTGOING.ordinal());
     }
 }

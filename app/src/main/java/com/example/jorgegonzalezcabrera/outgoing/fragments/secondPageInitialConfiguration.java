@@ -50,7 +50,7 @@ public class secondPageInitialConfiguration extends Fragment {
 
             @Override
             public void onItemAdded(int position) {
-                category categoryAdded = new category("", category.OUTGOING);
+                category categoryAdded = new category("", category.typeOfCategory.OUTGOING.ordinal());
                 categories.add(position, categoryAdded);
                 if (scrollViewContainer != null)
                     scrollViewContainer.post(new Runnable() {
@@ -107,7 +107,7 @@ public class secondPageInitialConfiguration extends Fragment {
     public RealmList<category> getIncomeCategoriesCategories() {
         RealmList<category> incomeCategories = new RealmList<>();
         for (int i = 0; i < categories.size(); i++) {
-            if (categories.get(i).getType() == category.INCOME)
+            if (categories.get(i).getType() == category.typeOfCategory.INCOME.ordinal())
                 incomeCategories.add(categories.get(i));
         }
         return incomeCategories;
@@ -116,7 +116,7 @@ public class secondPageInitialConfiguration extends Fragment {
     public RealmList<category> getCategories() {
         RealmList<category> outgoingCategories = new RealmList<>();
         for (int i = 0; i < categories.size(); i++) {
-            if (categories.get(i).getType() == category.OUTGOING)
+            if (categories.get(i).getType() == category.typeOfCategory.OUTGOING.ordinal())
                 outgoingCategories.add(categories.get(i));
         }
         return outgoingCategories;

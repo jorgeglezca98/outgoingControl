@@ -24,8 +24,9 @@ import android.widget.EditText;
 import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.categoriesSelectionAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.actionsFragment;
+import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
-import com.example.jorgegonzalezcabrera.outgoing.models.entry.type;
+import com.example.jorgegonzalezcabrera.outgoing.models.category.typeOfCategory;
 import com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 import com.example.jorgegonzalezcabrera.outgoing.views.editTextWithButton;
@@ -122,9 +123,9 @@ public class dialogs {
                 if (!valueEditText.getText().toString().isEmpty() && !categorySelectionEditText.getText().toString().isEmpty()) {
                     int typeOfCategory;
                     if (outgoingCategories.contains(categorySelectionEditText.getText().toString()))
-                        typeOfCategory = type.OUTGOING.ordinal();
+                        typeOfCategory = category.typeOfCategory.OUTGOING.ordinal();
                     else
-                        typeOfCategory = type.INCOME.ordinal();
+                        typeOfCategory = category.typeOfCategory.INCOME.ordinal();
 
                     String subcategory = categorySelectionEditText.getText().toString();
                     String description = descriptionEditText.getText().toString();
@@ -151,7 +152,7 @@ public class dialogs {
         final EditText valueEditText = dialog.findViewById(R.id.editTextValueNewEntry);
         valueEditText.setText(String.valueOf(lastVersion.getValor()));
         final EditText categorySelectionEditText = dialog.findViewById(R.id.editTextCategorySelection);
-        categorySelectionEditText.setText(lastVersion.getCategory());
+        categorySelectionEditText.setText(lastVersion.getCategoryName());
         final EditText descriptionEditText = dialog.findViewById(R.id.editTextConceptNewEntry);
         descriptionEditText.setText(lastVersion.getDescription());
         final EditText datePickerEditText = dialog.findViewById(R.id.editTextEntryDate);
@@ -215,9 +216,9 @@ public class dialogs {
                 if (!valueEditText.getText().toString().isEmpty() && !categorySelectionEditText.getText().toString().isEmpty()) {
                     int typeOfCategory;
                     if (outgoingCategories.contains(categorySelectionEditText.getText().toString()))
-                        typeOfCategory = type.OUTGOING.ordinal();
+                        typeOfCategory = category.typeOfCategory.OUTGOING.ordinal();
                     else
-                        typeOfCategory = type.INCOME.ordinal();
+                        typeOfCategory = category.typeOfCategory.INCOME.ordinal();
 
                     String subcategory = categorySelectionEditText.getText().toString();
                     String description = descriptionEditText.getText().toString();

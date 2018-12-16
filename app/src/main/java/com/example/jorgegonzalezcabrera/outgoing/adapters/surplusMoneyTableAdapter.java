@@ -69,13 +69,13 @@ public class surplusMoneyTableAdapter extends RecyclerView.Adapter<surplusMoneyT
     public void modifyData(entry currentEntry, entry nextEntry, Date dateOfLastUpdate) {
         for (int i = 0; i < items.size(); i++) {
             RealmList<category> subcategories = items.get(i).category.getSubcategories();
-            if (subcategories.where().equalTo("name", currentEntry.getCategory()).findFirst() != null) {
+            if (subcategories.where().equalTo("name", currentEntry.getCategoryName()).findFirst() != null) {
                 if (utils.areFromTheSameMonth(dateOfLastUpdate, currentEntry.getCreationDate())) {
                     items.get(i).surplusMoney += currentEntry.getValor();
                     notifyItemChanged(i);
                 }
             }
-            if (subcategories.where().equalTo("name", nextEntry.getCategory()).findFirst() != null) {
+            if (subcategories.where().equalTo("name", nextEntry.getCategoryName()).findFirst() != null) {
                 if (utils.areFromTheSameMonth(dateOfLastUpdate, nextEntry.getCreationDate())) {
                     items.get(i).surplusMoney -= nextEntry.getValor();
                     notifyItemChanged(i);
