@@ -1,5 +1,6 @@
 package com.example.jorgegonzalezcabrera.outgoing.fragments;
 
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -54,7 +55,9 @@ public class frontSurplusMoneyFragment extends Fragment {
 
             progressBarSurplusMoney.setProgress((int) Math.round(spentMoney));
             progressBarSurplusMoney.setMax((int) Math.round(surplusMoneyByCategory.category.getMaximum()));
+            if(spentMoney > Math.round(surplusMoneyByCategory.category.getMaximum())){
+                progressBarSurplusMoney.getProgressDrawable().setColorFilter(getResources().getColor(android.R.color.holo_red_dark), PorterDuff.Mode.SRC_IN);
+            }
         }
-
     }
 }
