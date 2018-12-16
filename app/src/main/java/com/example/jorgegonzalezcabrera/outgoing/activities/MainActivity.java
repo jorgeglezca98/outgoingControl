@@ -54,7 +54,8 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         , localUtils.OnCategoriesChangeInterface
         , editableOutgoingCategoriesAdapter.editOutgoingCategoryInterface
         , editIncomeCategoryInterface
-        , localUtils.changePeriodicEntriesInterface {
+        , localUtils.changePeriodicEntriesInterface
+        , settingFragment.manageViewsWithChanges {
 
     private ViewPager viewPager;
     private actionsFragment actionsFragment;
@@ -63,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     private chartsFragment chartsFragment;
     private Realm database;
     private localUtils.OnEntriesChangeInterface onEntriesChangeInterface;
+    private FloatingActionButton fabAddEntry;
+    private boolean someSettingSectionOpened;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
 
         database = Realm.getDefaultInstance();
 
-        TabLayout tabLayout = findViewById(R.id.tabLayout);
+        final TabLayout tabLayout = findViewById(R.id.tabLayout);
         tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.primary1));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.home));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.list));
@@ -112,11 +115,16 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
+                if (tab.getPosition() == tabLayout.getTabCount() - 1 && someSettingSectionOpened) {
+                    fabAddEntry.hide();
+                }
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
+                if (tab.getPosition() == tabLayout.getTabCount() - 1) {
+                    fabAddEntry.show();
+                }
             }
 
             @Override
@@ -127,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
 
         onEntriesChangeInterface = this;
 
-        FloatingActionButton fabAddEntry = findViewById(R.id.fab);
+        fabAddEntry = findViewById(R.id.fab);
 
         fabAddEntry.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -635,4 +643,25 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         }
     }
 
+    @Override
+    public void openedSettingSection(boolean someOpen) {
+        if (viewPager.getCurrentItem() == viewPager.getChildCount() - 1) {
+            if (someOpen) {
+                fabAddEntry.hide();
+            } else {
+                fabAddEntry.show();
+            }
+            someSettingSectionOpened = someOpen;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (viewPager.getCurrentItem() == viewPager.getChildCount() - 1 &&
+                someSettingSectionOpened) {
+            settingFragment.closeSections();
+        } else {
+            super.onBackPressed();
+        }
+    }
 }
