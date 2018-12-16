@@ -48,28 +48,32 @@ public class chartsFragment extends Fragment {
         barChart.invalidate();
 
         Realm database = Realm.getDefaultInstance();
-        GregorianCalendar smallerDate = new GregorianCalendar();
-        smallerDate.setTime(utils.firstDateOfTheMonth(database.where(entry.class).minimumDate("creationDate")));
-        Date lastEntryMade = database.where(entry.class).maximumDate("creationDate");
-        GregorianCalendar biggerDate = new GregorianCalendar();
-        biggerDate.setTime(smallerDate.getTime());
-        biggerDate.add(Calendar.MONTH, 1);
-
-        List<BarEntry> entries = new ArrayList<>();
-        float i = 1f;
-        do {
-            float valor = database.where(entry.class).equalTo("type", entry.type.OUTGOING.ordinal()).between("creationDate", smallerDate.getTime(), biggerDate.getTime()).sum("valor").floatValue();
-            entries.add(new BarEntry(i, valor));
-            i++;
-            smallerDate.add(Calendar.MONTH, 1);
+        Date firstEntryMade = database.where(entry.class).minimumDate("creationDate");
+        if (firstEntryMade != null) {
+            firstEntryMade = utils.firstDateOfTheMonth(firstEntryMade);
+            GregorianCalendar smallerDate = new GregorianCalendar();
+            smallerDate.setTime(firstEntryMade);
+            Date lastEntryMade = database.where(entry.class).maximumDate("creationDate");
+            GregorianCalendar biggerDate = new GregorianCalendar();
+            biggerDate.setTime(smallerDate.getTime());
             biggerDate.add(Calendar.MONTH, 1);
-        } while (smallerDate.getTime().getTime() < lastEntryMade.getTime());
 
-        BarDataSet set = new BarDataSet(entries, "BarDataSet");
-        set.setColor(getResources().getColor(R.color.primary2));
-        BarData data = new BarData(set);
-        data.setBarWidth(0.9f);
-        barChart.setData(data);
+            List<BarEntry> entries = new ArrayList<>();
+            float i = 1f;
+            do {
+                float valor = database.where(entry.class).equalTo("type", entry.type.OUTGOING.ordinal()).between("creationDate", smallerDate.getTime(), biggerDate.getTime()).sum("valor").floatValue();
+                entries.add(new BarEntry(i, valor));
+                i++;
+                smallerDate.add(Calendar.MONTH, 1);
+                biggerDate.add(Calendar.MONTH, 1);
+            } while (smallerDate.getTime().getTime() < lastEntryMade.getTime());
+
+            BarDataSet set = new BarDataSet(entries, "BarDataSet");
+            set.setColor(getResources().getColor(R.color.primary2));
+            BarData data = new BarData(set);
+            data.setBarWidth(0.9f);
+            barChart.setData(data);
+        }
         return view;
     }
 }
