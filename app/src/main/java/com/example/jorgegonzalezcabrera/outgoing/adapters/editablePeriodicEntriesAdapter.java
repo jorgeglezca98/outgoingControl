@@ -111,7 +111,6 @@ public class editablePeriodicEntriesAdapter extends RecyclerView.Adapter<editabl
         ImageButton removeButton;
 
         private final static String CONTAINER_TRANSITION_NAME = "container";
-        private final static String PERIODIC_ENTRY_TRANSITION_NAME = "periodicEntryTextView";
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -123,7 +122,6 @@ public class editablePeriodicEntriesAdapter extends RecyclerView.Adapter<editabl
 
         void bind(final periodicEntry periodicEntryToBind) {
             container.setTransitionName(CONTAINER_TRANSITION_NAME + periodicEntryToBind.getId());
-            description.setTransitionName(PERIODIC_ENTRY_TRANSITION_NAME + periodicEntryToBind.getId());
 
             description.setText(periodicEntryToBind.getDescription());
             description.setFocusable(false);

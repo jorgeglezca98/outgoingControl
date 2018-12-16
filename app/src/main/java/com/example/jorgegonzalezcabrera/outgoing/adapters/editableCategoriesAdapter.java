@@ -113,10 +113,10 @@ public class editableCategoriesAdapter extends RecyclerView.Adapter<editableCate
         if ((holder.getAdapterPosition() == (getItemCount() - 1)) && lastIsEmpty && !showingLast) {
             if (categoriesType == category.INCOME) {
                 editIncomeCategoryInterface.editCategoryField("",
-                        holder.container, holder.categoryName, "Income category", REQUEST_ADD_INCOME_CATEGORY, -1);
+                        holder.container, "Income category", REQUEST_ADD_INCOME_CATEGORY, -1);
             } else {
                 editIncomeCategoryInterface.editCategoryField("",
-                        holder.container, holder.categoryName, "Outgoing category", REQUEST_ADD_OUTGOING_CATEGORY, -1);
+                        holder.container, "Outgoing category", REQUEST_ADD_OUTGOING_CATEGORY, -1);
             }
             showingLast = true;
         }
@@ -129,7 +129,6 @@ public class editableCategoriesAdapter extends RecyclerView.Adapter<editableCate
         ImageButton removeButton;
 
         private final static String CONTAINER_TRANSITION_NAME = "container";
-        private final static String CATEGORY_NAME_TRANSITION_NAME = "categoryNameTextView";
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -141,7 +140,6 @@ public class editableCategoriesAdapter extends RecyclerView.Adapter<editableCate
 
         void bind(final category categoryToBind) {
             container.setTransitionName(CONTAINER_TRANSITION_NAME + categoryToBind.getId());
-            categoryName.setTransitionName(CATEGORY_NAME_TRANSITION_NAME + categoryToBind.getId());
 
             categoryName.setText(categoryToBind.getName());
             categoryName.setFocusable(false);
@@ -151,10 +149,10 @@ public class editableCategoriesAdapter extends RecyclerView.Adapter<editableCate
                 public void onClick(View view) {
                     if (categoriesType == com.example.jorgegonzalezcabrera.outgoing.models.category.INCOME) {
                         editIncomeCategoryInterface.editCategoryField(categoryToBind.getName(),
-                                container, categoryName, "Income category", REQUEST_EDIT_CATEGORY, categoryToBind.getId());
+                                container, "Income category", REQUEST_EDIT_CATEGORY, categoryToBind.getId());
                     } else {
                         editIncomeCategoryInterface.editCategoryField(categoryToBind.getName(),
-                                container, categoryName, "Outgoing category", REQUEST_EDIT_CATEGORY, categoryToBind.getId());
+                                container,"Outgoing category", REQUEST_EDIT_CATEGORY, categoryToBind.getId());
                     }
                 }
             });

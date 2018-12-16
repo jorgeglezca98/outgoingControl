@@ -112,7 +112,6 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
         ImageButton removeButton;
 
         private final static String CONTAINER_TRANSITION_NAME = "container";
-        private final static String CATEGORY_NAME_TRANSITION_NAME = "categoryNameTextView";
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -124,7 +123,6 @@ public class editableOutgoingCategoriesAdapter extends RecyclerView.Adapter<edit
 
         void bind(final moneyController controllerToBind) {
             container.setTransitionName(CONTAINER_TRANSITION_NAME + controllerToBind.getId());
-            categoryName.setTransitionName(CATEGORY_NAME_TRANSITION_NAME + controllerToBind.getId());
 
             categoryName.setText(controllerToBind.getName());
             categoryName.setFocusable(false);

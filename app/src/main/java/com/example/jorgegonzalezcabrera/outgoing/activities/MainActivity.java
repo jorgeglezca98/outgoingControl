@@ -10,7 +10,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
@@ -364,20 +362,17 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     }
 
     @Override
-    public void editCategoryField(String initialValue, ConstraintLayout container, TextView field, String hint, int requestCode, long id) {
+    public void editCategoryField(String initialValue, ConstraintLayout container, String hint, int requestCode, long id) {
         Intent intent = new Intent(this, editFieldActivity.class);
 
         intent.putExtra(CONTAINER_TRANSITION_NAME_KEY, container.getTransitionName());
-        intent.putExtra(FIELD_TRANSITION_NAME_KEY, field.getTransitionName());
         intent.putExtra(INITIAL_VALUE_KEY, initialValue);
         intent.putExtra(HINT_KEY, hint);
         intent.putExtra(ID_KEY, id);
         intent.putExtra(REQUEST_CODE_KEY, requestCode);
 
-        Pair<View, String> p1 = Pair.create((View) field, field.getTransitionName());
-        Pair<View, String> p2 = Pair.create((View) container, container.getTransitionName());
-
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2);
+        ActivityOptionsCompat options = ActivityOptionsCompat.
+                makeSceneTransitionAnimation(this, container, container.getTransitionName());
 
         startActivityForResult(intent, requestCode, options.toBundle());
     }
