@@ -41,6 +41,7 @@ public class initialConfigurationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_initial_configuration);
+        getWindow().setStatusBarColor(getResources().getColor(android.R.color.darker_gray));
 
         final customViewPager configurationViewPager = findViewById(R.id.viewPagerInitialConfiguration);
         configurationViewPager.setOffscreenPageLimit(4);

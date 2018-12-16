@@ -65,6 +65,7 @@ public class editPeriodicEntryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.editable_periodic_entry_activity);
         setFinishOnTouchOutside(false);
+        getWindow().setStatusBarColor(getResources().getColor(android.R.color.darker_gray));
         supportPostponeEnterTransition();
 
         final Bundle extras = getIntent().getExtras();

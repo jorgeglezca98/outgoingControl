@@ -48,6 +48,7 @@ public class editOutgoingCategoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.editable_outgoing_category_activity);
         setFinishOnTouchOutside(false);
+        getWindow().setStatusBarColor(getResources().getColor(android.R.color.darker_gray));
         supportPostponeEnterTransition();
 
         final Bundle extras = getIntent().getExtras();

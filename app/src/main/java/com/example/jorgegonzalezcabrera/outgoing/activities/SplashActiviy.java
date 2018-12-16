@@ -11,6 +11,7 @@ public class SplashActiviy extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setStatusBarColor(getResources().getColor(android.R.color.darker_gray));
 
         final Realm database = Realm.getDefaultInstance();
         final Intent intent;

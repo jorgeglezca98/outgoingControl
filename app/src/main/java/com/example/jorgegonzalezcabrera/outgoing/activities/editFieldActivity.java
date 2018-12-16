@@ -39,6 +39,7 @@ public class editFieldActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.editable_field_activity);
         setFinishOnTouchOutside(false);
+        getWindow().setStatusBarColor(getResources().getColor(android.R.color.darker_gray));
         supportPostponeEnterTransition();
 
         Bundle extras = getIntent().getExtras();

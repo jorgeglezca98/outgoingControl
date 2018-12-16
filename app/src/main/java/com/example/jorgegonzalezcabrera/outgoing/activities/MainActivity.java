@@ -72,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        getWindow().setStatusBarColor(getResources().getColor(android.R.color.darker_gray));
+
         Toolbar toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
