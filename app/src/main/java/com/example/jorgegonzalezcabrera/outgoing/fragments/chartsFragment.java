@@ -3,6 +3,7 @@ package com.example.jorgegonzalezcabrera.outgoing.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,12 +30,15 @@ import io.realm.Realm;
 
 public class chartsFragment extends Fragment {
 
+    private BarData outgoingData;
+    private BarData incomeData;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.chart_fragment, container, false);
 
-        BarChart barChart = view.findViewById(R.id.barChart);
+        final BarChart barChart = view.findViewById(R.id.barChart);
         barChart.getAxisLeft().setAxisMinimum(0f);
         barChart.getLegend().setEnabled(false);
         barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -46,7 +50,6 @@ public class chartsFragment extends Fragment {
         Description d = new Description();
         d.setText("");
         barChart.setDescription(d);
-        barChart.invalidate();
 
         Realm database = Realm.getDefaultInstance();
         Date firstEntryMade = database.where(entry.class).minimumDate("creationDate");
@@ -59,22 +62,59 @@ public class chartsFragment extends Fragment {
             biggerDate.setTime(smallerDate.getTime());
             biggerDate.add(Calendar.MONTH, 1);
 
-            List<BarEntry> entries = new ArrayList<>();
+            List<BarEntry> outgoings = new ArrayList<>();
+            List<BarEntry> incomes = new ArrayList<>();
             float i = 1f;
             do {
-                float valor = database.where(entry.class).equalTo("type", category.typeOfCategory.OUTGOING.ordinal()).between("creationDate", smallerDate.getTime(), biggerDate.getTime()).sum("valor").floatValue();
-                entries.add(new BarEntry(i, valor));
+                float outgoingValueByMonth = database.where(entry.class).equalTo("type", category.typeOfCategory.OUTGOING.ordinal()).between("creationDate", smallerDate.getTime(), biggerDate.getTime()).sum("valor").floatValue();
+                float incomeValueByMonth = database.where(entry.class).equalTo("type", category.typeOfCategory.INCOME.ordinal()).between("creationDate", smallerDate.getTime(), biggerDate.getTime()).sum("valor").floatValue();
+                outgoings.add(new BarEntry(i, outgoingValueByMonth));
+                incomes.add(new BarEntry(i, incomeValueByMonth));
                 i++;
                 smallerDate.add(Calendar.MONTH, 1);
                 biggerDate.add(Calendar.MONTH, 1);
             } while (smallerDate.getTime().getTime() < lastEntryMade.getTime());
 
-            BarDataSet set = new BarDataSet(entries, "BarDataSet");
-            set.setColor(getResources().getColor(R.color.primary2));
-            BarData data = new BarData(set);
-            data.setBarWidth(0.9f);
-            barChart.setData(data);
+            BarDataSet outgoingSet = new BarDataSet(outgoings, "BarDataSet");
+            outgoingSet.setColor(getResources().getColor(R.color.primary2));
+            outgoingData = new BarData(outgoingSet);
+            outgoingData.setBarWidth(0.9f);
+            barChart.setData(outgoingData);
+
+            BarDataSet incomeSet = new BarDataSet(incomes, "BarDataSet");
+            incomeSet.setColor(getResources().getColor(R.color.primary2));
+            incomeData = new BarData(incomeSet);
+            incomeData.setBarWidth(0.9f);
+
+            barChart.invalidate();
         }
+
+        TabLayout tabLayout = view.findViewById(R.id.tabLayout);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab.getPosition() == 0) {
+                    barChart.setData(outgoingData);
+                    barChart.invalidate();
+                } else if (tab.getPosition() == 1) {
+                    barChart.setData(incomeData);
+                    barChart.invalidate();
+                } else if (tab.getPosition() == 2) {
+
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
         return view;
     }
 }
