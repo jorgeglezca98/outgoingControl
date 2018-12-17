@@ -1,6 +1,7 @@
 package com.example.jorgegonzalezcabrera.outgoing.activities;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,6 +25,7 @@ import com.example.jorgegonzalezcabrera.outgoing.R;
 import com.example.jorgegonzalezcabrera.outgoing.activities.editFieldActivity.editIncomeCategoryInterface;
 import com.example.jorgegonzalezcabrera.outgoing.adapters.editableOutgoingCategoriesAdapter;
 import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
+import com.example.jorgegonzalezcabrera.outgoing.dialogs.entryDialog;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.actionsFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.chartsFragment;
 import com.example.jorgegonzalezcabrera.outgoing.fragments.mainFragment;
@@ -44,7 +46,6 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 
-import static com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs.newEntryDialog;
 import static com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry.periodicType.ANNUAL;
 import static com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry.periodicType.DAILY;
 import static com.example.jorgegonzalezcabrera.outgoing.models.periodicEntry.periodicType.MONTHLY;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
     private localUtils.OnEntriesChangeInterface onEntriesChangeInterface;
     private FloatingActionButton fabAddEntry;
     private boolean someSettingSectionOpened;
+    private entryDialog newEntryDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,12 +139,14 @@ public class MainActivity extends AppCompatActivity implements localUtils.OnEntr
 
         onEntriesChangeInterface = this;
 
-        fabAddEntry = findViewById(R.id.fab);
+        newEntryDialog = new entryDialog(this, onEntriesChangeInterface);
 
+        fabAddEntry = findViewById(R.id.fab);
         fabAddEntry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                newEntryDialog(MainActivity.this, onEntriesChangeInterface);
+                Resources.Theme a = getTheme();
+                newEntryDialog.show();
             }
         });
 

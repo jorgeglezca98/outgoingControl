@@ -13,9 +13,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.jorgegonzalezcabrera.outgoing.R;
-import com.example.jorgegonzalezcabrera.outgoing.dialogs.dialogs;
-import com.example.jorgegonzalezcabrera.outgoing.models.entry;
+import com.example.jorgegonzalezcabrera.outgoing.dialogs.entryDialog;
 import com.example.jorgegonzalezcabrera.outgoing.models.category.typeOfCategory;
+import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.localUtils;
 
 import java.text.DateFormat;
@@ -41,6 +41,7 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private Vector<RealmList<entry>> entries;
     private Context context;
     private localUtils.OnEntriesChangeInterface onEntriesChangeInterface;
+    private entryDialog editEntryDialog;
 
     public allEntriesAdapter(@NonNull Context context,
                              @Nonnull RealmList<entry> allEntries,
@@ -49,6 +50,7 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         this.headerLayout = R.layout.entries_by_month;
         this.context = context;
         this.onEntriesChangeInterface = onEntriesChangeInterface;
+        this.editEntryDialog = new entryDialog(context, onEntriesChangeInterface);
 
         Date firstDayOfMonth = allEntries.isEmpty() ? new Date() : allEntries.last().getCreationDate();
         entries = new Vector<>();
@@ -322,7 +324,8 @@ public class allEntriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         public boolean onMenuItemClick(MenuItem menuItem) {
                             switch (menuItem.getItemId()) {
                                 case R.id.editEntryMenuItem:
-                                    dialogs.editEntryDialog(context, get(getAdapterPosition()), onEntriesChangeInterface);
+                                    editEntryDialog.setLastVersion(get(getAdapterPosition()));
+                                    editEntryDialog.show();
                                     return true;
                                 case R.id.removeEntryMenuItem:
                                     entry itemToRemove = get(getAdapterPosition());
