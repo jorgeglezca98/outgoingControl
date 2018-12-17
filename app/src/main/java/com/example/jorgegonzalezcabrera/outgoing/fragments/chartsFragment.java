@@ -14,11 +14,19 @@ import com.example.jorgegonzalezcabrera.outgoing.models.category;
 import com.example.jorgegonzalezcabrera.outgoing.models.entry;
 import com.example.jorgegonzalezcabrera.outgoing.utilities.utils;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,16 +35,21 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 
 public class chartsFragment extends Fragment {
 
-    private BarData outgoingData;
-    private BarData incomeData;
+    private BarData barOutgoingData;
+    private BarData barIncomeData;
+    private PieData pieOutgoingData;
+    private PieData pieIncomeData;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.chart_fragment, container, false);
+
+        Realm database = Realm.getDefaultInstance();
 
         final BarChart barChart = view.findViewById(R.id.barChart);
         barChart.getAxisLeft().setAxisMinimum(0f);
@@ -51,7 +64,13 @@ public class chartsFragment extends Fragment {
         d.setText("");
         barChart.setDescription(d);
 
-        Realm database = Realm.getDefaultInstance();
+        final PieChart pieChart = view.findViewById(R.id.pieChart);
+
+        RealmList<category> outgoingCategories = new RealmList<>();
+        outgoingCategories.addAll(database.where(category.class).equalTo("type", category.typeOfCategory.OUTGOING.ordinal()).findAll());
+        RealmList<category> incomeCategories = new RealmList<>();
+        incomeCategories.addAll(database.where(category.class).equalTo("type", category.typeOfCategory.INCOME.ordinal()).findAll());
+
         Date firstEntryMade = database.where(entry.class).minimumDate("creationDate");
         if (firstEntryMade != null) {
             firstEntryMade = utils.firstDateOfTheMonth(firstEntryMade);
@@ -62,30 +81,64 @@ public class chartsFragment extends Fragment {
             biggerDate.setTime(smallerDate.getTime());
             biggerDate.add(Calendar.MONTH, 1);
 
-            List<BarEntry> outgoings = new ArrayList<>();
-            List<BarEntry> incomes = new ArrayList<>();
+            List<BarEntry> barOutgoingEntries = new ArrayList<>();
+            List<BarEntry> barIncomeEntries = new ArrayList<>();
+            List<PieEntry> pieOutgoingEntries = new ArrayList<>();
+            List<PieEntry> pieIncomeEntries = new ArrayList<>();
             float i = 1f;
             do {
-                float outgoingValueByMonth = database.where(entry.class).equalTo("type", category.typeOfCategory.OUTGOING.ordinal()).between("creationDate", smallerDate.getTime(), biggerDate.getTime()).sum("valor").floatValue();
-                float incomeValueByMonth = database.where(entry.class).equalTo("type", category.typeOfCategory.INCOME.ordinal()).between("creationDate", smallerDate.getTime(), biggerDate.getTime()).sum("valor").floatValue();
-                outgoings.add(new BarEntry(i, outgoingValueByMonth));
-                incomes.add(new BarEntry(i, incomeValueByMonth));
+                float outgoingValueByMonth = 0;
+                for (int j = 0; j < outgoingCategories.size(); j++) {
+                    float outgoingsPerMonthAndCategory = database.where(entry.class).equalTo("categoryName", outgoingCategories.get(j).getName()).between("creationDate", smallerDate.getTime(), biggerDate.getTime()).sum("valor").floatValue();
+                    outgoingValueByMonth += outgoingsPerMonthAndCategory;
+                    pieOutgoingEntries.add(new PieEntry(outgoingsPerMonthAndCategory));
+                }
+                float incomeValueByMonth = 0;
+                for (int j = 0; j < incomeCategories.size(); j++) {
+                    float incomesPerMonthAndCategory = database.where(entry.class).equalTo("categoryName", incomeCategories.get(j).getName()).between("creationDate", smallerDate.getTime(), biggerDate.getTime()).sum("valor").floatValue();
+                    incomeValueByMonth += incomesPerMonthAndCategory;
+                    pieIncomeEntries.add(new PieEntry(incomesPerMonthAndCategory));
+                }
+                barOutgoingEntries.add(new BarEntry(i, outgoingValueByMonth));
+                barIncomeEntries.add(new BarEntry(i, incomeValueByMonth));
+
                 i++;
                 smallerDate.add(Calendar.MONTH, 1);
                 biggerDate.add(Calendar.MONTH, 1);
             } while (smallerDate.getTime().getTime() < lastEntryMade.getTime());
 
-            BarDataSet outgoingSet = new BarDataSet(outgoings, "BarDataSet");
-            outgoingSet.setColor(getResources().getColor(R.color.primary2));
-            outgoingData = new BarData(outgoingSet);
-            outgoingData.setBarWidth(0.9f);
-            barChart.setData(outgoingData);
+            BarDataSet barOutgoingSet = new BarDataSet(barOutgoingEntries, "BarDataSet");
+            barOutgoingSet.setColor(getResources().getColor(R.color.primary2));
+            barOutgoingData = new BarData(barOutgoingSet);
+            barOutgoingData.setBarWidth(0.9f);
+            barChart.setData(barOutgoingData);
 
-            BarDataSet incomeSet = new BarDataSet(incomes, "BarDataSet");
-            incomeSet.setColor(getResources().getColor(R.color.primary2));
-            incomeData = new BarData(incomeSet);
-            incomeData.setBarWidth(0.9f);
+            BarDataSet barIncomeSet = new BarDataSet(barIncomeEntries, "BarDataSet");
+            barIncomeSet.setColor(getResources().getColor(R.color.primary2));
+            barIncomeData = new BarData(barIncomeSet);
+            barIncomeData.setBarWidth(0.9f);
 
+            PieDataSet pieOutgoingSet = new PieDataSet(pieOutgoingEntries, "PieDataSet");
+            pieOutgoingSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+            pieOutgoingData = new PieData(pieOutgoingSet);
+            pieChart.setData(pieOutgoingData);
+
+            PieDataSet pieIncomeSet = new PieDataSet(pieIncomeEntries, "PieDataSet");
+            pieIncomeSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+            pieIncomeData = new PieData(pieIncomeSet);
+
+            pieChart.invalidate();
+            pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+                @Override
+                public void onValueSelected(Entry e, Highlight h) {
+
+                }
+
+                @Override
+                public void onNothingSelected() {
+
+                }
+            });
             barChart.invalidate();
         }
 
@@ -94,13 +147,15 @@ public class chartsFragment extends Fragment {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 if (tab.getPosition() == 0) {
-                    barChart.setData(outgoingData);
+                    barChart.setData(barOutgoingData);
                     barChart.invalidate();
+                    pieChart.setData(pieOutgoingData);
+                    pieChart.invalidate();
                 } else if (tab.getPosition() == 1) {
-                    barChart.setData(incomeData);
+                    barChart.setData(barIncomeData);
                     barChart.invalidate();
-                } else if (tab.getPosition() == 2) {
-
+                    pieChart.setData(pieIncomeData);
+                    pieChart.invalidate();
                 }
             }
 
